@@ -16,7 +16,7 @@ const Topbar = ({ onMenuToggle }) => {
   };
 
   const handleUserClick = (e) => {
-    if (CheckAuth()) {
+    if (!CheckAuth()) {
       navigate("/login");
     } else {
       op.current.show(e);

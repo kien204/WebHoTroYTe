@@ -8,14 +8,17 @@ import NotFoundPage from "../features/notfoundpage/NotFoundPage";
 import ProtectedRoute from "./ProtectedRoute";
 import ResetPassword from "../features/auth/ResetPassword";
 import ForgotPassword from "../features/auth/ForgotPassword";
-import Profile from "../features/profile/Profile";
+import Profile from "../features/Profile/Profile";
 const RouterCustom = () => {
   const privateRouters = [
     { path: "/a", component: <App2 /> },
-    { path: "/profile", component: <Profile /> },
+    // { path: "/profile", component: <Profile /> },
   ];
 
-  const publicRouters = [{ path: "/", component: <App /> }];
+  const publicRouters = [
+    { path: "/", component: <App /> },
+    { path: "/profile", component: <Profile /> },
+  ];
 
   return (
     <Routes>
