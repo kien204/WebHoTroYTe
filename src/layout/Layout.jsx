@@ -1,30 +1,21 @@
-import React, { memo, useState } from "react";
-import Topbar from "./Topbar";
+import React, { memo } from "react";
 import Footer from "./Footer";
-import Sidebar from "./Sidebar";
+import MenuSidebar from "./Sidebar";
 
-const Layout = ({ children, ...props }) => {
-  const [sidebarVisible, setSidebarVisible] = useState(false);
-
+const Layout = ({ children }) => {
   return (
-    <div className="flex flex-column min-h-screen" {...props}>
-      {/* Topbar */}
-      <Topbar onMenuToggle={() => setSidebarVisible(true)} />
+    <div className="flex flex-row min-h-screen">
+      {/* Sidebar chiếm cố định 18rem */}
 
-      {/* Body */}
-      <div className="flex flex-row flex-1">
-        {/* Sidebar */}
-        <Sidebar
-          visible={sidebarVisible}
-          onHide={() => setSidebarVisible(false)}
-        />
-
-        {/* Content */}
-        <main className="flex-1 p-4">{children}</main>
+      <div className="w-18rem">
+        <MenuSidebar />
       </div>
 
-      {/* Footer */}
-      <Footer />
+      {/* Content */}
+      <div className="flex flex-column flex-1 min-h-screen">
+        <div className="flex-1 surface-ground p-4">{children}</div>
+        <Footer />
+      </div>
     </div>
   );
 };

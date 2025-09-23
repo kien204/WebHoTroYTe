@@ -1,5 +1,4 @@
-/* Body */
-body {
+Body body {
   font-family: "Segoe UI", Arial, sans-serif;
   font-size: 16px;
   line-height: 1.5;
@@ -21,4 +20,52 @@ ol {
   list-style: none;
   margin: 0;
   padding: 0;
+}
+
+.gap-15{
+  gap: 15rem;
+}
+
+.bg-main1 {
+  background-color: #0083ad;
+}
+
+.bg-main2 {
+  background-color: #777777;
+}
+
+.bg-main3 {
+  background-color: #edfbff;
+}
+
+.bg-white {
+  background-color: #ffffff;
+}
+
+.border-red {
+  background-color: #777777;
+}
+
+.text-main1 {
+  color: #0083ad;
+}
+
+.text-main2 {
+  color: #777777;
+}
+
+.active-sidebar{
+  background-color: #0083ad;
+
+  i, span {
+    color: #ffffff;
+  }
+}
+
+.hover-sidebar:hover{
+  background-color: #e8e8e8;
+
+  i, span {
+    color: #000000;
+  }
 }
