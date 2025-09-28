@@ -18,6 +18,7 @@ import Reports from "../pages/Reports/Reports";
 import HealthProfile from "../pages/HealthProfile/HealthProfile";
 import Settings from "../pages/Settings/Settings";
 import Home from "../pages/Home/Home";
+import Demo3 from "../demo/demo-quiz/QuizApp";
 
 const RouterCustom = () => {
   const privateRouters = [
@@ -45,6 +46,7 @@ const RouterCustom = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/terms-of-service" element={<TermsOfService />} />
+      <Route path="/demo-3" element={<Demo3 />} />
 
       {/* Trang công khai nhưng vẫn dùng Layout */}
       {publicRouters.map((item, key) => (

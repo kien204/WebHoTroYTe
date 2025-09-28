@@ -1,13 +1,30 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Avatar } from "primereact/avatar";
 import { Divider } from "primereact/divider";
 import { Link } from "react-router-dom";
 import { Menu } from "primereact/menu";
 import { useNavigate } from "react-router-dom";
+import { Button } from "primereact/button";
 
 const MenuSidebar = () => {
   const menu = useRef(null);
   const navigate = useNavigate();
+
+  const [auth, setAuth] = useState(null);
+
+  useEffect(() => {
+    const savedAuth = localStorage.getItem("auth");
+    if (savedAuth) {
+      const parsed = JSON.parse(savedAuth);
+
+      if (parsed.date > Date.now()) {
+        setAuth(parsed); // hợp lệ
+      } else {
+        localStorage.removeItem("auth");
+        setAuth(null);
+      }
+    }
+  }, []);
 
   const [menuSidebar] = useState([
     { name: "Trang chủ", path: "/", icon: "pi-home" },
@@ -21,11 +38,14 @@ const MenuSidebar = () => {
 
   const [itemsMenuFooter] = useState([
     { label: "Hồ sơ", icon: "pi pi-user", command: () => navigate("/profile") },
-    
-    { label: "Đăng xuất", icon: "pi pi-sign-out", command: () => {
-      
-      navigate("/login")
-    } },
+
+    {
+      label: "Đăng xuất",
+      icon: "pi pi-sign-out",
+      command: () => {
+        navigate("/login");
+      },
+    },
   ]);
 
   return (
@@ -68,19 +88,27 @@ const MenuSidebar = () => {
           popupAlignment="right"
         />
 
-        <div
-          className="m-3 flex align-items-center cursor-pointer p-2 gap-2"
-          onClick={(event) => menu.current.toggle(event)}
-          aria-haspopup
-          aria-controls="popup_menu"
-        >
-          <Avatar
-            image="https://i.pravatar.cc/100"
-            shape="circle"
-            size="large"
-          />
-          <span className="font-bold">HealthCare</span>
-        </div>
+        {auth ? (
+          <div
+            className="m-3 flex align-items-center cursor-pointer p-2 gap-2"
+            onClick={(event) => menu.current.toggle(event)}
+            aria-haspopup
+            aria-controls="popup_menu"
+          >
+            <Avatar
+              image="https://i.pravatar.cc/100"
+              shape="circle"
+              size="large"
+            />
+            <span className="font-bold">HealthCare</span>
+          </div>
+        ) : (
+          <div
+            className="m-3 flex align-items-center justify-content-center p-2 gap-2"
+          >
+            <Button onClick={() => {navigate("/login")}}>Đăng nhập</Button>
+          </div>
+        )}
       </div>
     </div>
   );

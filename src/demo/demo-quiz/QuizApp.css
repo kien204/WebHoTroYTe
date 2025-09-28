@@ -1,0 +1,13 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+}
+
+.question-card {
+  max-width: 800px;
+  margin: 20px auto;
+}
+
+.explanation {
+  background-color: #e9ecef;
+}

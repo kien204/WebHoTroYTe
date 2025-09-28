@@ -4,10 +4,9 @@ import MenuSidebar from "./Sidebar";
 
 const Layout = ({ children }) => {
   return (
-    <div className="flex flex-row min-h-screen">
-      {/* Sidebar chiếm cố định 18rem */}
-
-      <div className="w-18rem">
+    <div className="flex flex-column md:flex-row min-h-screen">
+      {/* Sidebar */}
+      <div className="hidden md:block w-18rem">
         <MenuSidebar />
       </div>
 

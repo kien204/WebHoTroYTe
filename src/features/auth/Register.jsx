@@ -13,7 +13,6 @@ import { InputOtp } from "primereact/inputotp";
 import doctor from "../../assets/Doctor.png";
 import { Image } from "primereact/image";
 
-
 const Register = () => {
   const [userName, setuserName] = useState("");
   const [password, setPassword] = useState("");
@@ -66,10 +65,6 @@ const Register = () => {
 
   const handleRegister = async () => {
     if (
-      !userName ||
-      !password ||
-      !email ||
-      !confirmPassword ||
       !checkPasswork ||
       !checkConfirmPasswork ||
       !checkEmail ||
@@ -84,8 +79,6 @@ const Register = () => {
       console.log(userName, email, password);
       const res = await authApi.register({ userName, email, password });
       console.log("Register successful:", res.data);
-      showToast("success", "Thành công", res.data.message);
-      // ví dụ: chuyển hướng sang trang chủ
       setIsDialog(true);
     } catch (err) {
       console.error("Login error:", err);
@@ -164,7 +157,14 @@ const Register = () => {
                     invalid={error && userName === "" ? true : false}
                     value={userName}
                     placeholder="Nhập họ và tên"
-                    onChange={(e) => setuserName(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      // chỉ cho phép chữ cái (có dấu tiếng Việt và khoảng trắng)
+                      const regex = /^[a-zA-ZÀ-ỹ\s]*$/;
+                      if (regex.test(value)) {
+                        setuserName(value);
+                      }
+                    }}
                   />
                 </IconField>
               </div>
@@ -183,7 +183,7 @@ const Register = () => {
                     onChange={(e) => setEmail(e.target.value)}
                   />
                 </IconField>
-                {!checkEmail && email != "" && (
+                {!checkEmail && email && (
                   <div className="text-sm mt-1" style={{ color: "red" }}>
                     Email phải định dạng xxx@gmail.com
                   </div>

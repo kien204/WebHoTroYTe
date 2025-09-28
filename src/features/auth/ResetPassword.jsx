@@ -16,10 +16,26 @@ const ResetPassword = () => {
   const toast = useRef(null);
   const [checkPass, setCheckPass] = useState(true);
   const [timeLeft, setTimeLeft] = useState(0);
+  const [checkEmail, setCheckEmail] = useState(false);
+  const [checkPasswork, setCheckPasswork] = useState(true); 
+  const [checkform, setCheckform] = useState(false);
 
   const showToast = (severity, summary, detail) => {
     toast.current.show({ severity, summary, detail, life: 3000 });
   };
+
+  useEffect(() => {
+    if (!email) setCheckEmail(false);
+    setCheckEmail(/^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(email.trim()));
+  }, [email]);
+
+  useEffect(() => {
+    if (newPassword.length < 8 && newPassword != "") {
+      setCheckPasswork(false);
+    } else {
+      setCheckPasswork(true);
+    }
+  }, [newPassword]);
 
   useEffect(() => {
     if (confirmPassword !== "" && newPassword !== confirmPassword) {
@@ -38,13 +54,9 @@ const ResetPassword = () => {
   }, [timeLeft]);
 
   const handleResetPassword = async () => {
-    if (!checkPass) {
-      showToast("error", "Thất bại", "Mật khẩu không khớp!");
-      return;
-    }
 
-    if (!newPassword || !confirmPassword || !email) {
-      showToast("warn", "Chú ý", "Vui lòng nhập đầy đủ thông tin!");
+    if (!checkPass || !checkPasswork || !checkEmail || !otp) {
+      setCheckform(true);
       return;
     }
 
@@ -104,18 +116,24 @@ const ResetPassword = () => {
               className="flex flex-column justify-content-center align-items-center bg-white p-6 w-30rem"
               style={{ borderRadius: "43px" }}
             >
-              <div className="text-4xl font-bold mb-4">Đổi mật khẩu</div>
+              <div className="text-4xl font-bold mb-4">Quên mật khẩu</div>
               <div className="w-full">
                 <label className="block mb-2 font-bold" htmlFor="userName">
                   Email
                 </label>
                 <InputText
                   id="email"
-                  className="w-full"
+                  className="w-full mb-1"
                   value={email}
                   placeholder="Nhập tên email"
                   onChange={(e) => setEmail(e.target.value)}
+                  invalid={checkform && !email || (email && !checkEmail)}
                 />
+                {!checkEmail && email && (
+                  <div className="text-sm mt-1" style={{ color: "red" }}>
+                    Email không hợp lệ!
+                  </div>
+                )}
               </div>
               <div className="w-full mt-3">
                 <div>
@@ -129,6 +147,7 @@ const ResetPassword = () => {
                       value={otp}
                       placeholder="Nhập mã otp"
                       onChange={(e) => setOtp(e.target.value)}
+                      invalid={checkform && !otp}
                     />
                     <Button
                       label={
@@ -146,12 +165,18 @@ const ResetPassword = () => {
                 </label>
                 <Password
                   id="newPassword"
-                  inputClassName="w-24rem"
+                  inputClassName="w-24rem mb-1"
                   placeholder="Nhập mật khẩu"
                   onChange={(e) => setNewPassword(e.target.value)}
                   toggleMask
                   feedback={false}
+                  invalid={checkform && !newPassword}
                 />
+                {!checkPasswork && (
+                  <div className="text-sm mt-1" style={{ color: "red" }}>
+                    Mật khẩu phải tối thiểu 8 kí tự
+                  </div>
+                )}
               </div>
               <div className="mt-3 w-full">
                 <label
@@ -167,6 +192,7 @@ const ResetPassword = () => {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   toggleMask
                   feedback={false}
+                  invalid={checkform && !confirmPassword}
                 />
                 {!checkPass && (
                   <div className="text-sm mt-1" style={{ color: "red" }}>

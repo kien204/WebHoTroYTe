@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import doctor from "../../assets/Doctor.png";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
@@ -15,6 +15,8 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [checkEmail, setCheckEmail] = useState(false);
+  const [checkForm, setCheckForm] = useState(false);
   const toast = useRef(null);
   const navigate = useNavigate();
 
@@ -22,7 +24,18 @@ const Login = () => {
     toast.current.show({ severity, summary, detail, life: 3000 });
   };
 
+  useEffect(() => {
+    if (!email) setCheckEmail(false);
+    setCheckEmail(/^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(email.trim()));
+  }, [email]);
+
   const handleLogin = async () => {
+    
+    if(!checkEmail || !password) {
+      setCheckForm(true);
+      return;
+    }
+    
     setLoading(true);
     try {
       console.log(email, password);
@@ -88,12 +101,15 @@ const Login = () => {
                   <InputIcon className="pi pi-envelope"> </InputIcon>
                   <InputText
                     id="email"
-                    className="w-full pl-5"
+                    className={`w-24rem pl-5 ${checkForm && !email ? "p-invalid" : ""}`}
                     value={email}
                     placeholder="Nhập tên đăng nhập"
                     onChange={(e) => setEmail(e.target.value)}
                   />
                 </IconField>
+                {email && !checkEmail && (
+                  <small className="p-error">Email không hợp lệ</small>
+                )}
               </div>
               <div className="mt-4 w-full">
                 <label className="block mb-2 font-bold" htmlFor="password">
@@ -103,7 +119,7 @@ const Login = () => {
                   <InputIcon className="pi pi-lock z-1" />
                   <Password
                     id="password"
-                    inputClassName="w-24rem pl-5"
+                    inputClassName={`w-24rem pl-5 ${checkForm && !password ? "p-invalid" : ""}`}
                     placeholder="Nhập mật khẩu"
                     onChange={(e) => setPassword(e.target.value)}
                     toggleMask
