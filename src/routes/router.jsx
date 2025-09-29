@@ -17,7 +17,7 @@ import DataEntry from "../pages/DataEntry/DataEntry";
 import Reports from "../pages/Reports/Reports";
 import HealthProfile from "../pages/HealthProfile/HealthProfile";
 import Settings from "../pages/Settings/Settings";
-import Home from "../pages/Home/Home";
+import Home from "../pages/home/Home";
 import Demo3 from "../demo/demo-quiz/QuizApp";
 
 const RouterCustom = () => {
@@ -27,7 +27,7 @@ const RouterCustom = () => {
   ];
 
   const publicRouters = [
-    { path: "/", component: <Demo1 /> },
+    { path: "/", component: <Home /> },
     { path: "/profile", component: <Profile /> },
     { path: "/ai-helper", component: <AiHelper /> },
     { path: "/health-metrics", component: <HealthMetrics /> },

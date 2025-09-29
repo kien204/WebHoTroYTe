@@ -1,25 +1,24 @@
 import React, { useRef } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "primereact/button";
-import logo from "../assets/logo.png";
 import { OverlayPanel } from "primereact/overlaypanel";
+import logo from "../assets/logo.png";
 
 const Topbar = ({ onMenuToggle }) => {
   const op = useRef(null);
   const navigate = useNavigate();
 
-  const CheckAuth = () => {
+  const isAuth = () => {
     const auth = JSON.parse(localStorage.getItem("auth"));
     if (!auth) return false;
-    const now = Date.now();
-    return auth.token && now < Number(auth.date);
+    return auth.token && Date.now() < Number(auth.date);
   };
 
   const handleUserClick = (e) => {
-    if (!CheckAuth()) {
+    if (!isAuth()) {
       navigate("/login");
     } else {
-      op.current.show(e);
+      op.current.toggle(e);
     }
   };
 
@@ -29,21 +28,20 @@ const Topbar = ({ onMenuToggle }) => {
   };
 
   return (
-    <div className="layout-topbar flex align-items-center justify-content-between px-4 py-2 surface-card shadow-2">
+    <div className="layout-topbar flex align-items-center justify-content-between px-4 py-2 surface-card border-bottom-1 surface-border">
       {/* Logo */}
-      <Link to="/" className="layout-topbar-logo flex align-items-center gap-2">
-        <img src={logo} alt="Logo" height="40" />
-        <span className="text-xl font-bold">Free Fire</span>
+      <Link to="/" className="flex align-items-center gap-2">
+        <img src={logo} alt="Logo" height="36" />
+        <span className="text-xl font-bold text-primary">HealthCare</span>
       </Link>
 
-      <Button
-        icon="pi pi-bars"
-        className="p-button-rounded p-button-text"
-        onClick={onMenuToggle}
-      />
-
-      {/* Right actions */}
-      <div className="flex align-items-center gap-3">
+      {/* Actions */}
+      <div className="flex align-items-center gap-2">
+        <Button
+          icon="pi pi-bars"
+          className="p-button-rounded p-button-text"
+          onClick={onMenuToggle}
+        />
         <Button
           icon="pi pi-search"
           className="p-button-rounded p-button-text"
@@ -54,19 +52,21 @@ const Topbar = ({ onMenuToggle }) => {
           className="p-button-rounded p-button-text"
           onClick={handleUserClick}
         />
-        <OverlayPanel ref={op} className="w-20rem">
-          <div className="flex flex-column align-items-center p-3">
-            <Link to="profile" className="w-full flex">
-              <div>
-                <i className="pi pi-user mr-2" />
-                <span className="font-bold">Hồ sơ cá nhân</span>
-              </div>
+
+        {/* Overlay user menu */}
+        <OverlayPanel ref={op} className="w-16rem">
+          <div className="flex flex-column gap-2 p-2">
+            <Link
+              to="/profile"
+              className="flex align-items-center gap-2 p-2 hover:surface-hover border-round"
+            >
+              <i className="pi pi-user" />
+              <span>Hồ sơ cá nhân</span>
             </Link>
-            <hr className="mb-3 border-top-1 border-none surface-border w-full" />
             <Button
               label="Đăng xuất"
               onClick={handleLogout}
-              className="w-full"
+              className="w-full p-button-text p-button-danger"
             />
           </div>
         </OverlayPanel>

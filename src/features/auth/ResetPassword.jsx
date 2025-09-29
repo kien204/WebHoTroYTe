@@ -6,28 +6,26 @@ import authApi from "./authApi";
 import { Toast } from "primereact/toast";
 import doctor from "../../assets/Doctor.png";
 import { Image } from "primereact/image";
+import { InputIcon } from "primereact/inputicon";
+import { IconField } from "primereact/iconfield";
+import { useNavigate } from "react-router-dom";
 
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState("");
-  const [email, setEmail] = useState("");
+  const email = localStorage.getItem("resetEmail") || "";
   const [otp, setOtp] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const toast = useRef(null);
   const [checkPass, setCheckPass] = useState(true);
   const [timeLeft, setTimeLeft] = useState(0);
-  const [checkEmail, setCheckEmail] = useState(false);
-  const [checkPasswork, setCheckPasswork] = useState(true); 
+  const [checkPasswork, setCheckPasswork] = useState(true);
   const [checkform, setCheckform] = useState(false);
+  const navigate = useNavigate();
 
   const showToast = (severity, summary, detail) => {
     toast.current.show({ severity, summary, detail, life: 3000 });
   };
-
-  useEffect(() => {
-    if (!email) setCheckEmail(false);
-    setCheckEmail(/^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(email.trim()));
-  }, [email]);
 
   useEffect(() => {
     if (newPassword.length < 8 && newPassword != "") {
@@ -54,8 +52,11 @@ const ResetPassword = () => {
   }, [timeLeft]);
 
   const handleResetPassword = async () => {
+    if (!email) {
+      return;
+    }
 
-    if (!checkPass || !checkPasswork || !checkEmail || !otp) {
+    if (!checkPass || !checkPasswork || !otp) {
       setCheckform(true);
       return;
     }
@@ -65,9 +66,8 @@ const ResetPassword = () => {
       console.log(email, otp, newPassword);
       const res = await authApi.reset_password({ email, otp, newPassword });
       console.log("Login successful:", res.data);
-
-      // ví dụ: chuyển hướng sang trang chủ
-      window.location.href = "/login";
+      showToast("success", "Thành công", "Đổi mật khẩu thành công");
+      navigate("/login");
     } catch (err) {
       console.error("Login error:", err);
       showToast("error", "Thất bại", "Tạo tài khoản thất bại!");
@@ -117,35 +117,64 @@ const ResetPassword = () => {
               style={{ borderRadius: "43px" }}
             >
               <div className="text-4xl font-bold mb-4">Quên mật khẩu</div>
-              <div className="w-full">
-                <label className="block mb-2 font-bold" htmlFor="userName">
-                  Email
+              <div className="mt-4 w-full">
+                <label className="block mb-2 font-bold" htmlFor="newPassword">
+                  Mật khẩu
                 </label>
-                <InputText
-                  id="email"
-                  className="w-full mb-1"
-                  value={email}
-                  placeholder="Nhập tên email"
-                  onChange={(e) => setEmail(e.target.value)}
-                  invalid={checkform && !email || (email && !checkEmail)}
-                />
-                {!checkEmail && email && (
+                <IconField iconPosition="left">
+                  <InputIcon className="pi pi-lock z-1" />
+                  <Password
+                    id="newPassword"
+                    inputClassName="w-24rem pl-5"
+                    placeholder="Nhập mật khẩu"
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    toggleMask
+                    feedback={false}
+                    invalid={checkform && !newPassword ? true : false}
+                  />
+                </IconField>
+                {!checkPasswork && (
                   <div className="text-sm mt-1" style={{ color: "red" }}>
-                    Email không hợp lệ!
+                    Mật khẩu phải tối thiểu 8 kí tự
+                  </div>
+                )}
+              </div>
+              <div className="mt-4 w-full">
+                <label
+                  className="block mb-2 font-bold"
+                  htmlFor="confirmPassword"
+                >
+                  Mật khẩu
+                </label>
+                <IconField iconPosition="left">
+                  <InputIcon className="pi pi-lock z-1" />
+                  <Password
+                    id="confirmPassword"
+                    inputClassName="w-24rem pl-5 "
+                    placeholder="Nhập mật khẩu"
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    toggleMask
+                    feedback={false}
+                    invalid={checkform && !confirmPassword ? true : false}
+                  />
+                </IconField>
+                {!checkPass && (
+                  <div className="text-sm mt-1" style={{ color: "red" }}>
+                    Mật khẩu không khớp!
                   </div>
                 )}
               </div>
               <div className="w-full mt-3">
                 <div>
                   <label className="block mb-2 font-bold" htmlFor="otp">
-                    Mã OTP
+                    Mã Capcha
                   </label>
                   <div className=" flex justify-content-between align-items-center">
                     <InputText
                       id="otp"
                       className="w-full max-w-15rem"
                       value={otp}
-                      placeholder="Nhập mã otp"
+                      placeholder="Nhập mã Capcha"
                       onChange={(e) => setOtp(e.target.value)}
                       invalid={checkform && !otp}
                     />
@@ -158,47 +187,6 @@ const ResetPassword = () => {
                     />
                   </div>
                 </div>
-              </div>
-              <div className="mt-3 w-full">
-                <label className="block mb-2 font-bold" htmlFor="newPassword">
-                  Mật khẩu mới
-                </label>
-                <Password
-                  id="newPassword"
-                  inputClassName="w-24rem mb-1"
-                  placeholder="Nhập mật khẩu"
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  toggleMask
-                  feedback={false}
-                  invalid={checkform && !newPassword}
-                />
-                {!checkPasswork && (
-                  <div className="text-sm mt-1" style={{ color: "red" }}>
-                    Mật khẩu phải tối thiểu 8 kí tự
-                  </div>
-                )}
-              </div>
-              <div className="mt-3 w-full">
-                <label
-                  className="block mb-2 font-bold"
-                  htmlFor="confirmPassword"
-                >
-                  Nhập lại mật khẩu mới
-                </label>
-                <Password
-                  id="confirmPassword"
-                  inputClassName="w-24rem"
-                  placeholder="Nhập lại mật khẩu"
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  toggleMask
-                  feedback={false}
-                  invalid={checkform && !confirmPassword}
-                />
-                {!checkPass && (
-                  <div className="text-sm mt-1" style={{ color: "red" }}>
-                    Mật khẩu không khớp!
-                  </div>
-                )}
               </div>
               <Button
                 className="w-full mt-6"

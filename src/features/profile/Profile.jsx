@@ -3,7 +3,6 @@ import { Avatar } from "primereact/avatar";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { RadioButton } from "primereact/radiobutton";
-import { FileUpload } from "primereact/fileupload";
 
 const Profile = () => {
   const [isEdit, setIsEdit] = useState(false);

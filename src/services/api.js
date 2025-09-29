@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Tạo instance Axios dùng chung
 const api = axios.create({
-  baseURL: "http://10.15.92.224:5092/api", // Thay bằng URL backend của bạn
+  baseURL: "http://10.15.253.185:5092/api", // Thay bằng URL backend của bạn
   headers: {
     "Content-Type": "application/json",
   },

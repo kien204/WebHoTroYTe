@@ -30,12 +30,11 @@ const Login = () => {
   }, [email]);
 
   const handleLogin = async () => {
-    
-    if(!checkEmail || !password) {
+    if (!checkEmail || !password) {
       setCheckForm(true);
       return;
     }
-    
+
     setLoading(true);
     try {
       console.log(email, password);
@@ -50,9 +49,8 @@ const Login = () => {
           date: Date.now() + 60 * 60 * 1000, // 1 hour
         })
       );
-
-      navigate("/");
       showToast("success", "Thành công", "Đăng nhập thành công!");
+      navigate("/");
     } catch (err) {
       console.error("Login error:", err);
       showToast("error", "Thất bại", "Tài khoản hoặc mật khẩu!");
@@ -101,7 +99,9 @@ const Login = () => {
                   <InputIcon className="pi pi-envelope"> </InputIcon>
                   <InputText
                     id="email"
-                    className={`w-24rem pl-5 ${checkForm && !email ? "p-invalid" : ""}`}
+                    className={`w-24rem pl-5 ${
+                      checkForm && !email ? "p-invalid" : ""
+                    }`}
                     value={email}
                     placeholder="Nhập tên đăng nhập"
                     onChange={(e) => setEmail(e.target.value)}
@@ -119,7 +119,9 @@ const Login = () => {
                   <InputIcon className="pi pi-lock z-1" />
                   <Password
                     id="password"
-                    inputClassName={`w-24rem pl-5 ${checkForm && !password ? "p-invalid" : ""}`}
+                    inputClassName={`w-24rem pl-5 ${
+                      checkForm && !password ? "p-invalid" : ""
+                    }`}
                     placeholder="Nhập mật khẩu"
                     onChange={(e) => setPassword(e.target.value)}
                     toggleMask

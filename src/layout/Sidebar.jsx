@@ -1,24 +1,23 @@
+// MenuSidebar.jsx
 import React, { useState, useRef, useEffect } from "react";
 import { Avatar } from "primereact/avatar";
 import { Divider } from "primereact/divider";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu } from "primereact/menu";
-import { useNavigate } from "react-router-dom";
 import { Button } from "primereact/button";
 
 const MenuSidebar = () => {
   const menu = useRef(null);
   const navigate = useNavigate();
-
+  const location = useLocation();
   const [auth, setAuth] = useState(null);
 
   useEffect(() => {
     const savedAuth = localStorage.getItem("auth");
     if (savedAuth) {
       const parsed = JSON.parse(savedAuth);
-
       if (parsed.date > Date.now()) {
-        setAuth(parsed); // hợp lệ
+        setAuth(parsed);
       } else {
         localStorage.removeItem("auth");
         setAuth(null);
@@ -38,18 +37,19 @@ const MenuSidebar = () => {
 
   const [itemsMenuFooter] = useState([
     { label: "Hồ sơ", icon: "pi pi-user", command: () => navigate("/profile") },
-
     {
       label: "Đăng xuất",
       icon: "pi pi-sign-out",
       command: () => {
+        localStorage.clear("auth");
         navigate("/login");
       },
     },
   ]);
 
   return (
-    <div className="h-screen w-18rem surface-card border-right-1 surface-border flex flex-column fixed left-0 top-0">
+    <div className="h-full surface-card border-right-1 surface-border flex flex-column">
+      {/* Logo */}
       <div className="flex align-items-center gap-2 p-3 surface-border">
         <i className="pi pi-heart text-4xl font-bold text-main1" />
         <div>
@@ -68,8 +68,7 @@ const MenuSidebar = () => {
               location.pathname === item.path
                 ? "active-sidebar"
                 : "hover-sidebar"
-            }
-          `}
+            }`}
           >
             <i className={`pi ${item.icon} text-xl text-main2`} />
             <span className="text-main2">{item.name}</span>
@@ -80,20 +79,11 @@ const MenuSidebar = () => {
       {/* Footer user */}
       <div className="mt-auto">
         <Divider className="mx" />
-        <Menu
-          model={itemsMenuFooter}
-          popup
-          ref={menu}
-          id="popup_menu"
-          popupAlignment="right"
-        />
-
+        <Menu model={itemsMenuFooter} popup ref={menu} id="popup_menu" />
         {auth ? (
           <div
             className="m-3 flex align-items-center cursor-pointer p-2 gap-2"
             onClick={(event) => menu.current.toggle(event)}
-            aria-haspopup
-            aria-controls="popup_menu"
           >
             <Avatar
               image="https://i.pravatar.cc/100"
@@ -103,10 +93,8 @@ const MenuSidebar = () => {
             <span className="font-bold">HealthCare</span>
           </div>
         ) : (
-          <div
-            className="m-3 flex align-items-center justify-content-center p-2 gap-2"
-          >
-            <Button onClick={() => {navigate("/login")}}>Đăng nhập</Button>
+          <div className="m-3 flex align-items-center justify-content-center p-2 gap-2">
+            <Button onClick={() => navigate("/login")}>Đăng nhập</Button>
           </div>
         )}
       </div>

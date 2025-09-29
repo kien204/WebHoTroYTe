@@ -2,11 +2,9 @@ import React, { useState, useRef, useEffect } from "react";
 import doctor from "../../assets/Doctor.png";
 import { Image } from "primereact/image";
 import { InputText } from "primereact/inputtext";
-import { Password } from "primereact/password";
 import { Button } from "primereact/button";
 import authApi from "./authApi";
 import { Toast } from "primereact/toast";
-import { Dialog } from "primereact/dialog";
 import { useNavigate } from "react-router-dom";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
@@ -44,6 +42,8 @@ const ForgetPassword = () => {
       const res = await authApi.forgot_password({ email });
 
       console.log(res.data);
+
+      localStorage.setItem("resetEmail", email);
 
       navigate("/reset-password");
     } catch (err) {
@@ -93,7 +93,7 @@ const ForgetPassword = () => {
                   <InputIcon className="pi pi-envelope"> </InputIcon>
                   <InputText
                     id="email"
-                    className="w-full pl-5 mb-1"
+                    className="w-full"
                     value={email}
                     placeholder="Nhập tên email"
                     onChange={(e) => setEmail(e.target.value)}

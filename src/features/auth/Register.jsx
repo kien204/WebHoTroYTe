@@ -9,7 +9,6 @@ import { Dialog } from "primereact/dialog";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { Checkbox } from "primereact/checkbox";
-import { InputOtp } from "primereact/inputotp";
 import doctor from "../../assets/Doctor.png";
 import { Image } from "primereact/image";
 
@@ -64,12 +63,7 @@ const Register = () => {
   }, [timeLeft]);
 
   const handleRegister = async () => {
-    if (
-      !checkPasswork ||
-      !checkConfirmPasswork ||
-      !checkEmail ||
-      !checked
-    ) {
+    if (!checkPasswork || !checkConfirmPasswork || !checkEmail || !checked) {
       setError(true);
       return;
     }
@@ -104,6 +98,8 @@ const Register = () => {
     setTimeLeft(60); // đặt lại thời gian đếm ngược
     try {
       const res = await authApi.resend_otp({ email });
+      console.log(email);
+      
       showToast("success", "Thành công", "Gửi lại mã OTP thành công!");
 
       console.log("Resend OTP successful:", res.data);
@@ -159,7 +155,6 @@ const Register = () => {
                     placeholder="Nhập họ và tên"
                     onChange={(e) => {
                       const value = e.target.value;
-                      // chỉ cho phép chữ cái (có dấu tiếng Việt và khoảng trắng)
                       const regex = /^[a-zA-ZÀ-ỹ\s]*$/;
                       if (regex.test(value)) {
                         setuserName(value);
@@ -272,7 +267,20 @@ const Register = () => {
         header={<div>HealthCare</div>}
       >
         <div className="my-3 mx-5">
-          <InputOtp value={otp} length={6} onChange={(e) => setOtp(e.value)} />
+          <div>
+            <label className="block mb-2 font-bold" htmlFor="otp">
+              Mã Capcha
+            </label>
+            <div className=" flex justify-content-between align-items-center">
+              <InputText
+                id="otp"
+                className="w-full max-w-15rem"
+                value={otp}
+                placeholder="Nhập mã Capcha"
+                onChange={(e) => setOtp(e.target.value)}
+              />
+            </div>
+          </div>
           <div className="w-full flex justify-content-center gap-3 mt-5">
             <Button label="Xác nhận" onClick={handleOTP} />
             <Button
