@@ -44,9 +44,8 @@ const SetupInfoModal = ({ onClose }) => {
   };
 
   const handleSave = async () => {
-
-    if(!height || !weight) {
-      setCheckForm2(false)
+    if (!height || !weight) {
+      setCheckForm2(false);
       return;
     }
 
@@ -63,14 +62,14 @@ const SetupInfoModal = ({ onClose }) => {
       visible
       modal
       closable={false}
-      className="w-5 max-w-md md:max-w-5xl"
-      contentClassName="p-2 md:p-5"
+      className="w-11 md:w-7 xl:w-6"
+      contentClassName="p-2"
     >
       <div className="card flex justify-content-center">
-        <Stepper ref={stepperRef} style={{ flexBasis: "50rem" }} linear>
+        <Stepper ref={stepperRef} className="w-full setStepper" linear>
           <StepperPanel header="Thông tin 1">
             <div className="flex flex-column align-items-center min-h-12rem">
-              <div className="w-8">
+              <div className="w-12 sm:w-10">
                 <div className="flex flex-column align-items-center">
                   <div
                     style={{ position: "relative", display: "inline-block" }}
@@ -138,8 +137,8 @@ const SetupInfoModal = ({ onClose }) => {
                       />
                     </IconField>
                   </div>
-                  <div className="flex gap-6 mt-3">
-                    <div className="w-6">
+                  <div className="flex flex-column lg:flex-row gap-3 mt-3">
+                    <div className="w-12">
                       <label className="block mb-1 font-bold" htmlFor="age">
                         Tuổi <span style={{ color: "red" }}>*</span>
                       </label>
@@ -158,12 +157,12 @@ const SetupInfoModal = ({ onClose }) => {
                         />
                       </IconField>
                     </div>
-                    <div className="w-6">
+                    <div className="w-12">
                       <label className="block mb-1 font-bold" htmlFor="gender">
                         Giới tính <span style={{ color: "red" }}>*</span>
                       </label>
                       <IconField iconPosition="left">
-                        <InputIcon className="pi pi-users z-1"> </InputIcon>
+                        <InputIcon className="pi pi-users z-1" />
                         <Dropdown
                           id="gender"
                           value={gender}
@@ -197,7 +196,7 @@ const SetupInfoModal = ({ onClose }) => {
           </StepperPanel>
           <StepperPanel header="Thông tin 2">
             <div className="flex flex-column align-items-center min-h-12rem">
-              <div className="w-8">
+              <div className="w-12 sm:w-10">
                 <Card
                   className="shadow-2 mt-3"
                   title={
@@ -215,7 +214,7 @@ const SetupInfoModal = ({ onClose }) => {
                       Địa chỉ
                     </label>
                     <IconField iconPosition="left">
-                      <InputIcon className="pi pi-home"> </InputIcon>
+                      <InputIcon className="pi pi-home" />
                       <InputText
                         id="address"
                         className="w-full pl-5"
@@ -225,13 +224,13 @@ const SetupInfoModal = ({ onClose }) => {
                       />
                     </IconField>
                   </div>
-                  <div className="flex gap-6 mt-3">
-                    <div className="w-6">
+                  <div className="flex flex-column lg:flex-row gap-3 mt-3">
+                    <div className="w-12">
                       <label className="block mb-1 font-bold" htmlFor="weight">
                         Cân nặng <span style={{ color: "red" }}>*</span>
                       </label>
                       <div className="p-inputgroup flex-1">
-                        <span className="p-inputgroup-addon">
+                        <span className="p-inputgroup-addon hidden md:block">
                           <i className="pi pi-shopping-bag" />
                         </span>
                         <InputNumber
@@ -245,15 +244,17 @@ const SetupInfoModal = ({ onClose }) => {
                           className="w-full"
                           inputClassName="w-12"
                         />
-                        <span className="p-inputgroup-addon">kg</span>
+                        <span className="p-inputgroup-addon hidden md:block">
+                          kg
+                        </span>
                       </div>
                     </div>
-                    <div className="w-6">
+                    <div className="w-12">
                       <label className="block mb-1 font-bold" htmlFor="height">
                         Chiều cao <span style={{ color: "red" }}>*</span>
                       </label>
                       <div className="p-inputgroup flex-1">
-                        <span className="p-inputgroup-addon">
+                        <span className="p-inputgroup-addon hidden md:block">
                           <i className="pi pi-arrows-v" />
                         </span>
                         <InputNumber
@@ -267,7 +268,9 @@ const SetupInfoModal = ({ onClose }) => {
                           className="w-full"
                           inputClassName="w-12"
                         />
-                        <span className="p-inputgroup-addon">cm</span>
+                        <span className="p-inputgroup-addon hidden md:block">
+                          cm
+                        </span>
                       </div>
                     </div>
                   </div>

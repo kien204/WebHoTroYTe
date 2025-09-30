@@ -84,3 +84,10 @@ ol {
     color: #000000;
   }
 }
+
+.setStepper {
+  .p-stepper-panels {
+    padding: 0%;
+    padding-top: 1rem;
+  }
+}
