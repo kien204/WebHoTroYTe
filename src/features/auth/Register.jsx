@@ -99,7 +99,7 @@ const Register = () => {
     try {
       const res = await authApi.resend_otp({ email });
       console.log(email);
-      
+
       showToast("success", "Thành công", "Gửi lại mã OTP thành công!");
 
       console.log("Resend OTP successful:", res.data);
@@ -153,12 +153,26 @@ const Register = () => {
                     invalid={error && userName === "" ? true : false}
                     value={userName}
                     placeholder="Nhập họ và tên"
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      const regex = /^[a-zA-ZÀ-ỹ\s]*$/;
-                      if (regex.test(value)) {
-                        setuserName(value);
+                    onKeyDown={(e) => {
+                      // Nếu phím nhập ra ký tự thường (length === 1) nhưng không phải chữ hoặc khoảng trắng -> chặn
+                      if (e.key.length === 1 && !/^[\p{L}\s]$/u.test(e.key)) {
+                        e.preventDefault();
                       }
+                    }}
+                    onPaste={(e) => {
+                      const pasteData = e.clipboardData.getData("text");
+                      // Nếu trong dữ liệu dán có ký tự không hợp lệ -> chặn
+                      if (/[^\p{L}\s]/u.test(pasteData)) {
+                        e.preventDefault();
+                      }
+                    }}
+                    onChange={(e) => {
+                      // Lọc sạch lại dữ liệu để chắc chắn
+                      const onlyLetters = e.target.value.replace(
+                        /[^\p{L}\s]/gu,
+                        ""
+                      );
+                      setuserName(onlyLetters);
                     }}
                   />
                 </IconField>

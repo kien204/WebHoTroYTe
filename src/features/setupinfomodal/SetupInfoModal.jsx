@@ -9,16 +9,22 @@ import { Avatar } from "primereact/avatar";
 import { Card } from "primereact/card";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
-import axios from "axios";
+import { InputNumber } from "primereact/inputnumber";
 
 const SetupInfoModal = ({ onClose }) => {
   const stepperRef = useRef(null);
   const [userName, setuserName] = useState("");
+  const [age, setAge] = useState("");
   const [avatar, setAvatar] = useState("");
   const fileInputRef = useRef(null);
-  const [selectedGender, setSelectedGender] = useState(null);
+  const [gender, setGender] = useState(null);
+  const [address, setAddress] = useState("");
+  const [height, setHeight] = useState("");
+  const [weight, setWeight] = useState("");
+  const [checkForm1, setCheckForm1] = useState(true);
+  const [checkForm2, setCheckForm2] = useState(true);
 
-  const genders = [
+  const selectedGender = [
     { name: "Nam", code: "M" },
     { name: "Nữ", code: "F" },
   ];
@@ -38,6 +44,12 @@ const SetupInfoModal = ({ onClose }) => {
   };
 
   const handleSave = async () => {
+
+    if(!height || !weight) {
+      setCheckForm2(false)
+      return;
+    }
+
     // const auth = JSON.parse(localStorage.getItem("auth"));
     // await axios.put("/api/user/profile", form, {
     //   headers: { Authorization: `Bearer ${auth.token}` },
@@ -54,7 +66,7 @@ const SetupInfoModal = ({ onClose }) => {
       className="w-5"
     >
       <div className="card flex justify-content-center">
-        <Stepper ref={stepperRef} style={{ flexBasis: "50rem" }}>
+        <Stepper ref={stepperRef} style={{ flexBasis: "50rem" }} linear>
           <StepperPanel header="Thông tin 1">
             <div className="flex flex-column align-items-center min-h-12rem">
               <div className="w-8">
@@ -112,7 +124,7 @@ const SetupInfoModal = ({ onClose }) => {
                       <InputText
                         id="userName"
                         className="w-full pl-5"
-                        invalid={userName === "" ? true : false}
+                        invalid={!checkForm1 && !userName}
                         value={userName}
                         placeholder="Nhập họ và tên"
                         onChange={(e) => {
@@ -127,46 +139,39 @@ const SetupInfoModal = ({ onClose }) => {
                   </div>
                   <div className="flex gap-6 mt-3">
                     <div className="w-6">
-                      <label
-                        className="block mb-1 font-bold"
-                        htmlFor="userName"
-                      >
+                      <label className="block mb-1 font-bold" htmlFor="age">
                         Tuổi <span style={{ color: "red" }}>*</span>
                       </label>
                       <IconField iconPosition="left">
-                        <InputIcon className="pi pi-calendar"></InputIcon>
-                        <InputText
-                          id="userName"
-                          className="w-full pl-5"
-                          invalid={userName === "" ? true : false}
-                          value={userName}
+                        <InputIcon className="pi pi-calendar" />
+                        <InputNumber
+                          id="age"
+                          value={age}
+                          onValueChange={(e) => setAge(e.value)}
                           placeholder="Nhập tuổi"
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            const regex = /^[a-zA-ZÀ-ỹ\s]*$/;
-                            if (regex.test(value)) {
-                              setuserName(value);
-                            }
-                          }}
+                          min={1}
+                          max={120}
+                          invalid={!checkForm1 && !age}
+                          className="w-full"
+                          inputClassName="pl-5 w-12"
                         />
                       </IconField>
                     </div>
                     <div className="w-6">
-                      <label
-                        className="block mb-1 font-bold"
-                        htmlFor="userName"
-                      >
+                      <label className="block mb-1 font-bold" htmlFor="gender">
                         Giới tính <span style={{ color: "red" }}>*</span>
                       </label>
                       <IconField iconPosition="left">
-                        <InputIcon className="pi pi-user z-1"> </InputIcon>
+                        <InputIcon className="pi pi-users z-1"> </InputIcon>
                         <Dropdown
-                          value={selectedGender}
-                          onChange={(e) => setSelectedGender(e.value)}
-                          options={genders}
+                          id="gender"
+                          value={gender}
+                          onChange={(e) => setGender(e.value)}
+                          options={selectedGender}
                           optionLabel="name"
                           placeholder="Chọn giới tính"
-                          className="pl-4"
+                          className="pl-4 w-full"
+                          invalid={!checkForm1 && !gender}
                         />
                       </IconField>
                     </div>
@@ -179,29 +184,95 @@ const SetupInfoModal = ({ onClose }) => {
                 label="Tiếp theo"
                 icon="pi pi-arrow-right"
                 iconPos="right"
-                onClick={() => stepperRef.current.nextCallback()}
+                onClick={() => {
+                  if (!userName || !age || !selectedGender) {
+                    setCheckForm1(false);
+                    return;
+                  }
+                  stepperRef.current.nextCallback();
+                }}
               />
             </div>
           </StepperPanel>
           <StepperPanel header="Thông tin 2">
-            <div className="flex flex-column h-12rem"></div>
-            <div className="flex pt-4 justify-content-between">
-              <Button
-                label="Quay lại"
-                severity="secondary"
-                icon="pi pi-arrow-left"
-                onClick={() => stepperRef.current.prevCallback()}
-              />
-              <Button
-                label="Tiếp theo"
-                icon="pi pi-arrow-right"
-                iconPos="right"
-                onClick={() => stepperRef.current.nextCallback()}
-              />
+            <div className="flex flex-column align-items-center min-h-12rem">
+              <div className="w-8">
+                <Card
+                  className="shadow-2 mt-3"
+                  title={
+                    <div className="flex align-items-center gap-2">
+                      <i
+                        className="pi pi-user font-bold"
+                        style={{ fontSize: "1.3rem" }}
+                      />
+                      <span>Thông tin khác</span>
+                    </div>
+                  }
+                >
+                  <div>
+                    <label className="block mb-1 font-bold" htmlFor="address">
+                      Địa chỉ
+                    </label>
+                    <IconField iconPosition="left">
+                      <InputIcon className="pi pi-home"> </InputIcon>
+                      <InputText
+                        id="address"
+                        className="w-full pl-5"
+                        value={address}
+                        placeholder="Nhập địa chỉ"
+                        onChange={(e) => setAddress(e)}
+                      />
+                    </IconField>
+                  </div>
+                  <div className="flex gap-6 mt-3">
+                    <div className="w-6">
+                      <label className="block mb-1 font-bold" htmlFor="weight">
+                        Cân nặng <span style={{ color: "red" }}>*</span>
+                      </label>
+                      <div className="p-inputgroup flex-1">
+                        <span className="p-inputgroup-addon">
+                          <i className="pi pi-shopping-bag" />
+                        </span>
+                        <InputNumber
+                          id="weight"
+                          value={weight}
+                          onValueChange={(e) => setWeight(e.value)}
+                          placeholder="Nhập cân nặng"
+                          min={1}
+                          max={1000}
+                          invalid={!checkForm2 && !weight}
+                          className="w-full"
+                          inputClassName="w-12"
+                        />
+                        <span className="p-inputgroup-addon">kg</span>
+                      </div>
+                    </div>
+                    <div className="w-6">
+                      <label className="block mb-1 font-bold" htmlFor="height">
+                        Chiều cao <span style={{ color: "red" }}>*</span>
+                      </label>
+                      <div className="p-inputgroup flex-1">
+                        <span className="p-inputgroup-addon">
+                          <i className="pi pi-arrows-v" />
+                        </span>
+                        <InputNumber
+                          id="height"
+                          value={height}
+                          onValueChange={(e) => setHeight(e.value)}
+                          placeholder="Nhập chiều cao"
+                          min={1}
+                          max={300}
+                          invalid={!checkForm2 && !height}
+                          className="w-full"
+                          inputClassName="w-12"
+                        />
+                        <span className="p-inputgroup-addon">cm</span>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </div>
             </div>
-          </StepperPanel>
-          <StepperPanel header="Thông tin 3">
-            <div className="flex flex-column h-12rem"></div>
             <div className="flex pt-4 justify-content-between">
               <Button
                 label="Quay lại"
