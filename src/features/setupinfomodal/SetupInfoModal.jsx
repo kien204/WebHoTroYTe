@@ -63,7 +63,8 @@ const SetupInfoModal = ({ onClose }) => {
       visible
       modal
       closable={false}
-      className="w-5"
+      className="w-5 max-w-md md:max-w-5xl"
+      contentClassName="p-2 md:p-5"
     >
       <div className="card flex justify-content-center">
         <Stepper ref={stepperRef} style={{ flexBasis: "50rem" }} linear>

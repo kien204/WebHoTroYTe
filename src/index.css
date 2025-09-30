@@ -22,7 +22,20 @@ ol {
   padding: 0;
 }
 
-.gap-15{
+@keyframes slide-in {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out forwards;
+}
+
+.gap-15 {
   gap: 15rem;
 }
 
@@ -54,18 +67,20 @@ ol {
   color: #777777;
 }
 
-.active-sidebar{
+.active-sidebar {
   background-color: #0083ad;
 
-  i, span {
+  i,
+  span {
     color: #ffffff;
   }
 }
 
-.hover-sidebar:hover{
+.hover-sidebar:hover {
   background-color: #e8e8e8;
 
-  i, span {
+  i,
+  span {
     color: #000000;
   }
 }

@@ -76,7 +76,6 @@ const MenuSidebar = () => {
         ))}
       </div>
 
-      {/* Footer user */}
       <div className="mt-auto">
         <Divider className="mx" />
         <Menu model={itemsMenuFooter} popup ref={menu} id="popup_menu" />
