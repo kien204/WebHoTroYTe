@@ -44,20 +44,41 @@ const ResetPassword = () => {
   }, [newPassword, confirmPassword]);
 
   useEffect(() => {
-    let timer;
-    if (timeLeft > 0) {
-      timer = setInterval(() => setTimeLeft((t) => t - 1), 1000);
+    const expireTime = localStorage.getItem("otpExpire");
+    if (expireTime) {
+      const remaining = Math.floor((expireTime - Date.now()) / 1000);
+      if (remaining > 0) {
+        setTimeLeft(remaining);
+      } else {
+        localStorage.removeItem("otpExpire");
+      }
     }
-    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    if (timeLeft > 0) {
+      const timer = setInterval(() => {
+        setTimeLeft((prev) => {
+          const newTime = prev - 1;
+          if (newTime <= 0) {
+            localStorage.removeItem("otpExpire");
+          }
+          return newTime;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
   }, [timeLeft]);
 
   const handleResetPassword = async () => {
-    if (!email) {
+    if (!checkPass || !checkPasswork || !otp) {
+      setCheckform(true);
       return;
     }
 
-    if (!checkPass || !checkPasswork || !otp) {
-      setCheckform(true);
+    if (!email) {
+      showToast("error", "Thất bại", "Không tìm thấy email");
       return;
     }
 
@@ -76,11 +97,13 @@ const ResetPassword = () => {
   };
 
   const ResendOtp = async () => {
-    setTimeLeft(60); // đặt lại thời gian đếm ngược
+    const expireTime = Date.now() + 60 * 1000; // hết hạn sau 60s
+    localStorage.setItem("otpExpire", expireTime);
+    setTimeLeft(60);
+
     try {
       const res = await authApi.resend_otp({ email });
       showToast("success", "Thành công", "Gửi lại mã OTP thành công!");
-
       console.log("Resend OTP successful:", res.data);
     } catch (err) {
       console.error("Resend OTP error:", err);
@@ -90,11 +113,16 @@ const ResetPassword = () => {
 
   return (
     <>
-      <Toast ref={toast} />
-      <div className="flex justify-content-center align-items-center min-h-screen gap-15 bg-main3">
-        <Image src={doctor} alt="Image" width="350" />
-        <div>
-          <div className="flex flex-column align-items-center mt-5">
+      <Toast ref={toast} className="w-10" />
+      <div className="flex flex-column md:flex-row md:gap-8 align-items-center justify-content-center align-items-center min-h-screen bg-main3">
+        <Image
+          src={doctor}
+          alt="Image"
+          width="350"
+          className="hidden lg:block"
+        />
+        <div className="flex flex-column align-items-center w-12 md:w-30rem">
+          <div className="flex flex-column align-items-center">
             <div className="flex align-items-center gap-3">
               <i className="pi pi-heart text-4xl font-bold text-main1" />
               <span className="font-semibold text-2xl">HealthCare</span>
@@ -104,7 +132,7 @@ const ResetPassword = () => {
             </div>
           </div>
           <div
-            className="p-1 shadow-1"
+            className="p-1 shadow-1 w-11"
             style={{
               borderRadius: "46px",
               padding: "0.3rem",
@@ -113,10 +141,40 @@ const ResetPassword = () => {
             }}
           >
             <div
-              className="flex flex-column justify-content-center align-items-center bg-white p-6 w-30rem"
+              className="flex flex-column justify-content-center align-items-center bg-white p-3 md:p-5"
               style={{ borderRadius: "43px" }}
             >
               <div className="text-4xl font-bold mb-4">Quên mật khẩu</div>
+              <div className="text-main2 mb-4 text-center">
+                Nhập mã dã gửi ở email để đặt lại mật khẩu
+              </div>
+              <div className="w-full">
+                <div>
+                  <label className="block mb-2 font-bold" htmlFor="otp">
+                    Mã Capcha
+                  </label>
+                  <div className=" flex gap-5 justify-content-between align-items-center">
+                    <IconField iconPosition="left">
+                      <InputIcon className="pi pi-sync" />
+                      <InputText
+                        id="otp"
+                        className="w-full"
+                        value={otp}
+                        placeholder="Nhập mã Capcha"
+                        onChange={(e) => setOtp(e.target.value)}
+                        invalid={checkform && !otp}
+                      />
+                    </IconField>
+                    <Button
+                      label={
+                        timeLeft > 0 ? `Gửi lại (${timeLeft}s)` : "Gửi lại"
+                      }
+                      onClick={ResendOtp}
+                      disabled={timeLeft > 0}
+                    />
+                  </div>
+                </div>
+              </div>
               <div className="mt-4 w-full">
                 <label className="block mb-2 font-bold" htmlFor="newPassword">
                   Mật khẩu
@@ -125,12 +183,13 @@ const ResetPassword = () => {
                   <InputIcon className="pi pi-lock z-1" />
                   <Password
                     id="newPassword"
-                    inputClassName="w-24rem pl-5"
+                    className="w-12 w-p-icon-field"
+                    inputClassName="w-12 pl-5"
                     placeholder="Nhập mật khẩu"
                     onChange={(e) => setNewPassword(e.target.value)}
                     toggleMask
                     feedback={false}
-                    invalid={checkform && !newPassword ? true : false}
+                    invalid={checkform && !newPassword}
                   />
                 </IconField>
                 {!checkPasswork && (
@@ -150,12 +209,13 @@ const ResetPassword = () => {
                   <InputIcon className="pi pi-lock z-1" />
                   <Password
                     id="confirmPassword"
-                    inputClassName="w-24rem pl-5 "
+                    className="w-12 w-p-icon-field"
+                    inputClassName="w-12 pl-5"
                     placeholder="Nhập mật khẩu"
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     toggleMask
                     feedback={false}
-                    invalid={checkform && !confirmPassword ? true : false}
+                    invalid={checkform && !confirmPassword}
                   />
                 </IconField>
                 {!checkPass && (
@@ -164,32 +224,8 @@ const ResetPassword = () => {
                   </div>
                 )}
               </div>
-              <div className="w-full mt-3">
-                <div>
-                  <label className="block mb-2 font-bold" htmlFor="otp">
-                    Mã Capcha
-                  </label>
-                  <div className=" flex justify-content-between align-items-center">
-                    <InputText
-                      id="otp"
-                      className="w-full max-w-15rem"
-                      value={otp}
-                      placeholder="Nhập mã Capcha"
-                      onChange={(e) => setOtp(e.target.value)}
-                      invalid={checkform && !otp}
-                    />
-                    <Button
-                      label={
-                        timeLeft > 0 ? `Gửi lại (${timeLeft}s)` : "Gửi lại"
-                      }
-                      onClick={ResendOtp}
-                      disabled={timeLeft > 0}
-                    />
-                  </div>
-                </div>
-              </div>
               <Button
-                className="w-full mt-6"
+                className="w-full mt-5"
                 onClick={handleResetPassword}
                 disabled={loading}
                 label="Đổi"

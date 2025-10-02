@@ -55,11 +55,32 @@ const Register = () => {
   }, [email]);
 
   useEffect(() => {
-    let timer;
-    if (timeLeft > 0) {
-      timer = setInterval(() => setTimeLeft((t) => t - 1), 1000);
+    const expireTime = localStorage.getItem("otpExpire");
+    if (expireTime) {
+      const remaining = Math.floor((expireTime - Date.now()) / 1000);
+      if (remaining > 0) {
+        setTimeLeft(remaining);
+      } else {
+        localStorage.removeItem("otpExpire");
+      }
     }
-    return () => clearInterval(timer);
+  }, []);
+
+  // Đếm ngược mỗi giây
+  useEffect(() => {
+    if (timeLeft > 0) {
+      const timer = setInterval(() => {
+        setTimeLeft((prev) => {
+          const newTime = prev - 1;
+          if (newTime <= 0) {
+            localStorage.removeItem("otpExpire");
+          }
+          return newTime;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
   }, [timeLeft]);
 
   const handleRegister = async () => {
@@ -95,13 +116,13 @@ const Register = () => {
   };
 
   const ResendOtp = async () => {
-    setTimeLeft(60); // đặt lại thời gian đếm ngược
+    const expireTime = Date.now() + 60 * 1000; // hết hạn sau 60s
+    localStorage.setItem("otpExpire", expireTime);
+    setTimeLeft(60);
+
     try {
       const res = await authApi.resend_otp({ email });
-      console.log(email);
-
       showToast("success", "Thành công", "Gửi lại mã OTP thành công!");
-
       console.log("Resend OTP successful:", res.data);
     } catch (err) {
       console.error("Resend OTP error:", err);
@@ -112,9 +133,14 @@ const Register = () => {
   return (
     <>
       <Toast ref={toast} />
-      <div className="flex justify-content-center align-items-center min-h-screen gap-15 bg-main3">
-        <Image src={doctor} alt="Image" width="350" />
-        <div>
+      <div className="flex flex-column md:flex-row md:gap-8 align-items-center justify-content-center align-items-center min-h-screen py-3 bg-main3">
+        <Image
+          src={doctor}
+          alt="Image"
+          className="hidden lg:block"
+          width="350"
+        />
+        <div className="flex flex-column align-items-center w-12 md:w-30rem">
           <div className="flex flex-column align-items-center">
             <div className="flex align-items-center gap-3">
               <i className="pi pi-heart text-4xl font-bold text-main1" />
@@ -125,7 +151,7 @@ const Register = () => {
             </div>
           </div>
           <div
-            className="p-1 shadow-1"
+            className="p-1 shadow-1 w-11"
             style={{
               borderRadius: "46px",
               padding: "0.3rem",
@@ -134,11 +160,11 @@ const Register = () => {
             }}
           >
             <div
-              className="flex flex-column justify-content-center align-items-center bg-white p-6 w-30rem"
+              className="flex flex-column justify-content-center align-items-center bg-white p-3 md:p-5"
               style={{ borderRadius: "43px" }}
             >
               <div className="text-4xl font-bold">Đăng ký </div>
-              <div className="text-600 mb-4 opacity-80">
+              <div className="text-600 mb-4 opacity-80 text-center">
                 Tạo tài khoản để bắt đầu quản lý sức khỏe
               </div>
               <div className="w-full">
@@ -149,30 +175,12 @@ const Register = () => {
                   <InputIcon className="pi pi-user"> </InputIcon>
                   <InputText
                     id="userName"
-                    className="w-full pl-5"
-                    invalid={error && userName === "" ? true : false}
+                    className="w-12 pl-5"
+                    invalid={error && !userName}
                     value={userName}
                     placeholder="Nhập họ và tên"
-                    onKeyDown={(e) => {
-                      // Nếu phím nhập ra ký tự thường (length === 1) nhưng không phải chữ hoặc khoảng trắng -> chặn
-                      if (e.key.length === 1 && !/^[\p{L}\s]$/u.test(e.key)) {
-                        e.preventDefault();
-                      }
-                    }}
-                    onPaste={(e) => {
-                      const pasteData = e.clipboardData.getData("text");
-                      // Nếu trong dữ liệu dán có ký tự không hợp lệ -> chặn
-                      if (/[^\p{L}\s]/u.test(pasteData)) {
-                        e.preventDefault();
-                      }
-                    }}
                     onChange={(e) => {
-                      // Lọc sạch lại dữ liệu để chắc chắn
-                      const onlyLetters = e.target.value.replace(
-                        /[^\p{L}\s]/gu,
-                        ""
-                      );
-                      setuserName(onlyLetters);
+                      setuserName(e.target.value);
                     }}
                   />
                 </IconField>
@@ -186,7 +194,7 @@ const Register = () => {
                   <InputText
                     id="email"
                     className="w-full pl-5"
-                    invalid={error && email === "" ? true : false}
+                    invalid={error && !email}
                     value={email}
                     placeholder="Nhập email"
                     onChange={(e) => setEmail(e.target.value)}
@@ -207,10 +215,16 @@ const Register = () => {
                   <InputIcon className="pi pi-lock z-1" />
                   <Password
                     id="password"
-                    inputClassName="w-24rem pl-5"
-                    invalid={error && password === "" ? true : false}
+                    className="w-12 w-p-icon-field"
+                    inputClassName="w-12 pl-5"
+                    invalid={error && password}
                     placeholder="Nhập mật khẩu"
                     onChange={(e) => setPassword(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === " ") {
+                        e.preventDefault(); // chặn gõ space
+                      }
+                    }}
                     toggleMask
                     feedback={false}
                   />
@@ -230,10 +244,16 @@ const Register = () => {
                   <InputIcon className="pi pi-lock z-1" />
                   <Password
                     id="confirmPassword"
-                    inputClassName="w-24rem pl-5"
-                    invalid={error && confirmPassword === "" ? true : false}
+                    className="w-12 w-p-icon-field"
+                    inputClassName="w-12 pl-5"
+                    invalid={error && confirmPassword}
                     placeholder="Nhập lại mật khẩu"
                     onChange={(e) => setConfirmPassword(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === " ") {
+                        e.preventDefault(); // chặn gõ space
+                      }
+                    }}
                     toggleMask
                     feedback={false}
                   />

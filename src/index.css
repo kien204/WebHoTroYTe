@@ -91,3 +91,9 @@ ol {
     padding-top: 1rem;
   }
 }
+
+.w-p-icon-field {
+  .p-icon-field {
+    width: 100%;
+  }
+}

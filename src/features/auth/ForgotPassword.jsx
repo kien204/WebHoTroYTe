@@ -5,10 +5,9 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import authApi from "./authApi";
 import { Toast } from "primereact/toast";
-import { useNavigate } from "react-router-dom";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const ForgetPassword = () => {
   const [email, setEmail] = useState("");
@@ -38,6 +37,7 @@ const ForgetPassword = () => {
     }
 
     setLoading(true);
+
     try {
       const res = await authApi.forgot_password({ email });
 
@@ -56,10 +56,15 @@ const ForgetPassword = () => {
   return (
     <>
       <Toast ref={toast} />
-      <div className="flex justify-content-center align-items-center min-h-screen gap-15 bg-main3">
-        <Image src={doctor} alt="Image" width="350" />
-        <div>
-          <div className="flex flex-column align-items-center mt-5">
+      <div className="flex flex-column md:flex-row md:gap-8 align-items-center justify-content-center align-items-center min-h-screen bg-main3">
+        <Image
+          src={doctor}
+          alt="Image"
+          width="350"
+          className="hidden lg:block"
+        />
+        <div className="flex flex-column align-items-center md:w-30rem">
+          <div className="flex flex-column align-items-center">
             <div className="flex align-items-center gap-3">
               <i className="pi pi-heart text-4xl font-bold text-main1" />
               <span className="font-semibold text-2xl">HealthCare</span>
@@ -69,7 +74,7 @@ const ForgetPassword = () => {
             </div>
           </div>
           <div
-            className="p-1 shadow-1"
+            className="p-1 shadow-1 w-11"
             style={{
               borderRadius: "46px",
               padding: "0.3rem",
@@ -78,14 +83,14 @@ const ForgetPassword = () => {
             }}
           >
             <div
-              className="flex flex-column justify-content-center align-items-center bg-white p-6 w-30rem"
+              className="flex flex-column justify-content-center align-items-center bg-white p-3 md:p-5"
               style={{ borderRadius: "43px" }}
             >
               <div className="text-4xl font-bold">Quên mật khẩu</div>
-              <div className="text-main2 mb-4">
+              <div className="text-main2 mb-4 text-center">
                 Nhập email của bạn để đặt lại mật khẩu{" "}
               </div>
-              <div className="w-full mt-3">
+              <div className="w-full">
                 <label className="block mb-2 font-bold" htmlFor="email">
                   Email
                 </label>
@@ -97,7 +102,7 @@ const ForgetPassword = () => {
                     value={email}
                     placeholder="Nhập tên email"
                     onChange={(e) => setEmail(e.target.value)}
-                    invalid={!isCheckEmail && !email ? true : false}
+                    invalid={!isCheckEmail && !email}
                   />
                 </IconField>
               </div>
