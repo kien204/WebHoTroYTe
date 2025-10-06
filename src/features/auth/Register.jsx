@@ -164,7 +164,7 @@ const Register = () => {
               style={{ borderRadius: "43px" }}
             >
               <div className="text-4xl font-bold">Đăng ký </div>
-              <div className="text-600 mb-4 opacity-80 text-center">
+              <div className="text-600 mb-4 opacity-80 text-center mt-1">
                 Tạo tài khoản để bắt đầu quản lý sức khỏe
               </div>
               <div className="w-full">
@@ -202,7 +202,7 @@ const Register = () => {
                 </IconField>
                 {!checkEmail && email && (
                   <div className="text-sm mt-1" style={{ color: "red" }}>
-                    Email phải định dạng xxx@gmail.com
+                    Email không hợp lệ, vui lòng nhập lại.
                   </div>
                 )}
               </div>
@@ -217,7 +217,7 @@ const Register = () => {
                     id="password"
                     className="w-12 w-p-icon-field"
                     inputClassName="w-12 pl-5"
-                    invalid={error && password}
+                    invalid={error && !password}
                     placeholder="Nhập mật khẩu"
                     onChange={(e) => setPassword(e.target.value)}
                     onKeyDown={(e) => {
@@ -246,7 +246,7 @@ const Register = () => {
                     id="confirmPassword"
                     className="w-12 w-p-icon-field"
                     inputClassName="w-12 pl-5"
-                    invalid={error && confirmPassword}
+                    invalid={error && !confirmPassword}
                     placeholder="Nhập lại mật khẩu"
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     onKeyDown={(e) => {

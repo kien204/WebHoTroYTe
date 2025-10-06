@@ -87,8 +87,8 @@ const ForgetPassword = () => {
               style={{ borderRadius: "43px" }}
             >
               <div className="text-4xl font-bold">Quên mật khẩu</div>
-              <div className="text-main2 mb-4 text-center">
-                Nhập email của bạn để đặt lại mật khẩu{" "}
+              <div className="text-main2 mb-4 text-center mt-1">
+                Nhập email của bạn để đặt lại mật khẩu
               </div>
               <div className="w-full">
                 <label className="block mb-2 font-bold" htmlFor="email">
@@ -108,7 +108,7 @@ const ForgetPassword = () => {
               </div>
               {!checkEmail && email && (
                 <div className="w-full" style={{ color: "red" }}>
-                  Email không hợp lệ!
+                  Email không hợp lệ, vui lòng nhập lại.
                 </div>
               )}
               <Button

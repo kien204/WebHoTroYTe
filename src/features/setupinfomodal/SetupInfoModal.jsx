@@ -119,7 +119,7 @@ const SetupInfoModal = ({ onClose }) => {
                     <label className="block mb-1 font-bold" htmlFor="userName">
                       Nhập họ và tên <span style={{ color: "red" }}>*</span>
                     </label>
-                    <IconField iconPosition="left">
+                    <IconField >
                       <InputIcon className="pi pi-user"> </InputIcon>
                       <InputText
                         id="userName"
@@ -142,7 +142,7 @@ const SetupInfoModal = ({ onClose }) => {
                       <label className="block mb-1 font-bold" htmlFor="age">
                         Tuổi <span style={{ color: "red" }}>*</span>
                       </label>
-                      <IconField iconPosition="left">
+                      <IconField >
                         <InputIcon className="pi pi-calendar" />
                         <InputNumber
                           id="age"
@@ -161,7 +161,7 @@ const SetupInfoModal = ({ onClose }) => {
                       <label className="block mb-1 font-bold" htmlFor="gender">
                         Giới tính <span style={{ color: "red" }}>*</span>
                       </label>
-                      <IconField iconPosition="left">
+                      <IconField >
                         <InputIcon className="pi pi-users z-1" />
                         <Dropdown
                           id="gender"
@@ -185,7 +185,7 @@ const SetupInfoModal = ({ onClose }) => {
                 icon="pi pi-arrow-right"
                 iconPos="right"
                 onClick={() => {
-                  if (!userName || !age || !selectedGender) {
+                  if (!userName || !age || !gender) {
                     setCheckForm1(false);
                     return;
                   }
@@ -213,14 +213,14 @@ const SetupInfoModal = ({ onClose }) => {
                     <label className="block mb-1 font-bold" htmlFor="address">
                       Địa chỉ
                     </label>
-                    <IconField iconPosition="left">
+                    <IconField >
                       <InputIcon className="pi pi-home" />
                       <InputText
                         id="address"
                         className="w-full pl-5"
                         value={address}
                         placeholder="Nhập địa chỉ"
-                        onChange={(e) => setAddress(e)}
+                        onChange={(e) => setAddress(e.target.value)}
                       />
                     </IconField>
                   </div>

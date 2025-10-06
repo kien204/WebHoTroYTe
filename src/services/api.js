@@ -1,42 +1,54 @@
 import axios from "axios";
 
-// Tạo instance Axios dùng chung
+let showToastGlobal = null;
+export const setGlobalToast = (fn) => {
+  showToastGlobal = fn;
+};
+
+let logoutGlobal = null;
+export const setGlobalLogout = (fn) => {
+  logoutGlobal = fn;
+};
+
 const api = axios.create({
-  baseURL: "http://10.15.253.185:5092/api", // Thay bằng URL backend của bạn
+  baseURL: "http://10.15.43.11:5092/api",
   headers: {
     "Content-Type": "application/json",
   },
-  // timeout: 10000, // 10 giây timeout
 });
 
-// Thêm token vào header nếu có
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token"); // hoặc sessionStorage
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    const authData = localStorage.getItem("auth");
+    if (authData) {
+      const { token } = JSON.parse(authData);
+      if (token) config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Xử lý lỗi response chung
 api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response) {
-      // Ví dụ: 401 Unauthorized → logout hoặc redirect login
-      if (error.response.status === 401) {
-        console.log("Yêu cầu token, chuyển hướng đến đăng nhập");
-        localStorage.removeItem("token");
-        window.location.href = "/login";
+  (res) => res,
+  (err) => {
+    if (showToastGlobal) {
+      // chỉ gọi showToastGlobal khi cần (server down, token hết hạn)
+      if (err.response) {
+        if (
+          err.response.status === 401 &&
+          !err.config.url.includes("/auth/login")
+        ) {
+          showToastGlobal("error", "Phiên hết hạn", "Vui lòng đăng nhập lại");
+          if (logoutGlobal) logoutGlobal();
+        } else if (err.response.status >= 500) {
+          showToastGlobal("error", "Hệ thống lỗi", "Vui lòng thử lại sau");
+        }
+      } else if (err.request) {
+        showToastGlobal("warn", "Mất kết nối", "Không thể kết nối đến server!");
       }
-      // Có thể handle thêm 403, 500...
     }
-    return Promise.reject(error);
+    return Promise.reject(err);
   }
 );
 

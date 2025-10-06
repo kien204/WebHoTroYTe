@@ -1,5 +1,8 @@
 // MenuSidebar.jsx
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useContext } from "react";
+
+import { AuthContext } from "../../common/context/AuthContext";
+
 import { Avatar } from "primereact/avatar";
 import { Divider } from "primereact/divider";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -10,33 +13,18 @@ const MenuSidebar = () => {
   const menu = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const [auth, setAuth] = useState(null);
-
-  useEffect(() => {
-    const savedAuth = localStorage.getItem("auth");
-    if (savedAuth) {
-      const parsed = JSON.parse(savedAuth);
-      if (parsed.date > Date.now()) {
-        setAuth(parsed);
-      } else {
-        localStorage.removeItem("auth");
-        setAuth(null);
-      }
-    }
-  }, []);
+  const { auth } = useContext(AuthContext);
 
   const [menuSidebar] = useState([
-    { name: "Trang chủ", path: "/", icon: "pi-home" },
-    { name: "Chỉ số sức khỏe", path: "/health-metrics", icon: "pi-chart-bar" },
-    { name: "Nhập dữ liệu", path: "/data-entry", icon: "pi-heart" },
-    { name: "Trợ lý AI", path: "/ai-helper", icon: "pi-comments" },
-    { name: "Báo cáo", path: "/reports", icon: "pi-home" },
-    { name: "Hồ sơ sức khỏe", path: "/health-profile", icon: "pi-book" },
-    { name: "Cài đặt", path: "/settings", icon: "pi-cog" },
+    { name: "Tổng quan", path: "/admin", icon: "pi-home" },
+    {
+      name: "Quản trị hệ thống",
+      path: "/admin/system-manager",
+      icon: "pi-wave-pulse",
+    },
   ]);
 
   const [itemsMenuFooter] = useState([
-    { label: "Hồ sơ", icon: "pi pi-user", command: () => navigate("/profile") },
     {
       label: "Đăng xuất",
       icon: "pi pi-sign-out",

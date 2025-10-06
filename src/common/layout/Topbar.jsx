@@ -1,8 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "primereact/button";
-import { OverlayPanel } from "primereact/overlaypanel";
-import logo from "../assets/logo.png";
+import logo from "../../assets/logo.png";
 
 const Topbar = ({ onMenuToggle }) => {
   return (

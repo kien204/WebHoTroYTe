@@ -1,15 +1,17 @@
-import React, { useState, useRef, useEffect } from "react";
-import doctor from "../../assets/Doctor.png";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
-import authApi from "./authApi";
-import { Toast } from "primereact/toast";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { Image } from "primereact/image";
 import { Divider } from "primereact/divider";
+import { useToast } from "../../common/hooks/useToast";
+import { AuthContext } from "../../common/context/AuthContext";
+
+import authApi from "./authApi";
+import doctor from "../../assets/Doctor.png";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -17,17 +19,20 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [checkEmail, setCheckEmail] = useState(false);
   const [checkForm, setCheckForm] = useState(false);
-  const toast = useRef(null);
-  const navigate = useNavigate();
-
-  const showToast = (severity, summary, detail) => {
-    toast.current.show({ severity, summary, detail, life: 3000 });
-  };
+  const { showToast } = useToast();
+  const { login } = useContext(AuthContext);
+  const isMounted = useRef(true);
 
   useEffect(() => {
     if (!email) setCheckEmail(false);
     setCheckEmail(/^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(email.trim()));
   }, [email]);
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false; // khi unmount
+    };
+  }, []);
 
   const handleLogin = async () => {
     if (!checkEmail || !password) {
@@ -37,30 +42,20 @@ const Login = () => {
 
     setLoading(true);
     try {
-      console.log(email, password);
       const res = await authApi.login({ email, password });
-      console.log("Login successful:", res.data);
-
-      localStorage.setItem(
-        "auth",
-        JSON.stringify({
-          token: res.data.token,
-          id_user: res.data.useid,
-          date: Date.now() + 60 * 60 * 1000, // 1 hour
-        })
-      );
-      showToast("success", "Thành công", "Đăng nhập thành công!");
-      navigate("/");
+      if (isMounted.current) {
+        login(res.data.auth, res.data.token);
+        showToast("success", "Thành công", "Đăng nhập thành công!");
+      }
     } catch (err) {
-      console.error("Login error:", err);
-      showToast("error", "Thất bại", "Tài khoản hoặc mật khẩu!");
+      console.error(err);
+    } finally {
+      if (isMounted.current) setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
     <>
-      <Toast ref={toast} />
       <div className="flex flex-column md:flex-row md:gap-8 align-items-center justify-content-center align-items-center min-h-screen bg-main3">
         <Image
           src={doctor}
@@ -92,7 +87,7 @@ const Login = () => {
               style={{ borderRadius: "43px" }}
             >
               <div className="text-4xl font-bold">Đăng nhập</div>
-              <div className="text-main2 mb-4 text-center">
+              <div className="text-main2 mb-4 text-center mt-1">
                 Nhập thông tin để truy cập tài khoản của bạn
               </div>
               <div className="w-full">
@@ -111,7 +106,9 @@ const Login = () => {
                   />
                 </IconField>
                 {email && !checkEmail && (
-                  <small className="p-error">Email không hợp lệ</small>
+                  <small className="p-error">
+                    Email không hợp lệ, vui lòng nhập lại.
+                  </small>
                 )}
               </div>
               <div className="mt-4 w-full">
@@ -124,9 +121,14 @@ const Login = () => {
                     id="password"
                     className="w-12 w-p-icon-field"
                     inputClassName="w-12 pl-5"
-                    invalid={checkForm && password}
+                    invalid={checkForm && !password}
                     placeholder="Nhập mật khẩu"
                     onChange={(e) => setPassword(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === " ") {
+                        e.preventDefault(); // chặn gõ space
+                      }
+                    }}
                     toggleMask
                     feedback={false}
                   />

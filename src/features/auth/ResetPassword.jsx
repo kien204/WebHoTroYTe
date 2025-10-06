@@ -145,7 +145,7 @@ const ResetPassword = () => {
               style={{ borderRadius: "43px" }}
             >
               <div className="text-4xl font-bold mb-4">Quên mật khẩu</div>
-              <div className="text-main2 mb-4 text-center">
+              <div className="text-main2 mb-4 text-center mt-1">
                 Nhập mã dã gửi ở email để đặt lại mật khẩu
               </div>
               <div className="w-full">

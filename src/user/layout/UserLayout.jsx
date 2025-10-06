@@ -1,17 +1,26 @@
-import React, { useEffect, useState } from "react";
-import Footer from "./Footer";
-import Topbar from "./Topbar";
-import MenuSidebar from "./Sidebar";
-import SetupInfoModal from "../features/setupinfomodal/SetupInfoModal";
+import React, { useEffect, useState, useContext } from "react";
+import Footer from "../../common/layout/Footer";
+import Topbar from "../../common/layout/Topbar";
+import MenuSidebar from "./UserSidebar";
+import SetupInfoModal from "../../features/setupinfomodal/SetupInfoModal";
+import { AuthContext } from "../../common/context/AuthContext";
 
 const Layout = ({ children }) => {
-  const [showSetup, setShowSetup] = useState(false);
-  const [sidebarVisible, setSidebarVisible] = useState(false);
+  const { auth, updateUser } = useContext(AuthContext);
+  const [sidebarVisible, setSidebarVisible] = useState(false);  
 
   // Disable scroll khi sidebar mobile mở
   useEffect(() => {
     document.body.style.overflow = sidebarVisible ? "hidden" : "auto";
   }, [sidebarVisible]);
+
+  // Đóng modal và cập nhật localStorage
+  const handleCloseSetup = () => {
+    if (auth) {
+      const updatedUser = { ...auth, check: true };
+      updateUser(updatedUser); // đồng bộ cả context + localStorage
+    }
+  };
 
   return (
     <div className="flex min-h-screen">
@@ -39,9 +48,9 @@ const Layout = ({ children }) => {
         </div>
       )}
 
-      {showSetup && (
+      {auth && !auth.check && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <SetupInfoModal onClose={() => setShowSetup(false)} />
+          <SetupInfoModal onClose={handleCloseSetup} />
         </div>
       )}
     </div>
