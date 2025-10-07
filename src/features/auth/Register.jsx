@@ -1,8 +1,7 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
-import { Toast } from "primereact/toast";
 import { Link, useNavigate } from "react-router-dom";
 import { Dialog } from "primereact/dialog";
 import { IconField } from "primereact/iconfield";
@@ -10,6 +9,7 @@ import { InputIcon } from "primereact/inputicon";
 import { Checkbox } from "primereact/checkbox";
 import { Image } from "primereact/image";
 
+import { useToast } from "../../common/hooks/useToast";
 import authApi from "../../services/api/authAPI";
 import { useApi } from "../../common/hooks/useApi";
 
@@ -20,7 +20,6 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const toast = useRef(null);
   const [checkConfirmPasswork, setCheckConfirmPasswork] = useState(true);
   const [checkPasswork, setCheckPasswork] = useState(true);
   const [checkEmail, setCheckEmail] = useState(true);
@@ -31,11 +30,9 @@ const Register = () => {
   const [error, setError] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
 
-  const { callApi } = useApi(showToast);
+  const { showToast } = useToast();
 
-  const showToast = (severity, summary, detail) => {
-    toast.current.show({ severity, summary, detail, life: 3000 });
-  };
+  const { callApi } = useApi(showToast);
 
   useEffect(() => {
     if (password !== confirmPassword && confirmPassword != "") {
@@ -94,11 +91,7 @@ const Register = () => {
     }
 
     try {
-      console.log(userName, email, password);
-      const res = await callApi(() =>
-        authApi.register({ userName, email, password })
-      );
-      console.log("Register successful:", res.data);
+      await callApi(() => authApi.register({ userName, email, password }));
       setIsDialog(true);
     } catch {
       //
@@ -107,9 +100,7 @@ const Register = () => {
 
   const handleOTP = async () => {
     try {
-      const res = await callApi(() => authApi.verify_otp({ email, otp }));
-
-      console.log("OTP successful:", res.data);
+      await callApi(() => authApi.verify_otp({ email, otp }));
 
       navigate("/login");
       showToast("success", "Thành công", "Xác thực tài khoản thành công!");
@@ -124,18 +115,15 @@ const Register = () => {
     setTimeLeft(60);
 
     try {
-      const res = await authApi.resend_otp({ email });
+      await authApi.resend_otp({ email });
       showToast("success", "Thành công", "Gửi lại mã OTP thành công!");
-      console.log("Resend OTP successful:", res.data);
-    } catch (err) {
-      console.error("Resend OTP error:", err);
-      showToast("error", "Thất bại", "Gửi lại mã OTP thất bại!");
+    } catch {
+      //
     }
   };
 
   return (
     <>
-      <Toast ref={toast} />
       <div className="flex flex-column md:flex-row md:gap-8 align-items-center justify-content-center align-items-center min-h-screen py-3 bg-main3">
         <Image
           src={doctor}

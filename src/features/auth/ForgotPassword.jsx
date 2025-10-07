@@ -1,11 +1,11 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Image } from "primereact/image";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
-import { Toast } from "primereact/toast";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { Link, useNavigate } from "react-router-dom";
+import { useToast } from "../../common/hooks/useToast";
 
 import authApi from "../../services/api/authAPI";
 import { useApi } from "../../common/hooks/useApi";
@@ -16,14 +16,11 @@ const ForgetPassword = () => {
   const [email, setEmail] = useState("");
   const [isCheckEmail, setIsCheckEmail] = useState(true);
   const [checkEmail, setCheckEmail] = useState(false);
-  const toast = useRef(null);
   const navigate = useNavigate();
 
-  const { callApi } = useApi(showToast);
+  const { showToast } = useToast();
 
-  const showToast = (severity, summary, detail) => {
-    toast.current.show({ severity, summary, detail, life: 3000 });
-  };
+  const { callApi } = useApi(showToast);
 
   useEffect(() => {
     if (!email) setCheckEmail(false);
@@ -41,9 +38,7 @@ const ForgetPassword = () => {
     }
 
     try {
-      const res = await callApi(() => authApi.forgot_password({ email }));
-
-      console.log(res.data);
+      await callApi(() => authApi.forgot_password({ email }));
 
       localStorage.setItem("resetEmail", email);
 
@@ -55,7 +50,6 @@ const ForgetPassword = () => {
 
   return (
     <>
-      <Toast ref={toast} />
       <div className="flex flex-column md:flex-row md:gap-8 align-items-center justify-content-center align-items-center min-h-screen bg-main3">
         <Image
           src={doctor}

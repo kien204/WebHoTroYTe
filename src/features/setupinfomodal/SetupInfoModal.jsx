@@ -68,8 +68,6 @@ const SetupInfoModal = ({ onClose }) => {
     if (avatar) formData.append("avatar", avatar);
 
     try {
-      console.log(Array.from(formData.entries()));
-
       await callApi(() => infoAPI.create());
 
       onClose();

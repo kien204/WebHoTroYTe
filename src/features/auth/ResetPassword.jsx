@@ -1,13 +1,13 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
-import { Toast } from "primereact/toast";
 import { Image } from "primereact/image";
 import { InputIcon } from "primereact/inputicon";
 import { IconField } from "primereact/iconfield";
 import { useNavigate } from "react-router-dom";
 
+import { useToast } from "../../common/hooks/useToast";
 import { useApi } from "../../common/hooks/useApi";
 import authApi from "../../services/api/authAPI";
 
@@ -18,18 +18,15 @@ const ResetPassword = () => {
   const email = localStorage.getItem("resetEmail") || "";
   const [otp, setOtp] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const toast = useRef(null);
   const [checkPass, setCheckPass] = useState(true);
   const [timeLeft, setTimeLeft] = useState(0);
   const [checkPasswork, setCheckPasswork] = useState(true);
   const [checkform, setCheckform] = useState(false);
   const navigate = useNavigate();
 
-  const { callApi } = useApi(showToast);
+  const { showToast } = useToast();
 
-  const showToast = (severity, summary, detail) => {
-    toast.current.show({ severity, summary, detail, life: 3000 });
-  };
+  const { callApi } = useApi(showToast);
 
   useEffect(() => {
     if (newPassword.length < 8 && newPassword != "") {
@@ -87,11 +84,7 @@ const ResetPassword = () => {
     }
 
     try {
-      const res = await callApi(() =>
-        authApi.reset_password({ email, otp, newPassword })
-      );
-
-      console.log("Login successful:", res.data);
+      await callApi(() => authApi.reset_password({ email, otp, newPassword }));
 
       showToast("success", "Thành công", "Đổi mật khẩu thành công");
       navigate("/login");
@@ -117,7 +110,6 @@ const ResetPassword = () => {
 
   return (
     <>
-      <Toast ref={toast} className="w-10" />
       <div className="flex flex-column md:flex-row md:gap-8 align-items-center justify-content-center align-items-center min-h-screen bg-main3">
         <Image
           src={doctor}
