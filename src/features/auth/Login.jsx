@@ -108,7 +108,7 @@ const Login = () => {
                 <IconField iconPosition="left">
                   <InputIcon className="pi pi-lock z-1" />
                   <Password
-                    id="password"
+                    inputId="password"
                     className="w-12 w-p-icon-field"
                     inputClassName="w-12 pl-5"
                     invalid={checkForm && !password}

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useContext } from "react";
 import { Stepper } from "primereact/stepper";
 import { StepperPanel } from "primereact/stepperpanel";
 import { Dialog } from "primereact/dialog";
@@ -10,16 +10,20 @@ import { Card } from "primereact/card";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { InputNumber } from "primereact/inputnumber";
-import { useToast } from "../../common/hooks/useToast";
+
+import { AuthContext } from "../../common/context/AuthContext";
 
 import infoAPI from "../../services/api/infoAPI";
 import { useApi } from "../../common/hooks/useApi";
+import { useToast } from "../../common/hooks/useToast";
 
 const SetupInfoModal = ({ onClose }) => {
   const stepperRef = useRef(null);
   const fileInputRef = useRef(null);
   const { showToast } = useToast();
   const { callApi } = useApi(showToast);
+
+  const { auth } = useContext(AuthContext);
 
   const [form, setForm] = useState({
     userName: "",
@@ -59,16 +63,19 @@ const SetupInfoModal = ({ onClose }) => {
     }
 
     const formData = new FormData();
-    formData.append("hoVaTen", form.userName);
-    formData.append("tuoi", form.age);
-    formData.append("gioiTinh", form.gender?.code);
-    formData.append("diaChi", form.address);
-    formData.append("chieuCao", form.height);
-    formData.append("canNang", form.weight);
+    formData.append("TaiKhoanId", auth.id);
+    formData.append("FullName", form.userName);
+    formData.append("Age", form.age);
+    formData.append("Gender", form.gender?.code);
+    formData.append("Address", form.address);
+    formData.append("Height", form.height);
+    formData.append("Weight", form.weight);
     if (avatar) formData.append("avatar", avatar);
 
+    console.log(Array.from(formData));
+
     try {
-      await callApi(() => infoAPI.create());
+      await callApi(() => infoAPI.create(formData));
 
       onClose();
     } catch {
@@ -143,16 +150,12 @@ const SetupInfoModal = ({ onClose }) => {
                       <InputIcon className="pi pi-user"> </InputIcon>
                       <InputText
                         id="userName"
-                        className="w-full pl-5"
+                        className="w-12 pl-5"
                         invalid={!checkForm1 && !form.userName}
                         value={form.userName}
                         placeholder="Nhập họ và tên"
                         onChange={(e) => {
-                          const value = e.target.value;
-                          const regex = /^[a-zA-ZÀ-ỹ\s]*$/;
-                          if (regex.test(value)) {
-                            setForm({ ...form, userName: value });
-                          }
+                          setForm({ ...form, userName: e.target.value });
                         }}
                       />
                     </IconField>
@@ -162,10 +165,13 @@ const SetupInfoModal = ({ onClose }) => {
                       <label className="block mb-1 font-bold" htmlFor="age">
                         Tuổi <span style={{ color: "red" }}>*</span>
                       </label>
-                      <IconField iconPosition="left">
-                        <InputIcon className="pi pi-calendar" />
+                      <div className="flex align-items-center">
+                        <InputIcon
+                          className="pi pi-calendar absolute"
+                          style={{ marginLeft: "0.75rem" }}
+                        />
                         <InputNumber
-                          id="age"
+                          inputId="age"
                           value={form.age}
                           onValueChange={(e) =>
                             setForm({ ...form, age: e.value })
@@ -177,16 +183,19 @@ const SetupInfoModal = ({ onClose }) => {
                           className="w-full"
                           inputClassName="pl-5 w-12"
                         />
-                      </IconField>
+                      </div>
                     </div>
                     <div className="w-12">
                       <label className="block mb-1 font-bold" htmlFor="gender">
                         Giới tính <span style={{ color: "red" }}>*</span>
                       </label>
-                      <IconField iconPosition="left">
-                        <InputIcon className="pi pi-users z-1" />
+                      <div className="flex align-items-center">
+                        <InputIcon
+                          className="pi pi-users z-1 absolute"
+                          style={{ marginLeft: "0.75rem" }}
+                        />
                         <Dropdown
-                          id="gender"
+                          inputId="gender"
                           value={form.gender}
                           onChange={(e) =>
                             setForm({ ...form, gender: e.value })
@@ -197,7 +206,7 @@ const SetupInfoModal = ({ onClose }) => {
                           className="pl-4 w-full"
                           invalid={!checkForm1 && !form.gender}
                         />
-                      </IconField>
+                      </div>
                     </div>
                   </div>
                 </Card>
@@ -247,6 +256,7 @@ const SetupInfoModal = ({ onClose }) => {
                         onChange={(e) =>
                           setForm({ ...form, address: e.target.value })
                         }
+                        invalid={!checkForm2 && !form.address}
                       />
                     </IconField>
                   </div>
@@ -260,7 +270,7 @@ const SetupInfoModal = ({ onClose }) => {
                           <i className="pi pi-shopping-bag" />
                         </span>
                         <InputNumber
-                          id="weight"
+                          inputId="weight"
                           value={form.weight}
                           onValueChange={(e) =>
                             setForm({ ...form, weight: e.value })
@@ -286,7 +296,7 @@ const SetupInfoModal = ({ onClose }) => {
                           <i className="pi pi-arrows-v" />
                         </span>
                         <InputNumber
-                          id="height"
+                          inputId="height"
                           value={form.height}
                           onValueChange={(e) =>
                             setForm({ ...form, height: e.value })

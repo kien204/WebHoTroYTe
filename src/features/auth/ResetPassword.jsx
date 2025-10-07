@@ -178,7 +178,7 @@ const ResetPassword = () => {
                 <IconField iconPosition="left">
                   <InputIcon className="pi pi-lock z-1" />
                   <Password
-                    id="newPassword"
+                    inputId="newPassword"
                     className="w-12 w-p-icon-field"
                     inputClassName="w-12 pl-5"
                     placeholder="Nhập mật khẩu"
@@ -204,7 +204,7 @@ const ResetPassword = () => {
                 <IconField iconPosition="left">
                   <InputIcon className="pi pi-lock z-1" />
                   <Password
-                    id="confirmPassword"
+                    inputId="confirmPassword"
                     className="w-12 w-p-icon-field"
                     inputClassName="w-12 pl-5"
                     placeholder="Nhập mật khẩu"
