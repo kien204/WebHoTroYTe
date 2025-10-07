@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
@@ -10,29 +10,24 @@ import { Divider } from "primereact/divider";
 import { useToast } from "../../common/hooks/useToast";
 import { AuthContext } from "../../common/context/AuthContext";
 
-import authApi from "./authApi";
+import authApi from "../../services/api/authAPI";
+import { useApi } from "../../common/hooks/useApi";
+
 import doctor from "../../assets/Doctor.png";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [checkEmail, setCheckEmail] = useState(false);
   const [checkForm, setCheckForm] = useState(false);
   const { showToast } = useToast();
   const { login } = useContext(AuthContext);
-  const isMounted = useRef(true);
+  const { callApi } = useApi(showToast);
 
   useEffect(() => {
     if (!email) setCheckEmail(false);
     setCheckEmail(/^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(email.trim()));
   }, [email]);
-  useEffect(() => {
-    isMounted.current = true;
-    return () => {
-      isMounted.current = false; // khi unmount
-    };
-  }, []);
 
   const handleLogin = async () => {
     if (!checkEmail || !password) {
@@ -40,17 +35,12 @@ const Login = () => {
       return;
     }
 
-    setLoading(true);
     try {
-      const res = await authApi.login({ email, password });
-      if (isMounted.current) {
-        login(res.data.auth, res.data.token);
-        showToast("success", "Thành công", "Đăng nhập thành công!");
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      if (isMounted.current) setLoading(false);
+      const data = await callApi(() => authApi.login({ email, password }));
+      login(data.auth, data.token);
+      showToast("success", "Thành công", "Đăng nhập thành công!");
+    } catch {
+      // Không cần xử lý lỗi ở đây nữa, handleApiError đã làm rồi
     }
   };
 
@@ -142,7 +132,6 @@ const Login = () => {
               <Button
                 className="w-full mt-3"
                 onClick={handleLogin}
-                disabled={loading}
                 label="Đăng nhập"
               />
               <div className="mt-4">

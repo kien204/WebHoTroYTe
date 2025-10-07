@@ -10,17 +10,26 @@ import { Card } from "primereact/card";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { InputNumber } from "primereact/inputnumber";
+import { useToast } from "../../common/hooks/useToast";
+
+import infoAPI from "../../services/api/infoAPI";
+import { useApi } from "../../common/hooks/useApi";
 
 const SetupInfoModal = ({ onClose }) => {
   const stepperRef = useRef(null);
-  const [userName, setuserName] = useState("");
-  const [age, setAge] = useState("");
-  const [avatar, setAvatar] = useState("");
   const fileInputRef = useRef(null);
-  const [gender, setGender] = useState(null);
-  const [address, setAddress] = useState("");
-  const [height, setHeight] = useState("");
-  const [weight, setWeight] = useState("");
+  const { showToast } = useToast();
+  const { callApi } = useApi(showToast);
+
+  const [form, setForm] = useState({
+    userName: "",
+    age: "",
+    gender: null,
+    address: "",
+    height: "",
+    weight: "",
+  });
+  const [avatar, setAvatar] = useState(null);
   const [checkForm1, setCheckForm1] = useState(true);
   const [checkForm2, setCheckForm2] = useState(true);
 
@@ -44,16 +53,29 @@ const SetupInfoModal = ({ onClose }) => {
   };
 
   const handleSave = async () => {
-    if (!height || !weight) {
+    if (!form.height || !form.weight) {
       setCheckForm2(false);
       return;
     }
 
-    // const auth = JSON.parse(localStorage.getItem("auth"));
-    // await axios.put("/api/user/profile", form, {
-    //   headers: { Authorization: `Bearer ${auth.token}` },
-    // });
-    onClose();
+    const formData = new FormData();
+    formData.append("hoVaTen", form.userName);
+    formData.append("tuoi", form.age);
+    formData.append("gioiTinh", form.gender?.code);
+    formData.append("diaChi", form.address);
+    formData.append("chieuCao", form.height);
+    formData.append("canNang", form.weight);
+    if (avatar) formData.append("avatar", avatar);
+
+    try {
+      console.log(Array.from(formData.entries()));
+
+      await callApi(() => infoAPI.create());
+
+      onClose();
+    } catch {
+      //
+    }
   };
 
   return (
@@ -119,19 +141,19 @@ const SetupInfoModal = ({ onClose }) => {
                     <label className="block mb-1 font-bold" htmlFor="userName">
                       Nhập họ và tên <span style={{ color: "red" }}>*</span>
                     </label>
-                    <IconField >
+                    <IconField iconPosition="left">
                       <InputIcon className="pi pi-user"> </InputIcon>
                       <InputText
                         id="userName"
                         className="w-full pl-5"
-                        invalid={!checkForm1 && !userName}
-                        value={userName}
+                        invalid={!checkForm1 && !form.userName}
+                        value={form.userName}
                         placeholder="Nhập họ và tên"
                         onChange={(e) => {
                           const value = e.target.value;
                           const regex = /^[a-zA-ZÀ-ỹ\s]*$/;
                           if (regex.test(value)) {
-                            setuserName(value);
+                            setForm({ ...form, userName: value });
                           }
                         }}
                       />
@@ -142,16 +164,18 @@ const SetupInfoModal = ({ onClose }) => {
                       <label className="block mb-1 font-bold" htmlFor="age">
                         Tuổi <span style={{ color: "red" }}>*</span>
                       </label>
-                      <IconField >
+                      <IconField iconPosition="left">
                         <InputIcon className="pi pi-calendar" />
                         <InputNumber
                           id="age"
-                          value={age}
-                          onValueChange={(e) => setAge(e.value)}
+                          value={form.age}
+                          onValueChange={(e) =>
+                            setForm({ ...form, age: e.value })
+                          }
                           placeholder="Nhập tuổi"
                           min={1}
                           max={120}
-                          invalid={!checkForm1 && !age}
+                          invalid={!checkForm1 && !form.age}
                           className="w-full"
                           inputClassName="pl-5 w-12"
                         />
@@ -161,17 +185,19 @@ const SetupInfoModal = ({ onClose }) => {
                       <label className="block mb-1 font-bold" htmlFor="gender">
                         Giới tính <span style={{ color: "red" }}>*</span>
                       </label>
-                      <IconField >
+                      <IconField iconPosition="left">
                         <InputIcon className="pi pi-users z-1" />
                         <Dropdown
                           id="gender"
-                          value={gender}
-                          onChange={(e) => setGender(e.value)}
+                          value={form.gender}
+                          onChange={(e) =>
+                            setForm({ ...form, gender: e.value })
+                          }
                           options={selectedGender}
                           optionLabel="name"
                           placeholder="Chọn giới tính"
                           className="pl-4 w-full"
-                          invalid={!checkForm1 && !gender}
+                          invalid={!checkForm1 && !form.gender}
                         />
                       </IconField>
                     </div>
@@ -185,7 +211,7 @@ const SetupInfoModal = ({ onClose }) => {
                 icon="pi pi-arrow-right"
                 iconPos="right"
                 onClick={() => {
-                  if (!userName || !age || !gender) {
+                  if (!form.userName || !form.age || !form.gender) {
                     setCheckForm1(false);
                     return;
                   }
@@ -213,14 +239,16 @@ const SetupInfoModal = ({ onClose }) => {
                     <label className="block mb-1 font-bold" htmlFor="address">
                       Địa chỉ
                     </label>
-                    <IconField >
+                    <IconField iconPosition="left">
                       <InputIcon className="pi pi-home" />
                       <InputText
                         id="address"
                         className="w-full pl-5"
-                        value={address}
+                        value={form.address}
                         placeholder="Nhập địa chỉ"
-                        onChange={(e) => setAddress(e.target.value)}
+                        onChange={(e) =>
+                          setForm({ ...form, address: e.target.value })
+                        }
                       />
                     </IconField>
                   </div>
@@ -235,12 +263,14 @@ const SetupInfoModal = ({ onClose }) => {
                         </span>
                         <InputNumber
                           id="weight"
-                          value={weight}
-                          onValueChange={(e) => setWeight(e.value)}
+                          value={form.weight}
+                          onValueChange={(e) =>
+                            setForm({ ...form, weight: e.value })
+                          }
                           placeholder="Nhập cân nặng"
                           min={1}
                           max={1000}
-                          invalid={!checkForm2 && !weight}
+                          invalid={!checkForm2 && !form.weight}
                           className="w-full"
                           inputClassName="w-12"
                         />
@@ -259,12 +289,14 @@ const SetupInfoModal = ({ onClose }) => {
                         </span>
                         <InputNumber
                           id="height"
-                          value={height}
-                          onValueChange={(e) => setHeight(e.value)}
+                          value={form.height}
+                          onValueChange={(e) =>
+                            setForm({ ...form, height: e.value })
+                          }
                           placeholder="Nhập chiều cao"
                           min={1}
                           max={300}
-                          invalid={!checkForm2 && !height}
+                          invalid={!checkForm2 && !form.height}
                           className="w-full"
                           inputClassName="w-12"
                         />

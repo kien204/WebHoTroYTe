@@ -2,22 +2,24 @@ import React, { useState, useRef, useEffect } from "react";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
-import authApi from "./authApi";
 import { Toast } from "primereact/toast";
 import { Link, useNavigate } from "react-router-dom";
 import { Dialog } from "primereact/dialog";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { Checkbox } from "primereact/checkbox";
-import doctor from "../../assets/Doctor.png";
 import { Image } from "primereact/image";
+
+import authApi from "../../services/api/authAPI";
+import { useApi } from "../../common/hooks/useApi";
+
+import doctor from "../../assets/Doctor.png";
 
 const Register = () => {
   const [userName, setuserName] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const toast = useRef(null);
   const [checkConfirmPasswork, setCheckConfirmPasswork] = useState(true);
   const [checkPasswork, setCheckPasswork] = useState(true);
@@ -28,6 +30,8 @@ const Register = () => {
   const [checked, setChecked] = useState(false);
   const [error, setError] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
+
+  const { callApi } = useApi(showToast);
 
   const showToast = (severity, summary, detail) => {
     toast.current.show({ severity, summary, detail, life: 3000 });
@@ -89,29 +93,28 @@ const Register = () => {
       return;
     }
 
-    setLoading(true);
     try {
       console.log(userName, email, password);
-      const res = await authApi.register({ userName, email, password });
+      const res = await callApi(() =>
+        authApi.register({ userName, email, password })
+      );
       console.log("Register successful:", res.data);
       setIsDialog(true);
-    } catch (err) {
-      console.error("Login error:", err);
-      showToast("error", "Thất bại", "Tạo tài khoản thất bại!");
+    } catch {
+      //
     }
-    setLoading(false);
   };
 
   const handleOTP = async () => {
     try {
-      console.log(userName, email, password);
-      const res = await authApi.verify_otp({ email, otp });
+      const res = await callApi(() => authApi.verify_otp({ email, otp }));
+
       console.log("OTP successful:", res.data);
+
       navigate("/login");
       showToast("success", "Thành công", "Xác thực tài khoản thành công!");
-    } catch (err) {
-      console.error("Register error:", err);
-      showToast("error", "Thất bại", "Tạo tài khoản thất bại!");
+    } catch {
+      //
     }
   };
 
@@ -278,7 +281,6 @@ const Register = () => {
               <Button
                 className="w-full mt-3"
                 onClick={handleRegister}
-                disabled={loading}
                 label="Tạo tài khoản"
               />
               <div className="mt-4">

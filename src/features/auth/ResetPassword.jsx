@@ -2,26 +2,30 @@ import React, { useState, useRef, useEffect } from "react";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
-import authApi from "./authApi";
 import { Toast } from "primereact/toast";
-import doctor from "../../assets/Doctor.png";
 import { Image } from "primereact/image";
 import { InputIcon } from "primereact/inputicon";
 import { IconField } from "primereact/iconfield";
 import { useNavigate } from "react-router-dom";
+
+import { useApi } from "../../common/hooks/useApi";
+import authApi from "../../services/api/authAPI";
+
+import doctor from "../../assets/Doctor.png";
 
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState("");
   const email = localStorage.getItem("resetEmail") || "";
   const [otp, setOtp] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const toast = useRef(null);
   const [checkPass, setCheckPass] = useState(true);
   const [timeLeft, setTimeLeft] = useState(0);
   const [checkPasswork, setCheckPasswork] = useState(true);
   const [checkform, setCheckform] = useState(false);
   const navigate = useNavigate();
+
+  const { callApi } = useApi(showToast);
 
   const showToast = (severity, summary, detail) => {
     toast.current.show({ severity, summary, detail, life: 3000 });
@@ -82,18 +86,18 @@ const ResetPassword = () => {
       return;
     }
 
-    setLoading(true);
     try {
-      console.log(email, otp, newPassword);
-      const res = await authApi.reset_password({ email, otp, newPassword });
+      const res = await callApi(() =>
+        authApi.reset_password({ email, otp, newPassword })
+      );
+
       console.log("Login successful:", res.data);
+
       showToast("success", "Thành công", "Đổi mật khẩu thành công");
       navigate("/login");
-    } catch (err) {
-      console.error("Login error:", err);
-      showToast("error", "Thất bại", "Tạo tài khoản thất bại!");
+    } catch {
+      //
     }
-    setLoading(false);
   };
 
   const ResendOtp = async () => {
@@ -227,7 +231,6 @@ const ResetPassword = () => {
               <Button
                 className="w-full mt-5"
                 onClick={handleResetPassword}
-                disabled={loading}
                 label="Đổi"
               />
             </div>

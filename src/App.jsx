@@ -1,16 +1,19 @@
-import { useEffect } from "react";
 import RouterCustom from "./routes/RouterCustom";
-import { useToast } from "./common/hooks/useToast";
-import { setGlobalToast } from "./services/api";
+
+import { ToastProvider } from "./services/ToastContext";
+import { AuthProvider } from "./common/context/AuthProvider";
+import { LoadingProvider } from "./common/context/LoadingProvider";
 
 function App() {
-  const { showToast } = useToast();
-
-  useEffect(() => {
-    setGlobalToast(showToast);
-  }, [showToast]);
-
-  return <RouterCustom />;
+  return (
+    <LoadingProvider>
+      <AuthProvider>
+        <ToastProvider>
+          <RouterCustom />
+        </ToastProvider>
+      </AuthProvider>
+    </LoadingProvider>
+  );
 }
 
 export default App;

@@ -1,21 +1,25 @@
 import React, { useState, useRef, useEffect } from "react";
-import doctor from "../../assets/Doctor.png";
 import { Image } from "primereact/image";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
-import authApi from "./authApi";
 import { Toast } from "primereact/toast";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { Link, useNavigate } from "react-router-dom";
 
+import authApi from "../../services/api/authAPI";
+import { useApi } from "../../common/hooks/useApi";
+
+import doctor from "../../assets/Doctor.png";
+
 const ForgetPassword = () => {
   const [email, setEmail] = useState("");
   const [isCheckEmail, setIsCheckEmail] = useState(true);
-  const [loading, setLoading] = useState(false);
   const [checkEmail, setCheckEmail] = useState(false);
   const toast = useRef(null);
   const navigate = useNavigate();
+
+  const { callApi } = useApi(showToast);
 
   const showToast = (severity, summary, detail) => {
     toast.current.show({ severity, summary, detail, life: 3000 });
@@ -36,21 +40,17 @@ const ForgetPassword = () => {
       return;
     }
 
-    setLoading(true);
-
     try {
-      const res = await authApi.forgot_password({ email });
+      const res = await callApi(() => authApi.forgot_password({ email }));
 
       console.log(res.data);
 
       localStorage.setItem("resetEmail", email);
 
       navigate("/reset-password");
-    } catch (err) {
-      console.error("Email error:", err);
-      showToast("error", "Thất bại", "Tài khoản không tồn tại!");
+    } catch {
+      //
     }
-    setLoading(false);
   };
 
   return (
@@ -114,7 +114,6 @@ const ForgetPassword = () => {
               <Button
                 className="w-full mt-4"
                 onClick={handleForgotPassword}
-                disabled={loading}
                 label="Tiếp tục"
               />
               <Link

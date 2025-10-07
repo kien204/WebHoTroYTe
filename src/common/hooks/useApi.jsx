@@ -1,0 +1,21 @@
+import { useLoading } from "../context/LoadingContext";
+import { handleApiError } from "../../services/handleApiError";
+
+export const useApi = (showToast) => {
+  const { setLoading } = useLoading();
+
+  const callApi = async (apiFunc) => {
+    try {
+      setLoading(true);
+      const res = await apiFunc();
+      return res.data;
+    } catch (err) {
+      handleApiError(err, showToast);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { callApi };
+};

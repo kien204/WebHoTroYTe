@@ -1,5 +1,5 @@
 // src/api/authApi.js
-import api from "../../services/api";
+import api from "../api";
 
 const authApi = {
   login: (data) => api.post("/Taikhoan/login", data),

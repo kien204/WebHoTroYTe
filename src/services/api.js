@@ -1,20 +1,11 @@
 import axios from "axios";
 
-let showToastGlobal = null;
-export const setGlobalToast = (fn) => {
-  showToastGlobal = fn;
-};
-
-let logoutGlobal = null;
-export const setGlobalLogout = (fn) => {
-  logoutGlobal = fn;
-};
-
 const api = axios.create({
   baseURL: "http://10.15.43.11:5092/api",
   headers: {
     "Content-Type": "application/json",
   },
+  timeout: 5000,
 });
 
 api.interceptors.request.use(
@@ -31,25 +22,7 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
   (res) => res,
-  (err) => {
-    if (showToastGlobal) {
-      // chỉ gọi showToastGlobal khi cần (server down, token hết hạn)
-      if (err.response) {
-        if (
-          err.response.status === 401 &&
-          !err.config.url.includes("/auth/login")
-        ) {
-          showToastGlobal("error", "Phiên hết hạn", "Vui lòng đăng nhập lại");
-          if (logoutGlobal) logoutGlobal();
-        } else if (err.response.status >= 500) {
-          showToastGlobal("error", "Hệ thống lỗi", "Vui lòng thử lại sau");
-        }
-      } else if (err.request) {
-        showToastGlobal("warn", "Mất kết nối", "Không thể kết nối đến server!");
-      }
-    }
-    return Promise.reject(err);
-  }
+  (err) => Promise.reject(err)
 );
 
 export default api;

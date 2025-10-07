@@ -7,18 +7,12 @@ import "primeicons/primeicons.css";
 import "primeflex/primeflex.css";
 import "./index.css";
 
-import { ToastProvider } from "./services/ToastContext";
-import { AuthProvider } from "./common/context/AuthProvider";
 import { BrowserRouter } from "react-router-dom";
 
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
-      <ToastProvider>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
-      </ToastProvider>
+      <App />
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById("root")
