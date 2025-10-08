@@ -152,10 +152,15 @@ const SetupInfoModal = ({ onClose }) => {
                         id="userName"
                         className="w-12 pl-5"
                         invalid={!checkForm1 && !form.userName}
-                        value={form.userName}
                         placeholder="Nhập họ và tên"
+                        value={form.userName}
                         onChange={(e) => {
                           setForm({ ...form, userName: e.target.value });
+                        }}
+                        onBlur={(e) => {
+                          const value = e.target.value;
+                          const filteredValue = value.replace(/[^a-zA-ZÀ-ỹ\s]/g, "");
+                          setForm({ ...form, userName: filteredValue });
                         }}
                       />
                     </IconField>

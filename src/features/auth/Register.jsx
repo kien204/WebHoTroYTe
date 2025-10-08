@@ -173,6 +173,14 @@ const Register = () => {
                     onChange={(e) => {
                       setuserName(e.target.value);
                     }}
+                    onBlur={(e) => {
+                      const value = e.target.value;
+                      const filteredValue = value.replace(
+                        /[^a-zA-ZÀ-ỹ\s]/g,
+                        ""
+                      );
+                      setuserName(filteredValue);
+                    }}
                   />
                 </IconField>
               </div>
