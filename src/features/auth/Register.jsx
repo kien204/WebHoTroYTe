@@ -175,10 +175,10 @@ const Register = () => {
                     }}
                     onBlur={(e) => {
                       const value = e.target.value;
-                      const filteredValue = value.replace(
-                        /[^a-zA-ZÀ-ỹ\s]/g,
-                        ""
-                      );
+                      const filteredValue = value
+                        .replace(/[^a-zA-ZÀ-ỹ\s]/g, "") // bỏ ký tự đặc biệt
+                        .replace(/\s+/g, " ") // gộp nhiều khoảng trắng thành 1
+                        .trim(); // xóa khoảng trắng đầu và cuối
                       setuserName(filteredValue);
                     }}
                   />

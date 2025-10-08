@@ -13,7 +13,7 @@ const MenuSidebar = () => {
   const menu = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const { auth } = useContext(AuthContext);
+  const { auth, logout } = useContext(AuthContext);
 
   const [menuSidebar] = useState([
     { name: "Tổng quan", path: "/admin", icon: "pi-home" },
@@ -29,8 +29,7 @@ const MenuSidebar = () => {
       label: "Đăng xuất",
       icon: "pi pi-sign-out",
       command: () => {
-        localStorage.clear("auth");
-        navigate("/login");
+        logout();
       },
     },
   ]);

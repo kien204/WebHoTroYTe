@@ -68,11 +68,9 @@ const SetupInfoModal = ({ onClose }) => {
     formData.append("Age", form.age);
     formData.append("Gender", form.gender?.code);
     formData.append("Address", form.address);
-    formData.append("Height", form.height);
-    formData.append("Weight", form.weight);
-    if (avatar) formData.append("avatar", avatar);
-
-    console.log(Array.from(formData));
+    formData.append("Height", Number(form.height));
+    formData.append("Weight", Number(form.weight));
+    if (avatar?.file) formData.append("Avatar", avatar.file);
 
     try {
       await callApi(() => infoAPI.create(formData));
@@ -151,17 +149,8 @@ const SetupInfoModal = ({ onClose }) => {
                       <InputText
                         id="userName"
                         className="w-12 pl-5"
-                        invalid={!checkForm1 && !form.userName}
-                        placeholder="Nhập họ và tên"
-                        value={form.userName}
-                        onChange={(e) => {
-                          setForm({ ...form, userName: e.target.value });
-                        }}
-                        onBlur={(e) => {
-                          const value = e.target.value;
-                          const filteredValue = value.replace(/[^a-zA-ZÀ-ỹ\s]/g, "");
-                          setForm({ ...form, userName: filteredValue });
-                        }}
+                        value={auth.userName}
+                        disabled="true"
                       />
                     </IconField>
                   </div>
