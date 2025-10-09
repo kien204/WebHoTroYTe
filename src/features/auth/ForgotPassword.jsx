@@ -106,6 +106,7 @@ const ForgetPassword = () => {
                 </div>
               )}
               <Button
+                type="button"
                 className="w-full mt-4"
                 onClick={handleForgotPassword}
                 label="Tiếp tục"

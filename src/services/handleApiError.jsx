@@ -31,7 +31,11 @@ export const handleApiError = (error, showToast) => {
         );
     }
   } else if (error.request) {
-    showToast("warn", "Mất kết nối", "Không thể kết nối đến server");
+    showToast(
+      "warn",
+      "Mất kết nối",
+      "Hiện tại hệ thống không khả dụng, vui lòng thử lại sau"
+    );
   } else {
     showToast("error", "Lỗi không xác định", error.message);
   }

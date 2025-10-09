@@ -162,6 +162,7 @@ const ResetPassword = () => {
                       />
                     </IconField>
                     <Button
+                      type="button"
                       label={
                         timeLeft > 0 ? `Gửi lại (${timeLeft}s)` : "Gửi lại"
                       }
@@ -221,6 +222,7 @@ const ResetPassword = () => {
                 )}
               </div>
               <Button
+                type="button"
                 className="w-full mt-5"
                 onClick={handleResetPassword}
                 label="Đổi"

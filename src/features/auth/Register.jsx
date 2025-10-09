@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
-import { Link, useNavigate } from "react-router-dom";
-import { Dialog } from "primereact/dialog";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { Checkbox } from "primereact/checkbox";
@@ -20,103 +20,55 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [checkConfirmPasswork, setCheckConfirmPasswork] = useState(true);
-  const [checkPasswork, setCheckPasswork] = useState(true);
-  const [checkEmail, setCheckEmail] = useState(true);
-  const [isDialog, setIsDialog] = useState(false);
-  const [otp, setOtp] = useState("");
-  const navigate = useNavigate();
+
   const [checked, setChecked] = useState(false);
   const [error, setError] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(0);
 
   const { showToast } = useToast();
-
   const { callApi } = useApi(showToast);
 
-  useEffect(() => {
-    if (password !== confirmPassword && confirmPassword != "") {
-      setCheckConfirmPasswork(false);
-    } else {
-      setCheckConfirmPasswork(true);
-    }
-  }, [password, confirmPassword]);
+  const navigate = useNavigate();
 
-  useEffect(() => {
+  const checkName = () => {
+    if (!userName) return false;
+    return /^[\p{L}\s]+$/u.test(userName.trim());
+  };
+
+  const checkEmail = () => {
+    if (!email) return false;
+    return /^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(email.trim());
+  };
+
+  const checkPasswork = () => {
     if (password.length < 8 && password != "") {
-      setCheckPasswork(false);
+      return false;
     } else {
-      setCheckPasswork(true);
+      return true;
     }
-  }, [password]);
+  };
 
-  useEffect(() => {
-    if (!email) setCheckEmail(false);
-    setCheckEmail(/^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(email.trim()));
-  }, [email]);
-
-  useEffect(() => {
-    const expireTime = localStorage.getItem("otpExpire");
-    if (expireTime) {
-      const remaining = Math.floor((expireTime - Date.now()) / 1000);
-      if (remaining > 0) {
-        setTimeLeft(remaining);
-      } else {
-        localStorage.removeItem("otpExpire");
-      }
+  const checkConfirmPasswork = () => {
+    if (password !== confirmPassword && confirmPassword != "") {
+      return false;
+    } else {
+      return true;
     }
-  }, []);
-
-  // Đếm ngược mỗi giây
-  useEffect(() => {
-    if (timeLeft > 0) {
-      const timer = setInterval(() => {
-        setTimeLeft((prev) => {
-          const newTime = prev - 1;
-          if (newTime <= 0) {
-            localStorage.removeItem("otpExpire");
-          }
-          return newTime;
-        });
-      }, 1000);
-
-      return () => clearInterval(timer);
-    }
-  }, [timeLeft]);
+  };
 
   const handleRegister = async () => {
-    if (!checkPasswork || !checkConfirmPasswork || !checkEmail || !checked) {
+    if (
+      !checkPasswork() ||
+      !checkConfirmPasswork() ||
+      !checkEmail() ||
+      !checked
+    ) {
       setError(true);
       return;
     }
 
     try {
       await callApi(() => authApi.register({ userName, email, password }));
-      setIsDialog(true);
-    } catch {
-      //
-    }
-  };
-
-  const handleOTP = async () => {
-    try {
-      await callApi(() => authApi.verify_otp({ email, otp }));
-
       navigate("/login");
-      showToast("success", "Thành công", "Xác thực tài khoản thành công!");
-    } catch {
-      //
-    }
-  };
-
-  const ResendOtp = async () => {
-    const expireTime = Date.now() + 60 * 1000; // hết hạn sau 60s
-    localStorage.setItem("otpExpire", expireTime);
-    setTimeLeft(60);
-
-    try {
-      await authApi.resend_otp({ email });
-      showToast("success", "Thành công", "Gửi lại mã OTP thành công!");
     } catch {
       //
     }
@@ -173,16 +125,14 @@ const Register = () => {
                     onChange={(e) => {
                       setuserName(e.target.value);
                     }}
-                    onBlur={(e) => {
-                      const value = e.target.value;
-                      const filteredValue = value
-                        .replace(/[^a-zA-ZÀ-ỹ\s]/g, "") // bỏ ký tự đặc biệt
-                        .replace(/\s+/g, " ") // gộp nhiều khoảng trắng thành 1
-                        .trim(); // xóa khoảng trắng đầu và cuối
-                      setuserName(filteredValue);
-                    }}
                   />
                 </IconField>
+                {!checkName() && email && (
+                  <div className="text-sm mt-1" style={{ color: "red" }}>
+                    Họ tên chỉ được chứa chữ, không bao gồm ký tự đặc biệt hoặc
+                    số
+                  </div>
+                )}
               </div>
               <div className="w-full mt-3">
                 <label className="block mb-1 font-bold" htmlFor="userName">
@@ -199,9 +149,9 @@ const Register = () => {
                     onChange={(e) => setEmail(e.target.value)}
                   />
                 </IconField>
-                {!checkEmail && email && (
+                {!checkEmail() && email && (
                   <div className="text-sm mt-1" style={{ color: "red" }}>
-                    Email không hợp lệ, vui lòng nhập lại.
+                    Email không hợp lệ, vui lòng nhập lại
                   </div>
                 )}
               </div>
@@ -228,7 +178,7 @@ const Register = () => {
                     feedback={false}
                   />
                 </IconField>
-                {!checkPasswork && (
+                {!checkPasswork() && (
                   <div className="text-sm mt-1" style={{ color: "red" }}>
                     Mật khẩu phải tối thiểu 8 kí tự
                   </div>
@@ -257,9 +207,9 @@ const Register = () => {
                     feedback={false}
                   />
                 </IconField>
-                {!checkConfirmPasswork && (
+                {!checkConfirmPasswork() && (
                   <div className="text-sm mt-1" style={{ color: "red" }}>
-                    Mật khẩu không khớp!
+                    Mật khẩu nhập lại không khớp
                   </div>
                 )}
               </div>
@@ -275,6 +225,7 @@ const Register = () => {
                 </Link>
               </div>
               <Button
+                type="button"
                 className="w-full mt-3"
                 onClick={handleRegister}
                 label="Tạo tài khoản"
@@ -289,40 +240,6 @@ const Register = () => {
           </div>
         </div>
       </div>
-      <Dialog
-        visible={isDialog}
-        modal
-        onHide={() => {
-          if (!isDialog) return;
-          setIsDialog(false);
-        }}
-        header={<div>HealthCare</div>}
-      >
-        <div className="my-3 mx-5">
-          <div>
-            <label className="block mb-2 font-bold" htmlFor="otp">
-              Mã Capcha
-            </label>
-            <div className=" flex justify-content-between align-items-center">
-              <InputText
-                id="otp"
-                className="w-full max-w-15rem"
-                value={otp}
-                placeholder="Nhập mã Capcha"
-                onChange={(e) => setOtp(e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="w-full flex justify-content-center gap-3 mt-5">
-            <Button label="Xác nhận" onClick={handleOTP} />
-            <Button
-              label={timeLeft > 0 ? `Gửi lại (${timeLeft}s)` : "Gửi lại"}
-              onClick={ResendOtp}
-              disabled={timeLeft > 0}
-            />{" "}
-          </div>
-        </div>
-      </Dialog>
     </>
   );
 };

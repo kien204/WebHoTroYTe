@@ -1,7 +1,10 @@
 // MenuSidebar.jsx
-import React, { useState, useRef, useContext } from "react";
+import React, { useState, useRef, useContext, useEffect } from "react";
 
 import { AuthContext } from "../../common/context/AuthContext";
+import { useApi } from "../../common/hooks/useApi";
+import infoApi from "../../services/api/infoAPI";
+import { useToast } from "../../common/hooks/useToast";
 
 import { Avatar } from "primereact/avatar";
 import { Divider } from "primereact/divider";
@@ -13,7 +16,11 @@ const MenuSidebar = () => {
   const menu = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const { auth } = useContext(AuthContext);
+  const { logout, auth } = useContext(AuthContext);
+  const [info, setInfo] = useState();
+
+  const { showToast } = useToast();
+  const { callApi } = useApi(showToast);
 
   const [menuSidebar] = useState([
     { name: "Trang chủ", path: "/", icon: "pi-home" },
@@ -31,11 +38,23 @@ const MenuSidebar = () => {
       label: "Đăng xuất",
       icon: "pi pi-sign-out",
       command: () => {
-        localStorage.clear("auth");
-        navigate("/login");
+        logout();
       },
     },
   ]);
+
+  useEffect(() => {
+    const fetchInfo = async () => {
+      try {
+        const res = await callApi(() => infoApi.getById(auth.id));
+        setInfo(res);
+      } catch {
+        //
+      }
+    };
+
+    fetchInfo();
+  }, [auth?.id]);
 
   return (
     <div className="h-full surface-card border-right-1 surface-border flex flex-column">
@@ -75,11 +94,13 @@ const MenuSidebar = () => {
             onClick={(event) => menu.current.toggle(event)}
           >
             <Avatar
-              image="https://i.pravatar.cc/100"
+              image={
+                info?.avatar || "https://www.w3schools.com/howto/img_avatar.png"
+              }
               shape="circle"
               size="large"
             />
-            <span className="font-bold">HealthCare</span>
+            <span className="font-bold">{info?.userName || "Người dùng"}</span>
           </div>
         ) : (
           <div className="m-3 flex align-items-center justify-content-center p-2 gap-2">

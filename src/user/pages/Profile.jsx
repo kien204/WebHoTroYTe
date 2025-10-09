@@ -50,6 +50,7 @@ const Profile = () => {
           />
           {isEdit && (
             <Button
+              type="button"
               icon="pi pi-pencil"
               className="h-2rem w-2rem p-button-rounded p-button-text p-button-sm flex align-items-center justify-content-center"
               style={{
@@ -72,6 +73,7 @@ const Profile = () => {
         </div>
         <h2 className="text-center ml-4 mr-auto">Hồ sơ cá nhân</h2>
         <Button
+          type="button"
           label={!isEdit ? "Sửa" : "Lưu"}
           icon={!isEdit ? "pi pi-pencil" : "pi pi-save"}
           className="mr-5 mb-3"

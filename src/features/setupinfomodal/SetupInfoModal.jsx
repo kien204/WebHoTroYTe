@@ -50,9 +50,7 @@ const SetupInfoModal = ({ onClose }) => {
     const file = event.target.files[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
-      setAvatar(imageUrl); // hiện preview ngay
-      console.log("Ảnh đã chọn:", file);
-      // TODO: Upload lên server bằng FormData nếu cần
+      setAvatar(imageUrl);
     }
   };
 
@@ -64,9 +62,9 @@ const SetupInfoModal = ({ onClose }) => {
 
     const formData = new FormData();
     formData.append("TaiKhoanId", auth.id);
-    formData.append("FullName", form.userName);
+    formData.append("FullName", auth.userName);
     formData.append("Age", form.age);
-    formData.append("Gender", form.gender?.code);
+    formData.append("Gender", form.gender.name);
     formData.append("Address", form.address);
     formData.append("Height", Number(form.height));
     formData.append("Weight", Number(form.weight));
@@ -108,6 +106,7 @@ const SetupInfoModal = ({ onClose }) => {
                       className="h-5rem w-5rem"
                     />
                     <Button
+                      type="button"
                       icon="pi pi-camera"
                       className="w-2rem h-2rem p-button-rounded p-button-text p-button-sm flex align-items-center justify-content-center"
                       style={{
@@ -150,7 +149,7 @@ const SetupInfoModal = ({ onClose }) => {
                         id="userName"
                         className="w-12 pl-5"
                         value={auth.userName}
-                        disabled="true"
+                        disabled={true}
                       />
                     </IconField>
                   </div>
@@ -208,11 +207,12 @@ const SetupInfoModal = ({ onClose }) => {
             </div>
             <div className="flex pt-4 justify-content-end">
               <Button
+                type="button"
                 label="Tiếp theo"
                 icon="pi pi-arrow-right"
                 iconPos="right"
                 onClick={() => {
-                  if (!form.userName || !form.age || !form.gender) {
+                  if (!form.age || !form.gender) {
                     setCheckForm1(false);
                     return;
                   }
@@ -313,12 +313,14 @@ const SetupInfoModal = ({ onClose }) => {
             </div>
             <div className="flex pt-4 justify-content-between">
               <Button
+                type="button"
                 label="Quay lại"
                 severity="secondary"
                 icon="pi pi-arrow-left"
                 onClick={() => stepperRef.current.prevCallback()}
               />
               <Button
+                type="button"
                 label="Lưu"
                 icon="pi pi-save"
                 iconPos="right"

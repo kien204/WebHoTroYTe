@@ -11,6 +11,7 @@ export const useApi = (showToast) => {
       return res.data;
     } catch (err) {
       handleApiError(err, showToast);
+      throw err;
     } finally {
       setLoading(false);
     }

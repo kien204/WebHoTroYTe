@@ -40,7 +40,7 @@ const Login = () => {
       login(data.auth, data.token);
       showToast("success", "Thành công", "Đăng nhập thành công!");
     } catch {
-      // Không cần xử lý lỗi ở đây nữa, handleApiError đã làm rồi
+      // 
     }
   };
 
@@ -130,6 +130,7 @@ const Login = () => {
                 </Link>
               </div>
               <Button
+                type="button"
                 className="w-full mt-3"
                 onClick={handleLogin}
                 label="Đăng nhập"
