@@ -9,11 +9,13 @@ import { OverlayPanel } from "primereact/overlaypanel";
 import { Dialog } from "primereact/dialog";
 import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
+import { Avatar } from "primereact/avatar";
 import { addLocale } from "primereact/api";
+
+import logo from "../../assets/anh1.svg";
 
 import { useWindowWidth } from "../../common/hooks/useWindowWidth";
 import { useToast } from "../../common/hooks/useToast";
-
 import { useApi } from "../../common/hooks/useApi";
 import managementAccountApi from "../../services/api/managementAccountApi";
 
@@ -122,15 +124,15 @@ const SystemManager = () => {
 
   const getListUser = async () => {
     try {
-        const res = await callApi(() => managementAccountApi.getAll());
-        if(res) {
-          setListUsers(res);
-          setFilteredUsers(res);
-        }
+      const res = await callApi(() => managementAccountApi.getAll());
+      if (res) {
+        setListUsers(res);
+        setFilteredUsers(res);
+      }
     } catch {
       //
     }
-  }
+  };
 
   useEffect(() => {
     getListUser;
@@ -487,7 +489,11 @@ const SystemManager = () => {
         )}
       </OverlayPanel>
       <Dialog
-        header="Xác nhận xóa"
+        header={
+          <div className="flex justify-content-center">
+            <Avatar image={logo} shape="circle" size="xlarge" />
+          </div>
+        }
         visible={visibleDialogDelete}
         onHide={() => setVisibleDialogDelete(false)}
         className="w-11 md:w-6 lg:w-4"
