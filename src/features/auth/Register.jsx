@@ -20,9 +20,15 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
   const [checked, setChecked] = useState(false);
-  const [error, setError] = useState(false);
+  
+  const [errorFields, setErrorFields] = useState({
+    name: false,
+    email: false,
+    password: false,
+    confirmPassword: false,
+    checked: false,
+  });
 
   const { showToast } = useToast();
   const { callApi } = useApi(showToast);
@@ -47,16 +53,18 @@ const Register = () => {
     return /^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(email.trim());
   };
 
-  const checkPasswork = () => {
-    if (password.length < 8 && password != "") {
+  const checkPassword = () => {
+    if (password.length < 8) {
       return false;
     } else {
       return true;
     }
   };
 
-  const checkConfirmPasswork = () => {
-    if (password !== confirmPassword && confirmPassword != "") {
+  const checkConfirmPassword = () => {
+    if (!confirmPassword) return false;
+
+    if (password !== confirmPassword) {
       return false;
     } else {
       return true;
@@ -64,19 +72,22 @@ const Register = () => {
   };
 
   const handleRegister = async () => {
-    if (
-      !checkPasswork() ||
-      !checkConfirmPasswork() ||
-      !checkEmail() ||
-      !checkName() ||
-      !checked
-    ) {
-      setError(true);
-      return;
-    }
+    const newErrors = {
+      name: !checkName(),
+      email: !checkEmail(),
+      password: !checkPassword(),
+      confirmPassword: !checkConfirmPassword(),
+      checked: !checked,
+    };
+
+    setErrorFields(newErrors);
+
+    // Nếu còn lỗi, dừng lại
+    if (Object.values(newErrors).some((v) => v)) return;
 
     try {
       await callApi(() => authApi.register({ userName, email, password }));
+      showToast("success", "Thành công", "Đăng ký tài khoản thành công");
       navigate("/login");
     } catch {
       //
@@ -128,15 +139,18 @@ const Register = () => {
                   <InputText
                     id="userName"
                     className="w-12 pl-5"
-                    invalid={error && !userName}
+                    invalid={errorFields.name && !userName}
                     value={userName}
                     placeholder="Nhập họ và tên"
                     onChange={(e) => {
                       setuserName(e.target.value);
                     }}
+                    onFocus={() =>
+                      setErrorFields((prev) => ({ ...prev, name: false }))
+                    }
                   />
                 </IconField>
-                {!checkName() && userName && (
+                {errorFields.name && userName && (
                   <div className="text-sm mt-1" style={{ color: "red" }}>
                     {userName.trim().length < 2
                       ? "Họ và tên phải có ít nhất 2 ký tự"
@@ -155,13 +169,16 @@ const Register = () => {
                   <InputText
                     id="email"
                     className="w-full pl-5"
-                    invalid={error && !email}
+                    invalid={errorFields.email && !email}
                     value={email}
                     placeholder="Nhập email"
                     onChange={(e) => setEmail(e.target.value)}
+                    onFocus={() =>
+                      setErrorFields((prev) => ({ ...prev, email: false }))
+                    }
                   />
                 </IconField>
-                {!checkEmail() && email && (
+                {errorFields.email && email && (
                   <div className="text-sm mt-1" style={{ color: "red" }}>
                     Email không hợp lệ, vui lòng nhập lại
                   </div>
@@ -178,7 +195,7 @@ const Register = () => {
                     inputId="password"
                     className="w-12 w-p-icon-field"
                     inputClassName="w-12 pl-5"
-                    invalid={error && !password}
+                    invalid={errorFields.password && !password}
                     placeholder="Nhập mật khẩu"
                     onChange={(e) => setPassword(e.target.value)}
                     onKeyDown={(e) => {
@@ -186,11 +203,14 @@ const Register = () => {
                         e.preventDefault(); // chặn gõ space
                       }
                     }}
+                    onFocus={() =>
+                      setErrorFields((prev) => ({ ...prev, password: false }))
+                    }
                     toggleMask
                     feedback={false}
                   />
                 </IconField>
-                {!checkPasswork() && (
+                {errorFields.password && password && (
                   <div className="text-sm mt-1" style={{ color: "red" }}>
                     Mật khẩu phải tối thiểu 8 kí tự
                   </div>
@@ -207,7 +227,7 @@ const Register = () => {
                     inputId="confirmPassword"
                     className="w-12 w-p-icon-field"
                     inputClassName="w-12 pl-5"
-                    invalid={error && !confirmPassword}
+                    invalid={errorFields.confirmPassword && !confirmPassword}
                     placeholder="Nhập lại mật khẩu"
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     onKeyDown={(e) => {
@@ -215,11 +235,17 @@ const Register = () => {
                         e.preventDefault(); // chặn gõ space
                       }
                     }}
+                    onFocus={() =>
+                      setErrorFields((prev) => ({
+                        ...prev,
+                        confirmPassword: false,
+                      }))
+                    }
                     toggleMask
                     feedback={false}
                   />
                 </IconField>
-                {!checkConfirmPasswork() && (
+                {errorFields.confirmPassword && confirmPassword && (
                   <div className="text-sm mt-1" style={{ color: "red" }}>
                     Mật khẩu nhập lại không khớp
                   </div>
@@ -229,7 +255,7 @@ const Register = () => {
                 <Checkbox
                   onChange={(e) => setChecked(e.checked)}
                   checked={checked}
-                  invalid={error && !checked ? true : false}
+                  invalid={errorFields.checked && !checked ? true : false}
                 ></Checkbox>
                 <label>Tôi đồng ý</label>
                 <Link to="/terms-of-service" className="text-main1">

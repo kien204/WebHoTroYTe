@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Image } from "primereact/image";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
@@ -14,26 +14,23 @@ import doctor from "../../assets/Doctor.png";
 
 const ForgetPassword = () => {
   const [email, setEmail] = useState("");
-  const [isCheckEmail, setIsCheckEmail] = useState(true);
-  const [checkEmail, setCheckEmail] = useState(false);
+  const [emailError, setEmailError] = useState(false);
   const navigate = useNavigate();
 
   const { showToast } = useToast();
 
   const { callApi } = useApi(showToast);
 
-  useEffect(() => {
-    if (!email) setCheckEmail(false);
-    setCheckEmail(/^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(email.trim()));
-  }, [email]);
+  const handleCheckEmail = () => {
+    if (!email) return false;
+    return /^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(email.trim());
+  };
 
   const handleForgotPassword = async () => {
-    if (!email) {
-      setIsCheckEmail(false);
-      return;
-    }
+    const isValid = handleCheckEmail();
+    setEmailError(!isValid);
 
-    if (!checkEmail) {
+    if (!isValid) {
       return;
     }
 
@@ -96,11 +93,12 @@ const ForgetPassword = () => {
                     value={email}
                     placeholder="Nhập tên email"
                     onChange={(e) => setEmail(e.target.value)}
-                    invalid={!isCheckEmail && !email}
+                    invalid={emailError && !email}
+                    onFocus={() => setEmailError(false)}
                   />
                 </IconField>
               </div>
-              {!checkEmail && email && (
+              {emailError && email && (
                 <div className="w-full" style={{ color: "red" }}>
                   Email không hợp lệ, vui lòng nhập lại.
                 </div>

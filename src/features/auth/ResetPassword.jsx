@@ -18,31 +18,17 @@ const ResetPassword = () => {
   const email = localStorage.getItem("resetEmail") || "";
   const [otp, setOtp] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [checkPass, setCheckPass] = useState(true);
   const [timeLeft, setTimeLeft] = useState(0);
-  const [checkPasswork, setCheckPasswork] = useState(true);
-  const [checkform, setCheckform] = useState(false);
+  const [errorFields, setErrorFields] = useState({
+    otp: false,
+    password: false,
+    confirmPassword: false,
+  });
   const navigate = useNavigate();
 
   const { showToast } = useToast();
 
   const { callApi } = useApi(showToast);
-
-  useEffect(() => {
-    if (newPassword.length < 8 && newPassword != "") {
-      setCheckPasswork(false);
-    } else {
-      setCheckPasswork(true);
-    }
-  }, [newPassword]);
-
-  useEffect(() => {
-    if (confirmPassword !== "" && newPassword !== confirmPassword) {
-      setCheckPass(false);
-    } else {
-      setCheckPass(true);
-    }
-  }, [newPassword, confirmPassword]);
 
   useEffect(() => {
     const expireTime = localStorage.getItem("otpExpire");
@@ -72,16 +58,35 @@ const ResetPassword = () => {
     }
   }, [timeLeft]);
 
-  const handleResetPassword = async () => {
-    if (!checkPass || !checkPasswork || !otp) {
-      setCheckform(true);
-      return;
+const checkPassword = () => {
+    if (newPassword.length < 8) {
+      return false;
+    } else {
+      return true;
     }
+  };
 
-    if (!email) {
-      showToast("error", "Thất bại", "Không tìm thấy email");
-      return;
+  const checkConfirmPassword = () => {
+    if (!confirmPassword) return false;
+
+    if (newPassword !== confirmPassword) {
+      return false;
+    } else {
+      return true;
     }
+  };
+
+  const handleResetPassword = async () => {
+    const newErrors = {
+      password: !checkPassword(),
+      confirmPassword: !checkConfirmPassword(),
+      otp: !otp,
+    };
+
+    setErrorFields(newErrors);
+
+    // Nếu còn lỗi, dừng lại
+    if (Object.values(newErrors).some((v) => v)) return;
 
     try {
       await callApi(() => authApi.reset_password({ email, otp, newPassword }));
@@ -158,7 +163,7 @@ const ResetPassword = () => {
                         value={otp}
                         placeholder="Nhập mã Capcha"
                         onChange={(e) => setOtp(e.target.value)}
-                        invalid={checkform && !otp}
+                        invalid={errorFields.otp && !otp}
                       />
                     </IconField>
                     <Button
@@ -186,10 +191,13 @@ const ResetPassword = () => {
                     onChange={(e) => setNewPassword(e.target.value)}
                     toggleMask
                     feedback={false}
-                    invalid={checkform && !newPassword}
+                    invalid={errorFields.password && !newPassword}
+                    onFocus={() =>
+                      setErrorFields((prev) => ({ ...prev, password: false }))
+                    }
                   />
                 </IconField>
-                {!checkPasswork && (
+                {errorFields.password && newPassword && (
                   <div className="text-sm mt-1" style={{ color: "red" }}>
                     Mật khẩu phải tối thiểu 8 kí tự
                   </div>
@@ -212,10 +220,16 @@ const ResetPassword = () => {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     toggleMask
                     feedback={false}
-                    invalid={checkform && !confirmPassword}
+                    invalid={errorFields.confirmPassword && !confirmPassword}
+                    onFocus={() =>
+                      setErrorFields((prev) => ({
+                        ...prev,
+                        confirmPassword: false,
+                      }))
+                    }
                   />
                 </IconField>
-                {!checkPass && (
+                {errorFields.confirmPassword && confirmPassword && (
                   <div className="text-sm mt-1" style={{ color: "red" }}>
                     Mật khẩu không khớp!
                   </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
@@ -18,29 +18,31 @@ import doctor from "../../assets/Doctor.png";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [checkEmail, setCheckEmail] = useState(false);
+  const [emailError, setEmailError] = useState(false);
   const [checkForm, setCheckForm] = useState(false);
   const { showToast } = useToast();
   const { login } = useContext(AuthContext);
   const { callApi } = useApi(showToast);
 
-  useEffect(() => {
-    if (!email) setCheckEmail(false);
-    setCheckEmail(/^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(email.trim()));
-  }, [email]);
+  const handleCheckEmail = () => {
+    if (!email) return false;
+    return /^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(email.trim());
+  };
 
   const handleLogin = async () => {
-    if (!checkEmail || !password) {
+    setEmailError(!handleCheckEmail());
+
+    if (!handleCheckEmail() || !email || !password) {
       setCheckForm(true);
       return;
     }
 
     try {
       const data = await callApi(() => authApi.login({ email, password }));
-      login(data.auth, data.token);
       showToast("success", "Thành công", "Đăng nhập thành công!");
+      login(data.auth, data.token);
     } catch {
-      // 
+      //
     }
   };
 
@@ -93,9 +95,10 @@ const Login = () => {
                     value={email}
                     placeholder="Nhập tên đăng nhập"
                     onChange={(e) => setEmail(e.target.value)}
+                    onFocus={() => setEmailError(false)}
                   />
                 </IconField>
-                {email && !checkEmail && (
+                {email && emailError && (
                   <small className="p-error">
                     Email không hợp lệ, vui lòng nhập lại.
                   </small>

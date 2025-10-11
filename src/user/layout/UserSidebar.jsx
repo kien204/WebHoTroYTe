@@ -44,6 +44,8 @@ const MenuSidebar = () => {
   ]);
 
   useEffect(() => {
+    if(!auth) return;
+
     const fetchInfo = async () => {
       try {
         const res = await callApi(() => infoApi.getById(auth.id));
