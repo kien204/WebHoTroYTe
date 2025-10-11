@@ -23,7 +23,7 @@ const Layout = ({ children }) => {
   };
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen">
       <div className="hidden md:block w-[18rem] bg-white border-r surface-border min-h-screen flex-shrink-0">
         <MenuSidebar />
       </div>

@@ -31,7 +31,15 @@ const Register = () => {
 
   const checkName = () => {
     if (!userName) return false;
-    return /^[\p{L}\s]+$/u.test(userName.trim());
+    if (
+      !/^[\p{L}\s]+$/u.test(userName.trim()) ||
+      userName.length < 2 ||
+      userName.length > 100
+    ) {
+      return false;
+    } else {
+      return true;
+    }
   };
 
   const checkEmail = () => {
@@ -60,6 +68,7 @@ const Register = () => {
       !checkPasswork() ||
       !checkConfirmPasswork() ||
       !checkEmail() ||
+      !checkName() ||
       !checked
     ) {
       setError(true);
@@ -127,10 +136,13 @@ const Register = () => {
                     }}
                   />
                 </IconField>
-                {!checkName() && email && (
+                {!checkName() && userName && (
                   <div className="text-sm mt-1" style={{ color: "red" }}>
-                    Họ tên chỉ được chứa chữ, không bao gồm ký tự đặc biệt hoặc
-                    số
+                    {userName.trim().length < 2
+                      ? "Họ và tên phải có ít nhất 2 ký tự"
+                      : userName.trim().length > 100
+                      ? "Họ và tên không được vượt quá 100 ký tự"
+                      : "Họ tên chỉ được chứa chữ, không bao gồm ký tự đặc biệt hoặc số"}
                   </div>
                 )}
               </div>

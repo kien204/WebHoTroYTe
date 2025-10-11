@@ -158,7 +158,7 @@ const SetupInfoModal = ({ onClose }) => {
                       <label className="block mb-1 font-bold" htmlFor="age">
                         Tuổi <span style={{ color: "red" }}>*</span>
                       </label>
-                      <div className="flex align-items-center">
+                      <div className="flex align-items-center relative">
                         <InputIcon
                           className="pi pi-calendar absolute"
                           style={{ marginLeft: "0.75rem" }}
@@ -182,7 +182,7 @@ const SetupInfoModal = ({ onClose }) => {
                       <label className="block mb-1 font-bold" htmlFor="gender">
                         Giới tính <span style={{ color: "red" }}>*</span>
                       </label>
-                      <div className="flex align-items-center">
+                      <div className="flex align-items-center relative">
                         <InputIcon
                           className="pi pi-users z-1 absolute"
                           style={{ marginLeft: "0.75rem" }}

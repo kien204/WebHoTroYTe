@@ -7,17 +7,12 @@ export const AuthProvider = ({ children }) => {
     const data = localStorage.getItem("auth");
     return data ? JSON.parse(data) : null;
   });
-  const [token, setToken] = useState(() => {
-    const data = localStorage.getItem("token");
-    return data ? JSON.parse(data) : null;
-  });
   const navigate = useNavigate();
 
   const login = (auth, token) => {
     localStorage.setItem("auth", JSON.stringify(auth));
     localStorage.setItem("token", token);
     setAuth(auth);
-    setToken(token);
     navigate("/");
   };
 
@@ -25,7 +20,6 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("auth");
     localStorage.removeItem("token");
     setAuth(null);
-    setToken(null);
     navigate("/login", { replace: true });
   };
 
@@ -35,7 +29,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ auth, token, login, logout, updateAuth }}>
+    <AuthContext.Provider value={{ auth, login, logout, updateAuth }}>
       {children}
     </AuthContext.Provider>
   );

@@ -55,16 +55,40 @@ ol {
   background-color: #ffffff;
 }
 
-.border-red {
-  background-color: #777777;
-}
-
 .text-main1 {
   color: #0083ad;
 }
 
 .text-main2 {
   color: #777777;
+}
+
+.card-1 {
+  border: 2px solid #a5e3fa;
+  border-radius: 5px;
+  background-color: #cbeef8;
+  color: #006d94;
+}
+
+.card-2 {
+  border-radius: 5px;
+  border: 2px solid #ffadb7;
+  background-color: #ffd2d7;
+  color: #fc394f;
+}
+
+.card-3 {
+  border-radius: 5px;
+  border: 2px solid #f9fad0;
+  background-color: #dcdbcd;
+  color: #006d94;
+}
+
+.card-4 {
+  border-radius: 5px;
+  border: 2px solid #a1ec8e;
+  background-color: #e5ffe0;
+  color: #3bd315;
 }
 
 .active-sidebar {

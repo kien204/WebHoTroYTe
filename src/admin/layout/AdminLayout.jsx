@@ -12,17 +12,16 @@ const Layout = ({ children }) => {
   }, [sidebarVisible]);
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen">
       <div className="hidden md:block w-[18rem] bg-white border-r surface-border min-h-screen flex-shrink-0">
         <MenuSidebar />
       </div>
 
       <div className="flex flex-column flex-1">
         <Topbar onMenuToggle={() => setSidebarVisible(true)} />
-        <div className="flex-1 p-4 overflow-auto surface-ground">
+        <div className="flex-1 p-4 overflow-auto bg-main3">
           {children}
         </div>
-        <Footer />
       </div>
 
       {sidebarVisible && (
