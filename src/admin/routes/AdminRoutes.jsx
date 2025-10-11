@@ -20,10 +20,10 @@ const AdminRoutes = () => {
           key={key}
           path={item.path}
           element={
-            // <ProtectedRoute requireAdmin>
-            //   <AdminLayout>{item.component}</AdminLayout>
-            // </ProtectedRoute>
-            <AdminLayout>{item.component}</AdminLayout>
+            <ProtectedRoute requireAdmin>
+              <AdminLayout>{item.component}</AdminLayout>
+            </ProtectedRoute>
+          //  <AdminLayout>{item.component}</AdminLayout>
           }
         />
       ))}

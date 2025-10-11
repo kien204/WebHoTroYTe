@@ -5,7 +5,7 @@ import UserLayout from "../layout/UserLayout";
 import ProtectedRoute from "../../routes/ProtectedRoute";
 
 import Demo2 from "../../demo/demo-chatbot/demo-chatbot";
-import Home from "../pages/Home"
+import Home from "../pages/Home";
 import Profile from "../pages/Profile";
 import AiHelper from "../pages/AiHelper";
 import HealthMetrics from "../pages/HealthMetrics";

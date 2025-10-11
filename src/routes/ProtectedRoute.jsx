@@ -4,12 +4,11 @@ import { AuthContext } from "../common/context/AuthContext";
 import NotFoundPage from "../features/notfoundpage/NotFoundPage";
 
 const ProtectedRoute = ({ children, requireAdmin = false }) => {
-  const { auth, token } = useContext(AuthContext);
+  const { auth } = useContext(AuthContext);
 
-  if (!auth || !token) {
-    // Chưa login → redirect
-    console.log(auth, token);
+  console.log(requireAdmin, auth.role);
 
+  if (!auth) {
     return <Navigate to="/login" replace />;
   }
 

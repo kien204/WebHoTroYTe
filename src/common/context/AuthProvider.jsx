@@ -13,7 +13,11 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("auth", JSON.stringify(auth));
     localStorage.setItem("token", token);
     setAuth(auth);
-    navigate("/");
+    if (auth.role == "admin") {
+      navigate("/admin");
+    } else {
+      navigate("/");
+    }
   };
 
   const logout = () => {
