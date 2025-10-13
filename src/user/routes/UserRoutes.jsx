@@ -4,6 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import UserLayout from "../layout/UserLayout";
 import ProtectedRoute from "../../routes/ProtectedRoute";
 
+import NotFoundPage from "../../features/notfoundpage/NotFoundPage";
 import Demo2 from "../../demo/demo-chatbot/demo-chatbot";
 import Home from "../pages/Home";
 import Profile from "../pages/Profile";
@@ -56,6 +57,8 @@ const UserRoutes = () => {
           }
         />
       ))}
+
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 };

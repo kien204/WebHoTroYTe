@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { InputText } from "primereact/inputtext";
@@ -8,6 +8,8 @@ import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { Checkbox } from "primereact/checkbox";
 import { Image } from "primereact/image";
+import { InputOtp } from "primereact/inputotp";
+import { Dialog } from "primereact/dialog";
 
 import { useToast } from "../../common/hooks/useToast";
 import authApi from "../../services/api/authAPI";
@@ -21,7 +23,11 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [checked, setChecked] = useState(false);
-  
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [isDialog, setIsDialog] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [otpError, setOtpError] = useState(false);
+
   const [errorFields, setErrorFields] = useState({
     name: false,
     email: false,
@@ -87,8 +93,64 @@ const Register = () => {
 
     try {
       await callApi(() => authApi.register({ userName, email, password }));
-      showToast("success", "Thành công", "Đăng ký tài khoản thành công");
+      setIsDialog(true);
+    } catch {
+      //
+    }
+  };
+
+  useEffect(() => {
+    const expireTime = localStorage.getItem("otpExpire");
+    if (expireTime) {
+      const remaining = Math.floor((expireTime - Date.now()) / 1000);
+      if (remaining > 0) {
+        setTimeLeft(remaining);
+      } else {
+        localStorage.removeItem("otpExpire");
+      }
+    }
+  }, []);
+
+  // Đếm ngược mỗi giây
+  useEffect(() => {
+    if (timeLeft > 0) {
+      const timer = setInterval(() => {
+        setTimeLeft((prev) => {
+          const newTime = prev - 1;
+          if (newTime <= 0) {
+            localStorage.removeItem("otpExpire");
+          }
+          return newTime;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [timeLeft]);
+
+  const handleOTP = async () => {
+    if (!otp || otp.length < 6) {
+      setOtpError(true);
+      return;
+    }
+    setOtpError(false);
+    try {
+      await callApi(() => authApi.verify_otp({ email, otp }));
+      showToast("success", "Thành công", "Xác thực tài khoản thành công!");
       navigate("/login");
+    } catch {
+      //
+    }
+  };
+
+  const ResendOtp = async () => {
+    const expireTime = Date.now() + 60 * 1000; // hết hạn sau 60s
+    localStorage.setItem("otpExpire", expireTime);
+    setTimeLeft(60);
+
+    try {
+      await authApi.resend_otp({ email });
+      showToast("success", "Thành công", "Gửi lại mã OTP thành công!");
     } catch {
       //
     }
@@ -255,7 +317,7 @@ const Register = () => {
                 <Checkbox
                   onChange={(e) => setChecked(e.checked)}
                   checked={checked}
-                  invalid={errorFields.checked && !checked ? true : false}
+                  invalid={errorFields.checked && !checked}
                 ></Checkbox>
                 <label>Tôi đồng ý</label>
                 <Link to="/terms-of-service" className="text-main1">
@@ -278,6 +340,35 @@ const Register = () => {
           </div>
         </div>
       </div>
+      <Dialog
+        visible={true}
+        modal
+        onHide={() => {
+          if (!isDialog) return;
+          setIsDialog(false);
+        }}
+        header={<div>Nhập mã OTP</div>}
+      >
+        <div className="my-3 mx-5">
+          <div className="mb-3 font-bold">
+            Nhập mã OTP để kích hoạt tài khoản
+          </div>
+          <InputOtp value={otp} length={6} onChange={(e) => setOtp(e.value)} />
+          {otpError && (
+            <div className="text-sm mt-1" style={{ color: "red" }}>
+              Vui lòng nhập đầy đủ mã OTP
+            </div>
+          )}
+          <div className="w-full flex justify-content-center gap-3 mt-5">
+            <Button label="Xác nhận" onClick={handleOTP} />
+            <Button
+              label={timeLeft > 0 ? `Gửi lại (${timeLeft}s)` : "Gửi lại"}
+              onClick={ResendOtp}
+              disabled={timeLeft > 0}
+            />
+          </div>
+        </div>
+      </Dialog>
     </>
   );
 };
