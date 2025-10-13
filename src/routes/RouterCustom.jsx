@@ -1,7 +1,7 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 
-import UserRoutes from "../user/routes/UserRoutes"
+import UserRoutes from "../user/routes/UserRoutes";
 import AdminRoutes from "../admin/routes/AdminRoutes";
 
 import Login from "../features/auth/Login";
@@ -11,7 +11,6 @@ import ResetPassword from "../features/auth/ResetPassword";
 import ForgotPassword from "../features/auth/ForgotPassword";
 import TermsOfService from "../user/pages/TermsOfService";
 import Demo3 from "../demo/demo-quiz/QuizApp";
-
 
 const RouterCustom = () => {
   return (

@@ -44,19 +44,22 @@ const MenuSidebar = () => {
   ]);
 
   useEffect(() => {
-    if(!auth) return;
+    if (!auth) return;
 
     const fetchInfo = async () => {
       try {
-        const res = await callApi(() => infoApi.getById(auth.id));
-        setInfo(res);
+        const res = await callApi(
+          () => infoApi.getByTaiKhoanId(auth.id),
+          false
+        );
+        setInfo(res);        
       } catch {
         //
       }
     };
 
     fetchInfo();
-  }, [auth?.id]);
+  }, [auth?.id, auth?.check]);
 
   return (
     <div className="h-full surface-card border-right-1 surface-border flex flex-column">
@@ -97,12 +100,13 @@ const MenuSidebar = () => {
           >
             <Avatar
               image={
-                info?.avatar || "https://www.w3schools.com/howto/img_avatar.png"
+                info?.avatarUrl ||
+                "https://www.w3schools.com/howto/img_avatar.png"
               }
               shape="circle"
               size="large"
             />
-            <span className="font-bold">{info?.userName || "Người dùng"}</span>
+            <span className="font-bold">{info?.fullName || "Người dùng"}</span>
           </div>
         ) : (
           <div className="m-3 flex align-items-center justify-content-center p-2 gap-2">

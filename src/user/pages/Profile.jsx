@@ -23,9 +23,7 @@ const Profile = () => {
     const file = event.target.files[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
-      setAvatar(imageUrl); // hiện preview ngay
-      console.log("Ảnh đã chọn:", file);
-      // TODO: Upload lên server bằng FormData nếu cần
+      setAvatar(imageUrl); 
     }
   };
 

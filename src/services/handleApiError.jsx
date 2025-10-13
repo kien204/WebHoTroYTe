@@ -1,4 +1,6 @@
-export const handleApiError = (error, showToast) => {
+export const handleApiError = (error, showToast, opShowToast = true) => {
+  if (!opShowToast) return;
+
   if (error.response) {
     switch (error.response.status) {
       case 400:
@@ -31,6 +33,9 @@ export const handleApiError = (error, showToast) => {
         );
     }
   } else if (error.request) {
+
+    console.log(error.request);
+    
     showToast(
       "warn",
       "Mất kết nối",

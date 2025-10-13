@@ -23,7 +23,7 @@ const SetupInfoModal = ({ onClose }) => {
   const { showToast } = useToast();
   const { callApi } = useApi(showToast);
 
-  const { auth } = useContext(AuthContext);
+  const { auth, updateAuth } = useContext(AuthContext);
 
   const [form, setForm] = useState({
     userName: "",
@@ -34,13 +34,24 @@ const SetupInfoModal = ({ onClose }) => {
     weight: "",
   });
   const [avatar, setAvatar] = useState(null);
+  const [avatarUrl, setAvatarUrl] = useState(null);
   const [checkForm1, setCheckForm1] = useState(true);
   const [checkForm2, setCheckForm2] = useState(true);
+  const [addressError, setAddressError] = useState(false);
 
   const selectedGender = [
     { name: "Nam", code: "M" },
     { name: "Nữ", code: "F" },
+    { name: "Khác", code: "O" },
   ];
+
+  const checkAddress = () => {
+    if (!form.address) return false;
+    if (form.address.length < 3) {
+      return false;
+    }
+    return true;
+  };
 
   const handleButtonClick = () => {
     fileInputRef.current.click();
@@ -50,7 +61,8 @@ const SetupInfoModal = ({ onClose }) => {
     const file = event.target.files[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
-      setAvatar(imageUrl);
+      setAvatar(file);
+      setAvatarUrl(imageUrl);
     }
   };
 
@@ -60,19 +72,31 @@ const SetupInfoModal = ({ onClose }) => {
       return;
     }
 
+    if (!checkAddress()) {
+      setAddressError(true);
+      return;
+    }
+
+    console.log(addressError);
+    
+
     const formData = new FormData();
     formData.append("TaiKhoanId", auth.id);
     formData.append("FullName", auth.userName);
     formData.append("Age", form.age);
     formData.append("Gender", form.gender.name);
-    formData.append("Address", form.address);
     formData.append("Height", Number(form.height));
     formData.append("Weight", Number(form.weight));
-    if (avatar?.file) formData.append("Avatar", avatar.file);
+    formData.append("Adress", form.address);
+    if (avatar) formData.append("avatar", avatar);
 
     try {
       await callApi(() => infoAPI.create(formData));
-
+      showToast("success", "Thành công", "Thiết lập thông tin thành công");
+      updateAuth({
+        ...auth,
+        check: true,
+      });
       onClose();
     } catch {
       //
@@ -99,7 +123,7 @@ const SetupInfoModal = ({ onClose }) => {
                   >
                     <Avatar
                       image={
-                        avatar ||
+                        avatarUrl ||
                         "https://www.w3schools.com/howto/img_avatar.png"
                       }
                       shape="circle"
@@ -172,6 +196,10 @@ const SetupInfoModal = ({ onClose }) => {
                           placeholder="Nhập tuổi"
                           min={1}
                           max={120}
+                          mode="decimal"
+                          minFractionDigits={0}
+                          maxFractionDigits={0}
+                          useGrouping={false}
                           invalid={!checkForm1 && !form.age}
                           className="w-full"
                           inputClassName="pl-5 w-12"
@@ -250,9 +278,15 @@ const SetupInfoModal = ({ onClose }) => {
                         onChange={(e) =>
                           setForm({ ...form, address: e.target.value })
                         }
+                        onFocus={() => setAddressError(false)}
                         invalid={!checkForm2 && !form.address}
                       />
                     </IconField>
+                    {addressError && (
+                      <small className="p-error">
+                        Địa chỉ tối thiểu phải có 3 ký tự!
+                      </small>
+                    )}
                   </div>
                   <div className="flex flex-column lg:flex-row gap-3 mt-3">
                     <div className="w-12">

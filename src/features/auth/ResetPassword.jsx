@@ -58,7 +58,7 @@ const ResetPassword = () => {
     }
   }, [timeLeft]);
 
-const checkPassword = () => {
+  const checkPassword = () => {
     if (newPassword.length < 8) {
       return false;
     } else {
@@ -104,12 +104,10 @@ const checkPassword = () => {
     setTimeLeft(60);
 
     try {
-      const res = await authApi.resend_otp({ email });
+      await callApi(() => authApi.resend_otp({ email }));
       showToast("success", "Thành công", "Gửi lại mã OTP thành công!");
-      console.log("Resend OTP successful:", res.data);
-    } catch (err) {
-      console.error("Resend OTP error:", err);
-      showToast("error", "Thất bại", "Gửi lại mã OTP thất bại!");
+    } catch {
+      //
     }
   };
 

@@ -9,8 +9,8 @@ import SystemManager from "../pages/SystemManager";
 
 const AdminRoutes = () => {
   const adminRouters = [
-    { path: "/", component: <Home /> },
-    { path: "/system-manager", component: <SystemManager /> },
+    { path: "/", component: Home },
+    { path: "/system-manager", component: SystemManager },
   ];
 
   return (
@@ -21,9 +21,10 @@ const AdminRoutes = () => {
           path={item.path}
           element={
             <ProtectedRoute requireAdmin>
-              <AdminLayout>{item.component}</AdminLayout>
+              <AdminLayout>
+                <item.component />
+              </AdminLayout>
             </ProtectedRoute>
-          //  <AdminLayout>{item.component}</AdminLayout>
           }
         />
       ))}

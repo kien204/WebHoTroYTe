@@ -1,17 +1,17 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://10.15.43.11:5092/api",
+  baseURL: "http://10.15.117.87:5092/api",
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 5000,
+  timeout: 10000,
 });
 
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token") || null;
-    if (token) {      
+    if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
