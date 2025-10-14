@@ -456,10 +456,11 @@ const SystemManager = () => {
           <div className="flex flex-column gap-2">
             <div className="flex flex-row gap-2">
               <Button
-                icon="pi pi-pencil"
-                label="Sửa"
+                icon="pi pi-trash"
+                label="Xóa"
                 className="w-7rem"
-                // onClick={handleEdit()}
+                severity="danger"
+                onClick={() => setVisibleDialogDelete(true)}
               />
               <Button
                 icon={selectedUser.status ? "pi pi-lock" : "pi pi-lock-open"}
@@ -467,22 +468,6 @@ const SystemManager = () => {
                 className="w-7rem"
                 severity="warning"
                 onClick={handleLock}
-              />
-            </div>
-            <div className="flex flex-row gap-2">
-              <Button
-                icon="pi pi-refresh"
-                label="Reset"
-                className="w-7rem"
-                severity="success"
-                // onClick={handleReset()}
-              />
-              <Button
-                icon="pi pi-trash"
-                label="Xóa"
-                className="w-7rem"
-                severity="danger"
-                onClick={() => setVisibleDialogDelete(true)}
               />
             </div>
           </div>
