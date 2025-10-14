@@ -87,7 +87,7 @@ const HealthProfile = () => {
       fullName: !checkName(),
       address: !checkAddress(),
       gender: !info.gender,
-      age: !info.age,
+      age: !info.birth,
       weight: !info.weight,
       height: !info.height,
     };
@@ -97,8 +97,20 @@ const HealthProfile = () => {
     // Nếu còn lỗi, dừng lại
     if (Object.values(newErrors).some((v) => v)) return;
 
+    const formData = new FormData();
+    formData.append("TaiKhoanId", auth.id);
+    formData.append("FullName", info.taiKhoanId);
+    formData.append("Birth", info.brith);
+    formData.append("Gender", info.gender);
+    formData.append("Height", Number(info.height));
+    formData.append("Weight", Number(info.weight));
+    formData.append("Adress", info.address);
+    formData.append("avatar", info.avatarUrl);
+
+    console.log(Object.fromEntries(formData.entries()));
+
     try {
-      await callApi(() => infoApi.create(info));
+      await callApi(() => infoApi.update(info.hoSoId, formData));
       showToast("success", "Thành công", "Lưu thông tin thành công");
       updateAuth({
         ...auth,
@@ -255,13 +267,13 @@ const HealthProfile = () => {
               />
               <Calendar
                 id="age"
-                value={info.age}
+                value={info.birth ? new Date(info.birth) : null}
                 locale="vi"
                 className="w-full"
                 inputClassName="pl-5"
                 placeholder="dd/mm/yyyy"
                 dateFormat="dd/mm/yy"
-                onChange={(e) => setInfo({ ...info, age: e.value })}
+                onChange={(e) => setInfo({ ...info, birth: e.value })}
                 onFocus={() => setErrorForm({ ...errorForm, age: false })}
                 invalid={errorForm.age}
                 disabled={!isEdit}

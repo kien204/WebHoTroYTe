@@ -81,12 +81,14 @@ const SetupInfoModal = ({ onClose }) => {
     const formData = new FormData();
     formData.append("TaiKhoanId", auth.id);
     formData.append("FullName", auth.userName);
-    formData.append("Age", form.age);
+    formData.append("Birth", form.age);
     formData.append("Gender", form.gender.name);
     formData.append("Height", Number(form.height));
     formData.append("Weight", Number(form.weight));
     formData.append("Adress", form.address);
     if (avatar) formData.append("avatar", avatar);
+
+    console.log(Object.fromEntries(formData.entries()));
 
     try {
       await callApi(() => infoAPI.create(formData));

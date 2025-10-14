@@ -7,7 +7,6 @@ import ProtectedRoute from "../../routes/ProtectedRoute";
 import NotFoundPage from "../../features/notfoundpage/NotFoundPage";
 import Demo2 from "../../demo/demo-chatbot/demo-chatbot";
 import Home from "../pages/Home";
-import Profile from "../pages/Profile";
 import AiHelper from "../pages/AiHelper";
 import HealthMetrics from "../pages/HealthMetrics";
 import DataEntry from "../pages/DataEntry";
@@ -18,7 +17,6 @@ import Settings from "../pages/Settings";
 const UserRoutes = () => {
   const privateRouters = [
     { path: "/a", component: Demo2 },
-    { path: "/profile", component: Profile },
   ];
 
   const publicRouters = [
