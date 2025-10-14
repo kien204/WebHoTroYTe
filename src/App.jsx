@@ -3,15 +3,19 @@ import RouterCustom from "./routes/RouterCustom";
 import { ToastProvider } from "./common//context/ToastContext";
 import { AuthProvider } from "./common/context/AuthProvider";
 import { LoadingProvider } from "./common/context/LoadingProvider";
+import { locale } from "primereact/api";
+import "./common/locales/vietnameseLocale";
+
+locale("vi");
 
 function App() {
   return (
     <LoadingProvider>
-      <AuthProvider>
-        <ToastProvider>
+      <ToastProvider>
+        <AuthProvider>
           <RouterCustom />
-        </ToastProvider>
-      </AuthProvider>
+        </AuthProvider>
+      </ToastProvider>
     </LoadingProvider>
   );
 }

@@ -10,7 +10,6 @@ import { Dialog } from "primereact/dialog";
 import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
 import { Avatar } from "primereact/avatar";
-import { addLocale } from "primereact/api";
 
 import logo from "../../assets/anh1.svg";
 
@@ -18,54 +17,6 @@ import { useWindowWidth } from "../../common/hooks/useWindowWidth";
 import { useToast } from "../../common/hooks/useToast";
 import { useApi } from "../../common/hooks/useApi";
 import managementAccountApi from "../../services/api/managementAccountApi";
-
-const vietnameseLocale = {
-  firstDayOfWeek: 1,
-  dayNames: [
-    "Chủ Nhật",
-    "Thứ Hai",
-    "Thứ Ba",
-    "Thứ Tư",
-    "Thứ Năm",
-    "Thứ Sáu",
-    "Thứ Bảy",
-  ],
-  dayNamesShort: ["CN", "T2", "T3", "T4", "T5", "T6", "T7"],
-  dayNamesMin: ["CN", "T2", "T3", "T4", "T5", "T6", "T7"],
-  monthNames: [
-    "Tháng Một",
-    "Tháng Hai",
-    "Tháng Ba",
-    "Tháng Tư",
-    "Tháng Năm",
-    "Tháng Sáu",
-    "Tháng Bảy",
-    "Tháng Tám",
-    "Tháng Chín",
-    "Tháng Mười",
-    "Tháng Mười Một",
-    "Tháng Mười Hai",
-  ],
-  monthNamesShort: [
-    "Th1",
-    "Th2",
-    "Th3",
-    "Th4",
-    "Th5",
-    "Th6",
-    "Th7",
-    "Th8",
-    "Th9",
-    "Th10",
-    "Th11",
-    "Th12",
-  ],
-  today: "Hôm nay",
-  clear: "Xóa",
-};
-
-// Đăng ký locale
-addLocale("vi", vietnameseLocale);
 
 const SystemManager = () => {
   const [listUsers, setListUsers] = useState([]);
@@ -281,13 +232,13 @@ const SystemManager = () => {
         <Calendar
           ref={calendarRef}
           id="buttondisplay"
+          locale="vi"
           value={selectedDate}
           onChange={(e) => setSelectedDate(e.value)}
           showIcon
           className="w-10rem"
           placeholder="dd/mm/yyyy"
           dateFormat="dd/mm/yy"
-          locale="vi"
         />
         <Dropdown
           ref={monthRef}

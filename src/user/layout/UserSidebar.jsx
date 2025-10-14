@@ -1,10 +1,7 @@
 // MenuSidebar.jsx
-import React, { useState, useRef, useContext, useEffect } from "react";
+import React, { useState, useRef, useContext } from "react";
 
 import { AuthContext } from "../../common/context/AuthContext";
-import { useApi } from "../../common/hooks/useApi";
-import infoApi from "../../services/api/infoAPI";
-import { useToast } from "../../common/hooks/useToast";
 
 import { Avatar } from "primereact/avatar";
 import { Divider } from "primereact/divider";
@@ -16,11 +13,7 @@ const MenuSidebar = () => {
   const menu = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout, auth } = useContext(AuthContext);
-  const [info, setInfo] = useState();
-
-  const { showToast } = useToast();
-  const { callApi } = useApi(showToast);
+  const { logout, auth, profile } = useContext(AuthContext);
 
   const [menuSidebar] = useState([
     { name: "Trang chủ", path: "/", icon: "pi-home" },
@@ -42,24 +35,6 @@ const MenuSidebar = () => {
       },
     },
   ]);
-
-  useEffect(() => {
-    if (!auth) return;
-
-    const fetchInfo = async () => {
-      try {
-        const res = await callApi(
-          () => infoApi.getByTaiKhoanId(auth.id),
-          false
-        );
-        setInfo(res);        
-      } catch {
-        //
-      }
-    };
-
-    fetchInfo();
-  }, [auth?.id, auth?.check]);
 
   return (
     <div className="h-full surface-card border-right-1 surface-border flex flex-column">
@@ -100,13 +75,15 @@ const MenuSidebar = () => {
           >
             <Avatar
               image={
-                info?.avatarUrl ||
+                profile?.avatarUrl ||
                 "https://www.w3schools.com/howto/img_avatar.png"
               }
               shape="circle"
               size="large"
             />
-            <span className="font-bold">{info?.fullName || "Người dùng"}</span>
+            <span className="font-bold">
+              {profile?.fullName || "Người dùng"}
+            </span>
           </div>
         ) : (
           <div className="m-3 flex align-items-center justify-content-center p-2 gap-2">

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useContext, useEffect } from "react";
+import React, { useRef, useState, useContext } from "react";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
@@ -8,62 +8,12 @@ import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { InputNumber } from "primereact/inputnumber";
 import { Calendar } from "primereact/calendar";
-import { addLocale } from "primereact/api";
 
 import { AuthContext } from "../../common/context/AuthContext";
 
-import infoAPI from "../../services/api/infoAPI";
 import { useApi } from "../../common/hooks/useApi";
 import { useToast } from "../../common/hooks/useToast";
 import infoApi from "../../services/api/infoAPI";
-
-const vietnameseLocale = {
-  firstDayOfWeek: 1,
-  dayNames: [
-    "Chủ Nhật",
-    "Thứ Hai",
-    "Thứ Ba",
-    "Thứ Tư",
-    "Thứ Năm",
-    "Thứ Sáu",
-    "Thứ Bảy",
-  ],
-  dayNamesShort: ["CN", "T2", "T3", "T4", "T5", "T6", "T7"],
-  dayNamesMin: ["CN", "T2", "T3", "T4", "T5", "T6", "T7"],
-  monthNames: [
-    "Tháng Một",
-    "Tháng Hai",
-    "Tháng Ba",
-    "Tháng Tư",
-    "Tháng Năm",
-    "Tháng Sáu",
-    "Tháng Bảy",
-    "Tháng Tám",
-    "Tháng Chín",
-    "Tháng Mười",
-    "Tháng Mười Một",
-    "Tháng Mười Hai",
-  ],
-  monthNamesShort: [
-    "Th1",
-    "Th2",
-    "Th3",
-    "Th4",
-    "Th5",
-    "Th6",
-    "Th7",
-    "Th8",
-    "Th9",
-    "Th10",
-    "Th11",
-    "Th12",
-  ],
-  today: "Hôm nay",
-  clear: "Xóa",
-};
-
-// Đăng ký locale
-addLocale("vi", vietnameseLocale);
 
 const HealthProfile = () => {
   const [isEdit, setIsEdit] = useState(false);
@@ -72,9 +22,9 @@ const HealthProfile = () => {
   const { showToast } = useToast();
   const { callApi } = useApi(showToast);
 
-  const { auth, updateAuth } = useContext(AuthContext);
-  const [info, setInfo] = useState({});
-  const [infoOld, setInfoOld] = useState({});
+  const { auth, profile, updateAuth } = useContext(AuthContext);
+  const [info, setInfo] = useState(profile);
+  const [infoOld] = useState(profile);
 
   const [avatarUrl, setAvatarUrl] = useState(null);
   const [errorForm, setErrorForm] = useState({
@@ -91,22 +41,6 @@ const HealthProfile = () => {
     { name: "Nữ", value: "Nữ" },
     { name: "Khác", value: "Khác" },
   ];
-
-  useEffect(() => {
-    if (!auth) return;
-
-    const fetchInfo = async () => {
-      try {
-        const res = await callApi(() => infoApi.getByTaiKhoanId(auth.id));
-        setInfo(res);
-        setInfoOld(res);
-      } catch {
-        //
-      }
-    };
-
-    fetchInfo();
-  }, [auth?.id, auth?.check]);
 
   const checkAddress = () => {
     if (!info.address) return false;
@@ -164,7 +98,7 @@ const HealthProfile = () => {
     if (Object.values(newErrors).some((v) => v)) return;
 
     try {
-      await callApi(() => infoAPI.create(info));
+      await callApi(() => infoApi.create(info));
       showToast("success", "Thành công", "Lưu thông tin thành công");
       updateAuth({
         ...auth,
@@ -291,7 +225,7 @@ const HealthProfile = () => {
             </label>
             <div className="flex align-items-center relative">
               <InputIcon
-                className="pi pi-users z-1 absolute"
+                className={`pi pi-users absolute  ${isEdit ? "z-1" : ""}`}
                 style={{ marginLeft: "0.75rem" }}
               />
               <Dropdown
@@ -316,17 +250,17 @@ const HealthProfile = () => {
             </label>
             <div className="p-input-icon-left w-full">
               <i
-                className="pi pi-calendar z-1"
+                className={`pi pi-calendar ${isEdit ? "z-1" : ""}`}
                 style={{ paddingLeft: "0.70rem" }}
               />
               <Calendar
                 id="age"
                 value={info.age}
+                locale="vi"
                 className="w-full"
                 inputClassName="pl-5"
                 placeholder="dd/mm/yyyy"
                 dateFormat="dd/mm/yy"
-                locale="vi"
                 onChange={(e) => setInfo({ ...info, age: e.value })}
                 onFocus={() => setErrorForm({ ...errorForm, age: false })}
                 invalid={errorForm.age}

@@ -144,7 +144,7 @@ const Login = () => {
                   Đăng ký
                 </Link>
               </div>
-              <Divider align="center">
+              {/* <Divider align="center">
                 <span className="text-main2">Hoặc đăng nhập với</span>
               </Divider>
               <div className="flex justify-content-center gap-1 md:gap-5">
@@ -158,7 +158,7 @@ const Login = () => {
                   icon="pi pi-facebook"
                   className="p-button-sm flex align-items-center gap-2"
                 />
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

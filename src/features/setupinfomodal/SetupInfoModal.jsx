@@ -10,6 +10,7 @@ import { Card } from "primereact/card";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { InputNumber } from "primereact/inputnumber";
+import { Calendar } from "primereact/calendar";
 
 import { AuthContext } from "../../common/context/AuthContext";
 
@@ -76,8 +77,6 @@ const SetupInfoModal = ({ onClose }) => {
       setAddressError(true);
       return;
     }
-
-    console.log(addressError);
 
     const formData = new FormData();
     formData.append("TaiKhoanId", auth.id);
@@ -179,29 +178,26 @@ const SetupInfoModal = ({ onClose }) => {
                   <div className="flex flex-column lg:flex-row gap-3 mt-3">
                     <div className="w-12">
                       <label className="block mb-1 font-bold" htmlFor="age">
-                        Tuổi <span style={{ color: "red" }}>*</span>
+                        Năm sinh
                       </label>
-                      <div className="flex align-items-center relative">
-                        <InputIcon
-                          className="pi pi-calendar absolute"
-                          style={{ marginLeft: "0.75rem" }}
+                      <div className="p-input-icon-left w-full">
+                        <i
+                          className="pi pi-calendar z-1"
+                          style={{ paddingLeft: "0.70rem" }}
                         />
-                        <InputNumber
-                          inputId="age"
+                        <Calendar
+                          locale="vi"
+                          id="age"
                           value={form.age}
-                          onValueChange={(e) =>
-                            setForm({ ...form, age: e.value })
-                          }
-                          placeholder="Nhập tuổi"
-                          min={1}
-                          max={120}
-                          mode="decimal"
-                          minFractionDigits={0}
-                          maxFractionDigits={0}
-                          useGrouping={false}
-                          invalid={!checkForm1 && !form.age}
                           className="w-full"
-                          inputClassName="pl-5 w-12"
+                          inputClassName="pl-5"
+                          placeholder="dd/mm/yyyy"
+                          dateFormat="dd/mm/yy"
+                          onChange={(e) => setForm({ ...form, age: e.value })}
+                          onFocus={() =>
+                            setCheckForm1({ ...checkForm1, age: false })
+                          }
+                          invalid={!checkForm1 && !form.age}
                         />
                       </div>
                     </div>

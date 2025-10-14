@@ -33,9 +33,6 @@ export const handleApiError = (error, showToast, opShowToast = true) => {
         );
     }
   } else if (error.request) {
-
-    console.log(error.request);
-    
     showToast(
       "warn",
       "Mất kết nối",

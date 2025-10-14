@@ -34,7 +34,7 @@ const Layout = ({ children }) => {
       </div>
 
       {sidebarVisible && (
-        <div className="fixed inset-0 z-50 flex md:hidden">
+        <div className="fixed inset-0 z-5 flex md:hidden">
           <div
             className="absolute h-screen w-screen bg-main2 opacity-70"
             onClick={() => setSidebarVisible(false)}
