@@ -78,7 +78,6 @@ const SetupInfoModal = ({ onClose }) => {
     }
 
     console.log(addressError);
-    
 
     const formData = new FormData();
     formData.append("TaiKhoanId", auth.id);

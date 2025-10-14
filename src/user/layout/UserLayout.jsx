@@ -7,7 +7,7 @@ import { AuthContext } from "../../common/context/AuthContext";
 
 const Layout = ({ children }) => {
   const { auth, updateUser } = useContext(AuthContext);
-  const [sidebarVisible, setSidebarVisible] = useState(false);  
+  const [sidebarVisible, setSidebarVisible] = useState(false);
 
   // Disable scroll khi sidebar mobile mở
   useEffect(() => {
@@ -30,10 +30,7 @@ const Layout = ({ children }) => {
 
       <div className="flex flex-column flex-1">
         <Topbar onMenuToggle={() => setSidebarVisible(true)} />
-        <div className="flex-1 p-4 overflow-auto surface-ground">
-          {children}
-        </div>
-        <Footer />
+        <div className="flex-1 p-4 overflow-auto bg-main4">{children}</div>
       </div>
 
       {sidebarVisible && (

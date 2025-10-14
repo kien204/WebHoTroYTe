@@ -341,7 +341,7 @@ const Register = () => {
         </div>
       </div>
       <Dialog
-        visible={true}
+        visible={isDialog}
         modal
         onHide={() => {
           if (!isDialog) return;
