@@ -88,8 +88,6 @@ const SetupInfoModal = ({ onClose }) => {
     formData.append("Adress", form.address);
     if (avatar) formData.append("avatar", avatar);
 
-    console.log(Object.fromEntries(formData.entries()));
-
     try {
       await callApi(() => infoAPI.create(formData));
       showToast("success", "Thành công", "Thiết lập thông tin thành công");

@@ -107,8 +107,6 @@ const HealthProfile = () => {
     formData.append("Adress", info.address);
     formData.append("avatar", info.avatarUrl);
 
-    console.log(Object.fromEntries(formData.entries()));
-
     try {
       await callApi(() => infoApi.update(info.hoSoId, formData));
       showToast("success", "Thành công", "Lưu thông tin thành công");
@@ -176,7 +174,7 @@ const HealthProfile = () => {
               id="email"
               className="w-12 pl-5"
               value={auth?.email}
-              disabled="true"
+              disabled={true}
             />
           </IconField>
         </div>
