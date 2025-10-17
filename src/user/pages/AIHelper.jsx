@@ -39,7 +39,7 @@ const AIHelper = () => {
 
     const fetchHistory = async () => {
       try {
-        const res = await callApi(() => aiHelperAPI.getHistory(auth.id));
+        const res = await callApi(() => aiHelperAPI.getHistory(auth?.id));
         if (isMounted) setHistory(res.data.reverse()); 
       } catch {
         //
@@ -51,7 +51,7 @@ const AIHelper = () => {
     return () => {
       isMounted = false; 
     };
-  }, [auth.id, callApi]);
+  }, [auth?.id, callApi]);
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -79,7 +79,7 @@ const AIHelper = () => {
     }, 500);
 
     const reData = {
-      tkID: auth.id,
+      tkID: auth?.id,
       question: input,
       time: date,
     };

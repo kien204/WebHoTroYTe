@@ -59,7 +59,6 @@ export const AuthProvider = ({ children }) => {
 
   const updateProfile = (newProfile) => {
     setProfile(newProfile);
-    localStorage.setItem("profile", JSON.stringify(newProfile)); // nếu muốn lưu lại
   };
 
   return (
