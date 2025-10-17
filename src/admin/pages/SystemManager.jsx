@@ -239,6 +239,7 @@ const SystemManager = () => {
           className="w-10rem"
           placeholder="dd/mm/yyyy"
           dateFormat="dd/mm/yy"
+          readOnlyInput={true}
         />
         <Dropdown
           ref={monthRef}

@@ -81,12 +81,14 @@ const SetupInfoModal = ({ onClose }) => {
     const formData = new FormData();
     formData.append("TaiKhoanId", auth.id);
     formData.append("FullName", auth.userName);
-    formData.append("Birth", form.age);
+    formData.append("Birth", form.age.toLocaleDateString("en-CA"));
     formData.append("Gender", form.gender.name);
     formData.append("Height", Number(form.height));
     formData.append("Weight", Number(form.weight));
     formData.append("Adress", form.address);
     if (avatar) formData.append("avatar", avatar);
+
+    console.log(Object.fromEntries(formData.entries()));
 
     try {
       await callApi(() => infoAPI.create(formData));
@@ -198,6 +200,7 @@ const SetupInfoModal = ({ onClose }) => {
                             setCheckForm1({ ...checkForm1, age: false })
                           }
                           invalid={!checkForm1 && !form.age}
+                          readOnlyInput={true}
                         />
                       </div>
                     </div>
@@ -298,9 +301,12 @@ const SetupInfoModal = ({ onClose }) => {
                           onValueChange={(e) =>
                             setForm({ ...form, weight: e.value })
                           }
-                          placeholder="Nhập cân nặng"
                           min={1}
-                          max={1000}
+                          mode="decimal"
+                          minFractionDigits={0}
+                          maxFractionDigits={0}
+                          useGrouping={false}
+                          placeholder="Nhập cân nặng"
                           invalid={!checkForm2 && !form.weight}
                           className="w-full"
                           inputClassName="w-12"
@@ -321,12 +327,15 @@ const SetupInfoModal = ({ onClose }) => {
                         <InputNumber
                           inputId="height"
                           value={form.height}
+                          min={1}
+                          mode="decimal"
+                          minFractionDigits={0}
+                          maxFractionDigits={0}
+                          useGrouping={false}
                           onValueChange={(e) =>
                             setForm({ ...form, height: e.value })
                           }
                           placeholder="Nhập chiều cao"
-                          min={1}
-                          max={300}
                           invalid={!checkForm2 && !form.height}
                           className="w-full"
                           inputClassName="w-12"

@@ -12,7 +12,7 @@ import HealthMetrics from "../pages/HealthMetrics";
 import DataEntry from "../pages/DataEntry";
 import Reports from "../pages/Reports";
 import HealthProfile from "../pages/HealthProfile";
-import Settings from "../pages/Settings";
+import SetUpAlerts from "../pages/SetUpAlerts";
 
 const UserRoutes = () => {
   const privateRouters = [
@@ -26,7 +26,7 @@ const UserRoutes = () => {
     { path: "/data-entry", component: DataEntry },
     { path: "/reports", component: Reports },
     { path: "/health-profile", component: HealthProfile },
-    { path: "/settings", component: Settings },
+    { path: "/set-up-alerts", component: SetUpAlerts },
   ];
 
   return (

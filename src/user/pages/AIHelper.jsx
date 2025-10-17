@@ -7,7 +7,8 @@ import { Divider } from "primereact/divider";
 import { ScrollPanel } from "primereact/scrollpanel";
 
 import chatAI from "../../assets/chatAI.png";
-
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { AuthContext } from "../../common/context/AuthContext";
 import { useApi } from "../../common/hooks/useApi";
 import { useToast } from "../../common/hooks/useToast";
@@ -34,17 +35,23 @@ const AIHelper = () => {
   const [input, setInput] = useState("");
 
   useEffect(() => {
+    let isMounted = true; 
+
     const fetchHistory = async () => {
       try {
         const res = await callApi(() => aiHelperAPI.getHistory(auth.id));
-        setHistory(res.data);
+        if (isMounted) setHistory(res.data.reverse()); 
       } catch {
         //
       }
     };
 
     fetchHistory();
-  }, []);
+
+    return () => {
+      isMounted = false; 
+    };
+  }, [auth.id, callApi]);
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -263,7 +270,9 @@ const AIHelper = () => {
                             whiteSpace: "pre-wrap",
                           }}
                         >
-                          {msg.answer}
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {msg.answer}
+                          </ReactMarkdown>
                         </span>
                       </div>
                     )}

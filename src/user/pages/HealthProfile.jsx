@@ -1,4 +1,4 @@
-import React, { useRef, useState, useContext } from "react";
+import React, { useRef, useState, useContext, useEffect } from "react";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
@@ -8,23 +8,39 @@ import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { InputNumber } from "primereact/inputnumber";
 import { Calendar } from "primereact/calendar";
-
 import { AuthContext } from "../../common/context/AuthContext";
-
 import { useApi } from "../../common/hooks/useApi";
 import { useToast } from "../../common/hooks/useToast";
 import infoApi from "../../services/api/infoAPI";
 
 const HealthProfile = () => {
   const [isEdit, setIsEdit] = useState(false);
-
   const fileInputRef = useRef(null);
   const { showToast } = useToast();
   const { callApi } = useApi(showToast);
+  const { auth, profile, updateProfile } = useContext(AuthContext);
 
-  const { auth, profile, updateAuth } = useContext(AuthContext);
-  const [info, setInfo] = useState(profile);
-  const [infoOld] = useState(profile);
+  const [info, setInfo] = useState(() => ({
+    fullName: profile?.fullName || "",
+    address: profile?.address || "",
+    gender: profile?.gender || "",
+    brith: profile?.brith ? new Date(profile.brith) : null,
+    weight: profile?.weight || null,
+    height: profile?.height || null,
+    avatarUrl: profile?.avatarUrl || null,
+    hoSoId: profile?.hoSoId || "",
+  }));
+
+  const [infoOld, setInfoOld] = useState(() => ({
+    fullName: profile?.fullName || "",
+    address: profile?.address || "",
+    gender: profile?.gender || "",
+    brith: profile?.brith ? new Date(profile.brith) : null,
+    weight: profile?.weight || null,
+    height: profile?.height || null,
+    avatarUrl: profile?.avatarUrl || null,
+    hoSoId: profile?.hoSoId || "",
+  }));
 
   const [avatarUrl, setAvatarUrl] = useState(null);
   const [errorForm, setErrorForm] = useState({
@@ -42,9 +58,25 @@ const HealthProfile = () => {
     { name: "Khác", value: "Khác" },
   ];
 
+  useEffect(() => {
+    if (profile) {
+      const updatedInfo = {
+        fullName: profile.fullName || "",
+        address: profile.address || "",
+        gender: profile.gender || "",
+        brith: profile.brith ? new Date(profile.brith) : null,
+        weight: profile.weight || null,
+        height: profile.height || null,
+        avatarUrl: profile.avatarUrl || null,
+        hoSoId: profile.hoSoId || "",
+      };
+      setInfo(updatedInfo);
+      setInfoOld(updatedInfo);
+    }
+  }, [profile]);
+
   const checkAddress = () => {
-    if (!info.address) return false;
-    if (info.address.length < 3) {
+    if (!info.address || info.address.length < 3) {
       return false;
     }
     return true;
@@ -58,9 +90,8 @@ const HealthProfile = () => {
       info.fullName.length > 100
     ) {
       return false;
-    } else {
-      return true;
     }
+    return true;
   };
 
   const handleButtonClick = () => {
@@ -87,20 +118,22 @@ const HealthProfile = () => {
       fullName: !checkName(),
       address: !checkAddress(),
       gender: !info.gender,
-      age: !info.birth,
+      age: !info.brith,
       weight: !info.weight,
       height: !info.height,
     };
 
     setErrorForm(newErrors);
 
-    // Nếu còn lỗi, dừng lại
     if (Object.values(newErrors).some((v) => v)) return;
 
     const formData = new FormData();
     formData.append("TaiKhoanId", auth.id);
-    formData.append("FullName", info.taiKhoanId);
-    formData.append("Birth", info.brith);
+    formData.append("FullName", info.fullName);
+    formData.append(
+      "Birth",
+      info.brith ? info.brith.toLocaleDateString("en-CA") : ""
+    );
     formData.append("Gender", info.gender);
     formData.append("Height", Number(info.height));
     formData.append("Weight", Number(info.weight));
@@ -108,21 +141,19 @@ const HealthProfile = () => {
     formData.append("avatar", info.avatarUrl);
 
     try {
-      await callApi(() => infoApi.update(info.hoSoId, formData));
+      const res =  await callApi(() => infoApi.update(info.hoSoId, formData));
       showToast("success", "Thành công", "Lưu thông tin thành công");
-      updateAuth({
-        ...auth,
-        check: true,
-      });
+      updateProfile(res);
+      setIsEdit(false);
     } catch {
-      //
+      // Handle error
     }
   };
 
   return (
     <div className="flex flex-column">
       <div>
-        <div className="font-bold text-2xl">Hồ sở sức khỏe</div>
+        <div className="font-bold text-2xl">Hồ sơ sức khỏe</div>
         <div className="text-main2 mb-3">Thiết lập hồ sơ sức khỏe </div>
       </div>
       <Card title="Sửa thông tin người dùng">
@@ -132,7 +163,7 @@ const HealthProfile = () => {
               <Avatar
                 image={
                   avatarUrl ||
-                  info?.avatarUrl ||
+                  info.avatarUrl ||
                   "https://www.w3schools.com/howto/img_avatar.png"
                 }
                 shape="circle"
@@ -154,13 +185,13 @@ const HealthProfile = () => {
               />
               <input
                 type="file"
-                accept="image/*" // chỉ chọn ảnh (PC: file, Mobile: ảnh/camera)
+                accept="image/*"
                 ref={fileInputRef}
                 style={{ display: "none" }}
                 onChange={handleFileChange}
               />
             </div>
-            <div className="mt-2">{auth.id}</div>
+            <div className="mt-2">{auth?.id}</div>
           </div>
         </div>
 
@@ -173,7 +204,7 @@ const HealthProfile = () => {
             <InputText
               id="email"
               className="w-12 pl-5"
-              value={auth?.email}
+              value={auth?.email || ""}
               disabled={true}
             />
           </IconField>
@@ -189,9 +220,9 @@ const HealthProfile = () => {
                 id="userName"
                 className="w-12 pl-5"
                 placeholder="Nhập họ và tên"
-                value={info?.fullName}
+                value={info.fullName || ""}
                 onChange={(e) => setInfo({ ...info, fullName: e.target.value })}
-                invalid={errorForm.fullName && !info.fullName}
+                invalid={errorForm.fullName}
                 onFocus={() => setErrorForm({ ...errorForm, fullName: false })}
                 disabled={!isEdit}
               />
@@ -215,11 +246,11 @@ const HealthProfile = () => {
               <InputText
                 id="address"
                 className="w-full pl-5"
-                value={info?.address}
+                value={info.address || ""}
                 placeholder="Nhập địa chỉ"
                 onChange={(e) => setInfo({ ...info, address: e.target.value })}
                 onFocus={() => setErrorForm({ ...errorForm, address: false })}
-                invalid={errorForm.address && !info?.address}
+                invalid={errorForm.address}
                 disabled={!isEdit}
               />
             </IconField>
@@ -235,19 +266,19 @@ const HealthProfile = () => {
             </label>
             <div className="flex align-items-center relative">
               <InputIcon
-                className={`pi pi-users absolute  ${isEdit ? "z-1" : ""}`}
+                className={`pi pi-users absolute ${isEdit ? "z-1" : ""}`}
                 style={{ marginLeft: "0.75rem" }}
               />
               <Dropdown
                 inputId="gender"
-                value={info?.gender}
+                value={info.gender || ""}
                 onChange={(e) => setInfo({ ...info, gender: e.target.value })}
                 options={selectedGender}
                 optionLabel="name"
                 placeholder="Chọn giới tính"
                 className="pl-4 w-full"
                 onFocus={() => setErrorForm({ ...errorForm, gender: false })}
-                invalid={errorForm.gender && !info?.gender}
+                invalid={errorForm.gender}
                 disabled={!isEdit}
               />
             </div>
@@ -265,16 +296,17 @@ const HealthProfile = () => {
               />
               <Calendar
                 id="age"
-                value={info.birth ? new Date(info.birth) : null}
+                value={info.brith}
                 locale="vi"
                 className="w-full"
                 inputClassName="pl-5"
                 placeholder="dd/mm/yyyy"
                 dateFormat="dd/mm/yy"
-                onChange={(e) => setInfo({ ...info, birth: e.value })}
+                onChange={(e) => setInfo({ ...info, brith: e.value })}
                 onFocus={() => setErrorForm({ ...errorForm, age: false })}
                 invalid={errorForm.age}
                 disabled={!isEdit}
+                readOnlyInput={true}
               />
             </div>
           </div>
@@ -289,11 +321,10 @@ const HealthProfile = () => {
               />
               <InputNumber
                 inputId="weight"
-                value={info?.weight}
+                value={info.weight || null}
                 onValueChange={(e) => setInfo({ ...info, weight: e.value })}
                 placeholder="Nhập cân nặng"
                 min={1}
-                max={1000}
                 mode="decimal"
                 minFractionDigits={0}
                 maxFractionDigits={0}
@@ -317,14 +348,11 @@ const HealthProfile = () => {
               />
               <InputNumber
                 inputId="height"
-                value={info?.height}
-                onValueChange={(e) =>
-                  setInfo({ ...info, height: e.target.value })
-                }
+                value={info.height || null}
+                onValueChange={(e) => setInfo({ ...info, height: e.value })}
                 onFocus={() => setErrorForm({ ...errorForm, height: false })}
                 placeholder="Nhập chiều cao"
                 min={1}
-                max={300}
                 mode="decimal"
                 minFractionDigits={0}
                 maxFractionDigits={0}

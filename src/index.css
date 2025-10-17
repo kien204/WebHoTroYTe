@@ -3,7 +3,7 @@ Body body {
   font-size: 16px;
   line-height: 1.5;
   background-color: #f9f9f9;
-  color: #333;
+  color: #525252;
 }
 
 /* Link */
@@ -70,25 +70,25 @@ ol {
 .card-1 {
   border: 2px solid #a5e3fa;
   border-radius: 5px;
-  background-color: #cbeef8;
+  background-color: #EBF5F8;
   color: #006d94;
 }
 
-.card-2 {
+.card-4 {
   border-radius: 5px;
   border: 2px solid #ffadb7;
-  background-color: #ffd2d7;
+  background-color: #FBF2F3;
   color: #fc394f;
 }
 
 .card-3 {
   border-radius: 5px;
-  border: 2px solid #f9fad0;
-  background-color: #dcdbcd;
+  border: 2px solid #CBCD51;
+  background-color: #F9FAD0;
   color: #006d94;
 }
 
-.card-4 {
+.card-2 {
   border-radius: 5px;
   border: 2px solid #a1ec8e;
   background-color: #e5ffe0;

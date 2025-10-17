@@ -5,8 +5,8 @@ export const handleApiError = (error, showToast, opShowToast = true) => {
     switch (error.response.status) {
       case 400:
         showToast(
-          "warn",
-          "Dữ liệu không hợp lệ",
+          "error",
+          "Thất bại",
           error.response.data?.message || "Vui lòng kiểm tra lại"
         );
         break;
@@ -31,6 +31,7 @@ export const handleApiError = (error, showToast, opShowToast = true) => {
           "Lỗi",
           error.response.data?.message || "Có sự cố xảy ra"
         );
+        
     }
   } else if (error.request) {
     showToast(

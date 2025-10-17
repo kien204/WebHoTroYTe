@@ -24,7 +24,7 @@ const MenuSidebar = () => {
       icon: "pi-address-book",
     },
     { name: "Nhập dữ liệu", path: "/data-entry", icon: "pi-chart-line" },
-    { name: "Cảnh báo", path: "/reports", icon: "pi-exclamation-triangle" },
+    { name: "Thiết lập cảnh báo", path: "/set-up-alerts", icon: "pi-exclamation-triangle" },
     { name: "Trợ lý AI", path: "/ai-helper", icon: "pi-comments" },
     { name: "Báo cáo", path: "/reports", icon: "pi-book" },
   ]);
@@ -40,7 +40,10 @@ const MenuSidebar = () => {
   ]);
 
   return (
-    <div className="h-full surface-card border-right-1 surface-border flex flex-column">
+    <div
+      className="h-full surface-card flex flex-column"
+      style={{ borderRight: "1px solid #E3E3E3" }}
+    >
       {/* Logo */}
       <div className="flex align-items-center gap-2 p-3 surface-border">
         <i className="pi pi-heart text-4xl font-bold text-main1" />

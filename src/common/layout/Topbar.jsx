@@ -5,13 +5,15 @@ import logo from "../../assets/logo.png";
 
 const Topbar = ({ onMenuToggle }) => {
   return (
-    <div className="layout-topbar flex align-items-center justify-content-between px-2 py-2 surface-card border-bottom-1 surface-border">
+    <div
+      className="layout-topbar flex align-items-center justify-content-between px-2 py-2"
+      style={{ borderBottom: "1px solid #E3E3E3" }}
+    >
       {/* Logo */}
       <Link to="/" className="flex align-items-center gap-2">
         <img src={logo} alt="Logo" height="36" />
         <span className="text-xl font-bold text-primary">HealthCare</span>
       </Link>
-
       {/* Actions */}
       <div className="flex align-items-center gap-2">
         <Button icon="pi pi-bell" className="p-button-rounded p-button-text" />

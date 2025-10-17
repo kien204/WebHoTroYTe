@@ -12,7 +12,7 @@ const infoApi = {
     }),
 
   update: (id, formData) =>
-    api.put(`/update/${id}`, formData, {
+    api.put(`/UserProfile/update/${id}`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     }),
 

@@ -90,7 +90,7 @@ const ResetPassword = () => {
 
     try {
       await callApi(() => authApi.reset_password({ email, otp, newPassword }));
-
+      localStorage.removeItem("resetEmail");
       showToast("success", "Thành công", "Đổi mật khẩu thành công");
       navigate("/login");
     } catch {
@@ -150,7 +150,7 @@ const ResetPassword = () => {
               <div className="w-full">
                 <div>
                   <label className="block mb-2 font-bold" htmlFor="otp">
-                    Mã Capcha
+                    Mã Captcha
                   </label>
                   <div className=" flex gap-5 justify-content-between align-items-center">
                     <IconField iconPosition="left">
@@ -177,7 +177,7 @@ const ResetPassword = () => {
               </div>
               <div className="mt-4 w-full">
                 <label className="block mb-2 font-bold" htmlFor="newPassword">
-                  Mật khẩu
+                  Mật khẩu mới
                 </label>
                 <IconField iconPosition="left">
                   <InputIcon className="pi pi-lock z-1" />
@@ -185,7 +185,7 @@ const ResetPassword = () => {
                     inputId="newPassword"
                     className="w-12 w-p-icon-field"
                     inputClassName="w-12 pl-5"
-                    placeholder="Nhập mật khẩu"
+                    placeholder="Nhập mật khẩu mới"
                     onChange={(e) => setNewPassword(e.target.value)}
                     toggleMask
                     feedback={false}
@@ -206,7 +206,7 @@ const ResetPassword = () => {
                   className="block mb-2 font-bold"
                   htmlFor="confirmPassword"
                 >
-                  Mật khẩu
+                  Nhập lại mật khẩu mới
                 </label>
                 <IconField iconPosition="left">
                   <InputIcon className="pi pi-lock z-1" />
@@ -214,7 +214,7 @@ const ResetPassword = () => {
                     inputId="confirmPassword"
                     className="w-12 w-p-icon-field"
                     inputClassName="w-12 pl-5"
-                    placeholder="Nhập mật khẩu"
+                    placeholder="Nhập lại mật khẩu mới"
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     toggleMask
                     feedback={false}
