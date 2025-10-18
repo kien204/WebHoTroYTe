@@ -50,6 +50,9 @@ const Layout = ({ children }) => {
           <SetupInfoModal onClose={handleCloseSetup} />
         </div>
       )}
+      <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+        <SetupInfoModal onClose={handleCloseSetup} />
+      </div>
     </div>
   );
 };

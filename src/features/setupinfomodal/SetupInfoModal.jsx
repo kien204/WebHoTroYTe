@@ -1,4 +1,4 @@
-import React, { useRef, useState, useContext } from "react";
+import React, { useRef, useState, useContext, useEffect } from "react";
 import { Stepper } from "primereact/stepper";
 import { StepperPanel } from "primereact/stepperpanel";
 import { Dialog } from "primereact/dialog";
@@ -13,7 +13,6 @@ import { InputNumber } from "primereact/inputnumber";
 import { Calendar } from "primereact/calendar";
 
 import { AuthContext } from "../../common/context/AuthContext";
-
 import infoAPI from "../../services/api/infoAPI";
 import { useApi } from "../../common/hooks/useApi";
 import { useToast } from "../../common/hooks/useToast";
@@ -23,7 +22,6 @@ const SetupInfoModal = ({ onClose }) => {
   const fileInputRef = useRef(null);
   const { showToast } = useToast();
   const { callApi } = useApi(showToast);
-
   const { auth, updateAuth } = useContext(AuthContext);
 
   const [form, setForm] = useState({
@@ -37,8 +35,11 @@ const SetupInfoModal = ({ onClose }) => {
   const [avatar, setAvatar] = useState(null);
   const [avatarUrl, setAvatarUrl] = useState(null);
   const [checkForm1, setCheckForm1] = useState(true);
-  const [checkForm2, setCheckForm2] = useState(true);
-  const [addressError, setAddressError] = useState(false);
+  const [checkForm2, setCheckForm2] = useState({
+    height: false,
+    weight: false,
+    address: false,
+  });
 
   const selectedGender = [
     { name: "Nam", code: "M" },
@@ -47,11 +48,8 @@ const SetupInfoModal = ({ onClose }) => {
   ];
 
   const checkAddress = () => {
-    if (!form.address) return false;
-    if (form.address.length < 3) {
-      return false;
-    }
-    return true;
+    if (!form.address) return true;
+    return form.address.length < 3;
   };
 
   const handleButtonClick = () => {
@@ -61,26 +59,46 @@ const SetupInfoModal = ({ onClose }) => {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
+      // Kiểm tra dung lượng file
+      const maxSize = 2 * 1024 * 1024; 
+      if (file.size > maxSize) {
+        showToast(
+          "warn",
+          "Tệp quá lớn",
+          "Lỗi! Vui lòng chọn file kích thước < 2MB!"
+        );
+        event.target.value = ""; // reset input file
+        return;
+      }
+
       const imageUrl = URL.createObjectURL(file);
       setAvatar(file);
       setAvatarUrl(imageUrl);
     }
   };
 
-  const handleSave = async () => {
-    if (!form.height || !form.weight) {
-      setCheckForm2(false);
-      return;
-    }
 
-    if (!checkAddress()) {
-      setAddressError(true);
+  const handleNext = () => {
+    if (!form.age || !form.gender) {
+      setCheckForm1(false);
       return;
     }
+    stepperRef.current.nextCallback();
+  };
+
+  const handleSave = async () => {
+    const invalids = {
+      height: !form.height || form.height <= 0,
+      weight: !form.weight || form.weight <= 0,
+      address: checkAddress(),
+    };
+
+    setCheckForm2(invalids);
+    if (Object.values(invalids).some((v) => v)) return;
 
     const formData = new FormData();
-    formData.append("TaiKhoanId", auth.id);
-    formData.append("FullName", auth.userName);
+    formData.append("TaiKhoanId", auth?.id);
+    formData.append("FullName", auth?.userName);
     formData.append("Birth", form.age.toLocaleDateString("en-CA"));
     formData.append("Gender", form.gender.name);
     formData.append("Height", Number(form.height));
@@ -88,24 +106,36 @@ const SetupInfoModal = ({ onClose }) => {
     formData.append("Adress", form.address);
     if (avatar) formData.append("avatar", avatar);
 
-    console.log(Object.fromEntries(formData.entries()));
-
     try {
       await callApi(() => infoAPI.create(formData));
       showToast("success", "Thành công", "Thiết lập thông tin thành công");
-      updateAuth({
-        ...auth,
-        check: true,
-      });
+      updateAuth({ ...auth, check: true });
       onClose();
     } catch {
-      //
+      // ignore
     }
   };
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        const step = stepperRef.current?.getActiveStep?.() ?? 0;
+        if (step === 0) handleNext();
+        else handleSave();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [form]);
+
   return (
     <Dialog
-      header="Thiết lập thông tin"
+      header={
+        <div className="text-3xl font-bold text-center">
+          Thiết lập thông tin
+        </div>
+      }
       visible
       modal
       closable={false}
@@ -114,6 +144,7 @@ const SetupInfoModal = ({ onClose }) => {
     >
       <div className="card flex justify-content-center">
         <Stepper ref={stepperRef} className="w-full setStepper" linear>
+          {/* ===== BƯỚC 1 ===== */}
           <StepperPanel header="Thông tin 1">
             <div className="flex flex-column align-items-center min-h-12rem">
               <div className="w-12 sm:w-10">
@@ -144,22 +175,23 @@ const SetupInfoModal = ({ onClose }) => {
                     />
                     <input
                       type="file"
-                      accept="image/*" // chỉ chọn ảnh (PC: file, Mobile: ảnh/camera)
+                      accept=".jpeg,.jpg,.png"
                       ref={fileInputRef}
                       style={{ display: "none" }}
                       onChange={handleFileChange}
                     />
                   </div>
                 </div>
+
                 <Card
                   className="shadow-2 mt-3"
                   title={
                     <div className="flex align-items-center gap-2">
                       <i
                         className="pi pi-user font-bold"
-                        style={{ fontSize: "1.3rem" }}
+                        style={{ fontSize: "1.25rem" }}
                       />
-                      <span>Thông tin cá nhân</span>
+                      <span className="text-xl">Thông tin cá nhân</span>
                     </div>
                   }
                 >
@@ -168,19 +200,20 @@ const SetupInfoModal = ({ onClose }) => {
                       Nhập họ và tên <span style={{ color: "red" }}>*</span>
                     </label>
                     <IconField iconPosition="left">
-                      <InputIcon className="pi pi-user"> </InputIcon>
+                      <InputIcon className="pi pi-user" />
                       <InputText
                         id="userName"
                         className="w-12 pl-5"
-                        value={auth.userName}
-                        disabled={true}
+                        value={auth?.userName}
+                        disabled
                       />
                     </IconField>
                   </div>
+
                   <div className="flex flex-column lg:flex-row gap-3 mt-3">
                     <div className="w-12">
                       <label className="block mb-1 font-bold" htmlFor="age">
-                        Năm sinh
+                        Năm sinh <span style={{ color: "red" }}>*</span>
                       </label>
                       <div className="p-input-icon-left w-full">
                         <i
@@ -200,10 +233,11 @@ const SetupInfoModal = ({ onClose }) => {
                             setCheckForm1({ ...checkForm1, age: false })
                           }
                           invalid={!checkForm1 && !form.age}
-                          readOnlyInput={true}
+                          readOnlyInput
                         />
                       </div>
                     </div>
+
                     <div className="w-12">
                       <label className="block mb-1 font-bold" htmlFor="gender">
                         Giới tính <span style={{ color: "red" }}>*</span>
@@ -231,22 +265,19 @@ const SetupInfoModal = ({ onClose }) => {
                 </Card>
               </div>
             </div>
+
             <div className="flex pt-4 justify-content-end">
               <Button
                 type="button"
                 label="Tiếp theo"
                 icon="pi pi-arrow-right"
                 iconPos="right"
-                onClick={() => {
-                  if (!form.age || !form.gender) {
-                    setCheckForm1(false);
-                    return;
-                  }
-                  stepperRef.current.nextCallback();
-                }}
+                onClick={handleNext}
               />
             </div>
           </StepperPanel>
+
+          {/* ===== BƯỚC 2 ===== */}
           <StepperPanel header="Thông tin 2">
             <div className="flex flex-column align-items-center min-h-12rem">
               <div className="w-12 sm:w-10">
@@ -276,16 +307,19 @@ const SetupInfoModal = ({ onClose }) => {
                         onChange={(e) =>
                           setForm({ ...form, address: e.target.value })
                         }
-                        onFocus={() => setAddressError(false)}
-                        invalid={!checkForm2 && !form.address}
+                        onFocus={() =>
+                          setCheckForm2({ ...checkForm2, address: false })
+                        }
+                        invalid={checkForm2.address && !form.address}
                       />
                     </IconField>
-                    {addressError && (
+                    {checkForm2.address && form.address && (
                       <small className="p-error">
                         Địa chỉ tối thiểu phải có 3 ký tự!
                       </small>
                     )}
                   </div>
+
                   <div className="flex flex-column lg:flex-row gap-3 mt-3">
                     <div className="w-12">
                       <label className="block mb-1 font-bold" htmlFor="weight">
@@ -301,21 +335,27 @@ const SetupInfoModal = ({ onClose }) => {
                           onValueChange={(e) =>
                             setForm({ ...form, weight: e.value })
                           }
-                          min={1}
                           mode="decimal"
-                          minFractionDigits={0}
-                          maxFractionDigits={0}
                           useGrouping={false}
                           placeholder="Nhập cân nặng"
-                          invalid={!checkForm2 && !form.weight}
+                          invalid={checkForm2.weight && !form.weight}
                           className="w-full"
                           inputClassName="w-12"
+                          onFocus={() =>
+                            setCheckForm2({ ...checkForm2, weight: false })
+                          }
                         />
                         <span className="p-inputgroup-addon hidden md:block">
                           kg
                         </span>
                       </div>
+                      {checkForm2.weight && form.weight && (
+                        <small className="p-error">
+                          Cân nặng không hợp lệ! Vui lòng nhập lại!
+                        </small>
+                      )}
                     </div>
+
                     <div className="w-12">
                       <label className="block mb-1 font-bold" htmlFor="height">
                         Chiều cao <span style={{ color: "red" }}>*</span>
@@ -327,16 +367,16 @@ const SetupInfoModal = ({ onClose }) => {
                         <InputNumber
                           inputId="height"
                           value={form.height}
-                          min={1}
-                          mode="decimal"
-                          minFractionDigits={0}
-                          maxFractionDigits={0}
-                          useGrouping={false}
                           onValueChange={(e) =>
                             setForm({ ...form, height: e.value })
                           }
+                          mode="decimal"
+                          useGrouping={false}
                           placeholder="Nhập chiều cao"
-                          invalid={!checkForm2 && !form.height}
+                          onFocus={() =>
+                            setCheckForm2({ ...checkForm2, height: false })
+                          }
+                          invalid={checkForm2.height && !form.height}
                           className="w-full"
                           inputClassName="w-12"
                         />
@@ -344,11 +384,17 @@ const SetupInfoModal = ({ onClose }) => {
                           cm
                         </span>
                       </div>
+                      {checkForm2.height && form.height && (
+                        <small className="p-error">
+                          Chiều cao không hợp lệ! Vui lòng nhập lại!
+                        </small>
+                      )}
                     </div>
                   </div>
                 </Card>
               </div>
             </div>
+
             <div className="flex pt-4 justify-content-between">
               <Button
                 type="button"
