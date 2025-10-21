@@ -76,6 +76,8 @@ const SystemManager = () => {
   const getListUser = async () => {
     try {
       const res = await callApi(() => managementAccountApi.getAll());
+      console.log(res);
+      
       if (res) {
         setListUsers(res);
         setFilteredUsers(res);
@@ -86,7 +88,7 @@ const SystemManager = () => {
   };
 
   useEffect(() => {
-    getListUser;
+    getListUser();
   }, []);
 
   useEffect(() => {
@@ -183,7 +185,7 @@ const SystemManager = () => {
     // Lọc theo trạng thái
     if (selectedStatus) {
       filtered = filtered.filter(
-        (user) => user.status.toString() === selectedStatus.code
+        (user) => user.lockStatus.toString() === selectedStatus.code
       );
     }
 
@@ -294,20 +296,23 @@ const SystemManager = () => {
   const setBodyStatus = (rowData) => {
     return (
       <div
-        className={`p-2 text-center ${rowData.status ? "card-4" : "card-2"}`}
+        className={`p-2 text-center ${
+          rowData.lockStatus ? "card-2" : "card-4"
+        }`}
       >
-        {rowData.status ? "Hoạt động" : "Khóa"}
+        {rowData.lockStatus ? "Hoạt động" : "Khóa"}
       </div>
     );
   };
 
   const handleLock = async () => {
     try {
-      if (selectedUser.status) {
-        await callApi(() => managementAccountApi.lock(selectedUser.idUser));
+      if (selectedUser.lockStatus) {
+        await callApi(() => managementAccountApi.lock(selectedUser.id));
       } else {
-        await callApi(() => managementAccountApi.unlock(selectedUser.idUser));
+        await callApi(() => managementAccountApi.unlock(selectedUser.id));
       }
+      getListUser();
       if (op.current && op.current.hide) {
         op.current.hide();
       }
@@ -318,7 +323,7 @@ const SystemManager = () => {
 
   const handleDelete = async () => {
     try {
-      await callApi(() => managementAccountApi.delete(selectedUser.idUser));
+      await callApi(() => managementAccountApi.delete(selectedUser.id));
       getListUser();
       setVisibleDialogDelete(false);
       if (op.current && op.current.hide) {
@@ -357,7 +362,7 @@ const SystemManager = () => {
               <i className="pi pi-globe font-bold" />
             </div>
             <div className="font-bold">
-              {listUsers.filter((user) => user.status).length}
+              {listUsers.filter((user) => user.lockStatus).length}
             </div>
             <div>+12% so với tháng trước</div>
           </div>
@@ -367,7 +372,7 @@ const SystemManager = () => {
               <i className="pi pi-ban font-bold" />
             </div>
             <div className="font-bold">
-              {listUsers.filter((user) => !user.status).length}
+              {listUsers.filter((user) => !user.lockStatus).length}
             </div>
             <div>+12% so với tháng trước</div>
           </div>
@@ -394,11 +399,11 @@ const SystemManager = () => {
           emptyMessage="Không có dữ liệu người dùng."
         >
           <Column body={sttBodyTemplate} header="STT" />
-          <Column field="idUser" header="ID user" />
-          <Column field="name" header="Họ và tên" />
+          <Column field="id" header="ID user" />
+          <Column field="us1erName" header="Họ và tên" />
           <Column field="email" header="Email" />
-          <Column field="date" header="Ngày tạo" />
-          <Column field="lastUpdate" header="Cập nhật lần cuối" />
+          <Column field="creatAt" header="Ngày tạo" />
+          <Column field="updateAt" header="Cập nhật lần cuối" />
           <Column body={setBodyStatus} header="Trạng thái" />
           <Column body={actionBodyTemplate} header="Thao tác" />
         </DataTable>
@@ -415,8 +420,10 @@ const SystemManager = () => {
                 onClick={() => setVisibleDialogDelete(true)}
               />
               <Button
-                icon={selectedUser.status ? "pi pi-lock" : "pi pi-lock-open"}
-                label={selectedUser.status ? "Khóa" : "Mở"}
+                icon={
+                  selectedUser.lockStatus ? "pi pi-lock" : "pi pi-lock-open"
+                }
+                label={selectedUser.lockStatus ? "Khóa" : "Mở"}
                 className="w-7rem"
                 severity="warning"
                 onClick={handleLock}

@@ -27,6 +27,7 @@ const Register = () => {
   const [isDialog, setIsDialog] = useState(false);
   const [otp, setOtp] = useState("");
   const [otpError, setOtpError] = useState(false);
+  const [checkStatusUser, setCheckStatusUser] = useState(null);
 
   const [errorFields, setErrorFields] = useState({
     name: false,
@@ -92,7 +93,8 @@ const Register = () => {
     if (Object.values(newErrors).some((v) => v)) return;
 
     try {
-      await callApi(() => authApi.register({ userName, email, password }));
+      const res = await callApi(() => authApi.register({ userName, email, password }));
+      setCheckStatusUser(res.s0TP);
       setIsDialog(true);
     } catch {
       //
@@ -137,6 +139,7 @@ const Register = () => {
     try {
       await callApi(() => authApi.verify_otp({ email, otp }));
       showToast("success", "Thành công", "Xác thực tài khoản thành công!");
+      localStorage.removeItem("expireTime");
       navigate("/login");
     } catch {
       //
@@ -347,13 +350,23 @@ const Register = () => {
           if (!isDialog) return;
           setIsDialog(false);
         }}
-        header={<div>Nhập mã OTP</div>}
+        header={<div className="text-center">Nhập mã OTP</div>}
+        className="w-11 md:w-5 lg:w-4"
+        headerClassName="p-2"
       >
-        <div className="my-3 mx-5">
-          <div className="mb-3 font-bold">
-            Nhập mã OTP để kích hoạt tài khoản
+        <div>
+          <div className="mb-3 mt-3">
+            {checkStatusUser === 1
+              ? "Nhập mã OTP để kích hoạt tài khoản"
+              : "Đã có tài khoảnkhoản, nhập mã OTP để kích hoạt tài khoản"}
           </div>
-          <InputOtp value={otp} length={6} onChange={(e) => setOtp(e.value)} />
+          <InputOtp
+            value={otp}
+            length={6}
+            onChange={(e) => setOtp(e.value)}
+            style={{ display: "flex", justifyContent: "center" }}
+            inputClassName="p-0"
+          />
           {otpError && (
             <div className="text-sm mt-1" style={{ color: "red" }}>
               Vui lòng nhập đầy đủ mã OTP
