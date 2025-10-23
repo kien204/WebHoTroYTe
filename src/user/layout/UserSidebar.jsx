@@ -16,20 +16,31 @@ const MenuSidebar = () => {
   const { logout, auth, profile } = useContext(AuthContext);
 
   const [menuSidebar] = useState([
-    { name: "Tổng quan", path: "/", icon: "pi-home" },
-    { name: "Chỉ số sức khỏe", path: "/health-metrics", icon: "pi-wave-pulse" },
-    {
-      name: "Hồ sơ sức khỏe",
-      path: "/health-profile",
-      icon: "pi-address-book",
-    },
+    { name: "Trang chủ", path: "/", icon: "pi-home" },
+    { name: "Tổng quan", path: "/over-view", icon: "pi-chart-bar" },
     { name: "Nhập dữ liệu", path: "/data-entry", icon: "pi-chart-line" },
-    { name: "Thiết lập cảnh báo", path: "/set-up-alerts", icon: "pi-exclamation-triangle" },
+    {
+      name: "Thiết lập cảnh báo",
+      path: "/set-up-alerts",
+      icon: "pi-pen-to-square",
+    },
+    {
+      name: "Cảnh báo & và nhắc nhở",
+      path: "/warning-and-reminder",
+      icon: "pi-exclamation-triangle",
+    },
     { name: "Trợ lý AI", path: "/ai-helper", icon: "pi-comments" },
     { name: "Báo cáo", path: "/reports", icon: "pi-book" },
   ]);
 
   const [itemsMenuFooter] = useState([
+    {
+      label: "Hồ sơ",
+      icon: "pi pi-user",
+      command: () => {
+        navigate("/health-profile");
+      },
+    },
     {
       label: "Đăng xuất",
       icon: "pi pi-sign-out",

@@ -281,7 +281,7 @@ const AIHelper = () => {
               </div>
             </ScrollPanel>
 
-            <div className="flex align-items-center gap-2">
+            <div className="flex align-items-center gap-2 mt-5">
               <InputText
                 value={input}
                 onChange={(e) => setInput(e.target.value)}

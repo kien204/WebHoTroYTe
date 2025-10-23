@@ -6,13 +6,15 @@ import ProtectedRoute from "../../routes/ProtectedRoute";
 
 import NotFoundPage from "../../features/notfoundpage/NotFoundPage";
 import Demo2 from "../../demo/demo-chatbot/demo-chatbot";
+import OverView from "../pages/OverView";
 import Home from "../pages/Home";
 import AiHelper from "../pages/AiHelper";
-import HealthMetrics from "../pages/HealthMetrics";
 import DataEntry from "../pages/DataEntry";
 import Reports from "../pages/Reports";
 import HealthProfile from "../pages/HealthProfile";
 import SetUpAlerts from "../pages/SetUpAlerts";
+import WarningAndReminder from "../pages/WarningAndReminder";
+ 
 
 const UserRoutes = () => {
   const privateRouters = [
@@ -21,12 +23,13 @@ const UserRoutes = () => {
 
   const publicRouters = [
     { path: "/", component: Home },
+    { path: "/over-view", component: OverView },
     { path: "/ai-helper", component: AiHelper },
-    { path: "/health-metrics", component: HealthMetrics },
     { path: "/data-entry", component: DataEntry },
     { path: "/reports", component: Reports },
-    { path: "/health-profile", component: HealthProfile },
+    { path: "/warning-and-reminder", component: WarningAndReminder },
     { path: "/set-up-alerts", component: SetUpAlerts },
+    { path: "/health-profile", component: HealthProfile },
   ];
 
   return (
