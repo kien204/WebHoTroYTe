@@ -24,11 +24,60 @@
 }
 
 .p-card1 {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden; /* Chặn ảnh tràn ra */
+  transition: box-shadow 0.5s ease, transform 0.3s ease;
+  cursor: pointer;
 }
 
 .p-card1:hover {
-  .img {
-    transform: scale(1.03) ;
+  border: 1px solid #0596b3ff;
+}
+
+.p-card1 .img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+  display: block;
+  border-radius: 16px;
+}
+
+.p-card1 .p-card-content {
+  overflow: hidden;
+}
+
+.p-card1:hover .img {
+  transform: scale(1.08);
+}
+
+.hover-2 {
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+    display: block;
+    border-radius: 16px;
   }
+}
+
+.hover-2:hover img {
+  transform: scale(1.08);
+}
+
+.hover-button:hover {
+  background: #a855f7;
+  color: #ffffff;
+}
+
+.hover-3:hover {
+  transition: transform 0.4s ease;
+  transform: translateY(-7px);
+}
+
+.hover-button2:hover {
+  background: #079fbf;
+  color: #ffffff;
 }

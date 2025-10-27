@@ -4,7 +4,7 @@ import { TabView, TabPanel } from "primereact/tabview";
 import { Card } from "primereact/card";
 
 import { useWindowWidth } from "../../common/hooks/useWindowWidth";
-import { InputNumber } from "primereact/inputnumber";
+import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
 
@@ -21,43 +21,28 @@ const DataEntry = () => {
   const width = useWindowWidth();
   let tableWidthPx;
   if (width < 768) tableWidthPx = width - 50;
-  else if (width < 992) tableWidthPx = width - 310;
-  else if (width < 1440) tableWidthPx = width - 520;
+  else if (width < 992) tableWidthPx = width - 330;
+  else if (width < 1440) tableWidthPx = width - 550;
   else tableWidthPx = width;
 
   const [form1, setForm1] = useState({
     userProfileId: null,
-    heartRate: 0,
-    bloodSugar: 0,
     systolic: null,
     diastolic: null,
-    timeSleep: 0,
     note: "",
   });
   const [form2, setForm2] = useState({
     userProfileId: null,
     heartRate: null,
-    bloodSugar: 0,
-    systolic: 0,
-    diastolic: 0,
-    timeSleep: 0,
     note: "",
   });
   const [form3, setForm3] = useState({
     userProfileId: null,
-    heartRate: 0,
     bloodSugar: null,
-    systolic: 0,
-    diastolic: 0,
-    timeSleep: 0,
     note: "",
   });
   const [form4, setForm4] = useState({
     userProfileId: null,
-    heartRate: 0,
-    bloodSugar: 0,
-    systolic: 0,
-    diastolic: 0,
     timeSleep: null,
     note: "",
   });
@@ -79,64 +64,84 @@ const DataEntry = () => {
   const [errorform3, seterrorForm3] = useState(false);
   const [errorform4, seterrorForm4] = useState(false);
 
-  const callAPi = async (data) => {
-    try {
-      const res = await callApi(() => dataEntryApi.data(data));
-      showToast("success", "Thành công", "Lưu huyết áp thành công");
-      return res;
-    } catch {
-      //
-    }
+  const checkForm12 = () => {
+    if (!form1.diastolic) return true;
+    if (!/^-?\d+$/.test(form1.diastolic)) return true;
+    if (isNaN(form1.diastolic)) return true;
+    if (form1.diastolic < 20 || form1.diastolic > 200) return true;
   };
 
-  const handleForm1 = async () => {
-    const newError = {
-      data1: !form1.systolic,
-      data2: !form1.diastolic,
-    };
+  const checkForm11 = () => {
+    if (!form1.systolic) return true;
+    if (!/^-?\d+$/.test(form1.systolic)) return true;
+    if (isNaN(form1.systolic)) return true;
+    if (form1.systolic < 30 || form1.systolic > 250) return true;
+  };
 
+  const checkForm2 = () => {
+    if (!form2.heartRate) return true;
+    if (!/^-?\d+$/.test(form2.heartRate)) return true;
+    if (isNaN(form2.heartRate)) return true;
+    if (form2.heartRate < 30 || form2.heartRate > 300) return true;
+  };
+
+  const checkForm3 = () => {
+    if (!form3.bloodSugar) return true;
+    if (isNaN(form3.bloodSugar)) return true;
+    if (form3.bloodSugar < 0 || form3.bloodSugar > 200) return true;
+  };
+
+  const checkForm4 = () => {
+    if (!form4.timeSleep) return true;
+    if (!/^-?\d+$/.test(form4.timeSleep)) return true;
+    if (isNaN(form4.timeSleep)) return true;
+    if (form4.timeSleep < 0 || form4.timeSleep > 24) return true;
+  };
+
+  const handleForm1 = () => {
+    const newError = {
+      data1: checkForm11(),
+      data2: checkForm12(),
+    };
     seterrorForm1(newError);
-    if (Object.values(newError).some((v) => v)) return;
+    console.log(form1, errorform1);
+
+    if (Object.values(newError).some((value) => value === true)) return;
+
     console.log(form1);
-    const res = callAPi(form1);
-    console.log(res);
-    setForm1({ ...form1, systolic: null, diastolic: null });
+
+    // const res = callApi(() => dataEntryApi.createform1(form1));
+    // console.log(res);
   };
 
   const handleForm2 = () => {
-    if (!form2.heartRate) {
-      seterrorForm2(true);
-      return;
-    }
+    seterrorForm2(checkForm2);
+    if (errorform2) return;
 
     console.log(form2);
-    const res = callAPi(form2);
-    console.log(res);
-    setForm2({ ...form2, heartRate: null });
+
+    // const res = callApi(() => dataEntryApi.createform1(form1));
+    // console.log(res);
   };
 
   const handleForm3 = () => {
-    if (!form3.bloodSugar) {
-      seterrorForm3(true);
-      return;
-    }
+    seterrorForm3(checkForm3);
+    if (errorform3) return;
 
     console.log(form3);
-    const res = callAPi(form3);
-    console.log(res);
-    setForm3({ ...form3, bloodSugar: null });
+
+    // const res = callApi(() => dataEntryApi.createform3(form3));
+    // console.log(res);
   };
 
   const handleForm4 = () => {
-    if (!form4.timeSleep) {
-      seterrorForm4(true);
-      return;
-    }
+    seterrorForm4(checkForm4);
+    if (errorform4) return;
 
     console.log(form4);
-    const res = callAPi(form4);
-    console.log(res);
-    setForm4({ ...form4, timeSleep: null });
+
+    // const res = callApi(() => dataEntryApi.createform4(form4));
+    // console.log(res);
   };
 
   return (
@@ -163,48 +168,50 @@ const DataEntry = () => {
                 <div className="mt-4 p-3 card-1">
                   <div className="flex flex-column md:flex-row gap-3">
                     <div>
-                      <label htmlFor="ip1">Tâm thu (mmmHg)</label>
-                      <InputNumber
+                      <label htmlFor="ip1">Tâm thu (mmHg)</label>
+                      <InputText
                         inputId="ip1"
                         placeholder="Nhập tâm thu"
                         className="w-full mt-2"
-                        inputClassName="w-12"
-                        min={1}
-                        mode="decimal"
-                        minFractionDigits={0}
-                        maxFractionDigits={0}
-                        useGrouping={false}
                         value={form1.systolic}
-                        onValueChange={(e) =>
-                          setForm1({ ...form1, systolic: e.value })
+                        onChange={(e) =>
+                          setForm1({ ...form1, systolic: e.target.value })
                         }
                         invalid={errorform1.data1}
                         onFocus={() =>
                           seterrorForm1({ ...errorform1, data1: false })
                         }
                       />
+                      {errorform1.data1 && form1.systolic && (
+                        <div className="text-sm mt-1" style={{ color: "red" }}>
+                          {form1.systolic < 30 || form1.systolic > 250
+                            ? "Giá trị huyết áp tâm thu phải nằm trong khoảng 30 - 250 mmHg!"
+                            : "Dữ liệu không hợp lệ"}
+                        </div>
+                      )}
                     </div>
                     <div>
                       <label htmlFor="ip2">Tâm trương (mmHg)</label>
-                      <InputNumber
+                      <InputText
                         inputId="ip2"
                         placeholder="Nhập tâm trương"
                         className="w-full mt-2"
-                        inputClassName="w-12"
-                        min={1}
-                        mode="decimal"
-                        minFractionDigits={0}
-                        maxFractionDigits={0}
-                        useGrouping={false}
                         value={form1.diastolic}
-                        onValueChange={(e) =>
-                          setForm1({ ...form1, diastolic: e.value })
+                        onChange={(e) =>
+                          setForm1({ ...form1, diastolic: e.target.value })
                         }
                         invalid={errorform1.data2}
                         onFocus={() =>
                           seterrorForm1({ ...errorform1, data2: false })
                         }
                       />
+                      {errorform1.data2 && form1.diastolic && (
+                        <div className="text-sm mt-1" style={{ color: "red" }}>
+                          {form1.diastolic < 20 || form1.diastolic > 200
+                            ? "Giá trị huyết áp tâm trương phải nằm trong khoảng 20 - 200 mmHg!"
+                            : "Dữ liệu không hợp lệ"}
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="mt-3">
@@ -236,23 +243,25 @@ const DataEntry = () => {
                 <div className="mt-4 p-3 card-1">
                   <div>
                     <label htmlFor="ip1">Nhịp tim (BPM)</label>
-                    <InputNumber
+                    <InputText
                       inputId="ip1"
                       placeholder="Nhập nhịp tim"
                       className="w-full mt-2"
-                      inputClassName="w-12"
-                      min={1}
-                      mode="decimal"
-                      minFractionDigits={0}
-                      maxFractionDigits={0}
-                      useGrouping={false}
                       value={form2.heartRate}
-                      onValueChange={(e) =>
-                        setForm2({ ...form2, heartRate: e.value })
+                      onChange={(e) =>
+                        setForm2({ ...form2, heartRate: e.target.value })
                       }
                       invalid={errorform2}
                       onFocus={() => seterrorForm2(false)}
                     />
+
+                    {errorform2 && form2.heartRate && (
+                      <div className="text-sm mt-1" style={{ color: "red" }}>
+                        {form2.heartRate < 30 || form2.heartRate > 300
+                          ? "Giá trị nhịp tim phải nằm trong khoảng 30 - 300 BPM!"
+                          : "Dữ liệu không hợp lệ"}
+                      </div>
+                    )}
                   </div>
                   <div className="mt-3">
                     <label htmlFor="ip3">Ghi chú (tùy chọn)</label>
@@ -283,23 +292,25 @@ const DataEntry = () => {
                 <div className="mt-4 p-3 card-1">
                   <div>
                     <label htmlFor="ip1">Đường huyết (mg/dL)</label>
-                    <InputNumber
+                    <InputText
                       inputId="ip1"
                       placeholder="Nhập đường huyết"
                       className="w-full mt-2"
-                      inputClassName="w-12"
-                      min={1}
-                      mode="decimal"
-                      minFractionDigits={0}
-                      maxFractionDigits={0}
-                      useGrouping={false}
                       value={form3.bloodSugar}
-                      onValueChange={(e) =>
-                        setForm3({ ...form3, bloodSugar: e.value })
+                      onChange={(e) =>
+                        setForm3({ ...form3, bloodSugar: e.target.value })
                       }
                       invalid={errorform3}
                       onFocus={() => seterrorForm3(false)}
                     />
+
+                    {errorform3 && form3.bloodSugar && (
+                      <div className="text-sm mt-1" style={{ color: "red" }}>
+                        {form3.bloodSugar < 0 || form3.bloodSugar > 200
+                          ? "Giá trị đường huyết phải nằm trong khoảng 0 - 200 mg/dL!"
+                          : "Dữ liệu không hợp lệ"}
+                      </div>
+                    )}
                   </div>
                   <div className="mt-3">
                     <label htmlFor="ip3">Ghi chú (tùy chọn)</label>
@@ -330,23 +341,25 @@ const DataEntry = () => {
                 <div className="mt-4 p-3 card-1">
                   <div>
                     <label htmlFor="ip1">Giờ ngủ</label>
-                    <InputNumber
+                    <InputText
                       inputId="ip1"
                       placeholder="Nhập giở ngủ"
                       className="w-full mt-2"
-                      inputClassName="w-12"
-                      min={1}
-                      mode="decimal"
-                      minFractionDigits={0}
-                      maxFractionDigits={0}
-                      useGrouping={false}
                       value={form4.timeSleep}
-                      onValueChange={(e) =>
-                        setForm4({ ...form4, timeSleep: e.value })
+                      onChange={(e) =>
+                        setForm4({ ...form4, timeSleep: e.target.value })
                       }
                       invalid={errorform4}
                       onFocus={() => seterrorForm4(false)}
                     />
+
+                    {errorform4 && form4.timeSleep && (
+                      <div className="text-sm mt-1" style={{ color: "red" }}>
+                        {form4.timeSleep < 0 || form4.timeSleep > 24
+                          ? "Dữ liệu phải làm trong khoảng 0-24"
+                          : "Dữ liệu không hợp lệ"}
+                      </div>
+                    )}
                   </div>
                   <div className="mt-3">
                     <label htmlFor="ip3">Ghi chú (tùy chọn)</label>

@@ -1,0 +1,31 @@
+/* 🔹 Nút icon tròn ở góc phải */
+.chat-toggle-btn {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  font-size: 1.5rem;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 🔹 Hộp chat */
+.chat-box {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  width: 340px;
+  overflow: hidden;
+  z-index: 1001;
+  background: #fff;
+  border-radius: 16px;
+
+  .p-card-body {
+    padding: 0px;
+  }
+}
+
+.max-w-300 {
+  max-width: 400px;
+}

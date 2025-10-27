@@ -9,7 +9,6 @@ import { Avatar } from "primereact/avatar";
 import { Card } from "primereact/card";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
-import { InputNumber } from "primereact/inputnumber";
 import { Calendar } from "primereact/calendar";
 
 import { AuthContext } from "../../common/context/AuthContext";
@@ -60,7 +59,7 @@ const SetupInfoModal = ({ onClose }) => {
     const file = event.target.files[0];
     if (file) {
       // Kiểm tra dung lượng file
-      const maxSize = 2 * 1024 * 1024; 
+      const maxSize = 2 * 1024 * 1024;
       if (file.size > maxSize) {
         showToast(
           "warn",
@@ -77,7 +76,6 @@ const SetupInfoModal = ({ onClose }) => {
     }
   };
 
-
   const handleNext = () => {
     if (!form.age || !form.gender) {
       setCheckForm1(false);
@@ -88,8 +86,16 @@ const SetupInfoModal = ({ onClose }) => {
 
   const handleSave = async () => {
     const invalids = {
-      height: !form.height || form.height <= 0,
-      weight: !form.weight || form.weight <= 0,
+      height:
+        !form.height ||
+        form.height <= 0 ||
+        !/^-?\d+$/.test(form.height) ||
+        isNaN(form.height),
+      weight:
+        !form.weight ||
+        form.weight <= 0 ||
+        !/^-?\d+$/.test(form.weight) ||
+        isNaN(form.weight),
       address: checkAddress(),
     };
 
@@ -234,6 +240,14 @@ const SetupInfoModal = ({ onClose }) => {
                           }
                           invalid={!checkForm1 && !form.age}
                           readOnlyInput
+                          maxDate={new Date()} // không cho chọn ngày tương lai
+                          minDate={
+                            new Date(
+                              new Date().setFullYear(
+                                new Date().getFullYear() - 120
+                              )
+                            )
+                          }
                         />
                       </div>
                     </div>
@@ -329,18 +343,15 @@ const SetupInfoModal = ({ onClose }) => {
                         <span className="p-inputgroup-addon hidden md:block">
                           <i className="pi pi-shopping-bag" />
                         </span>
-                        <InputNumber
+                        <InputText
                           inputId="weight"
                           value={form.weight}
-                          onValueChange={(e) =>
-                            setForm({ ...form, weight: e.value })
+                          onChange={(e) =>
+                            setForm({ ...form, weight: e.target.value })
                           }
-                          mode="decimal"
-                          useGrouping={false}
                           placeholder="Nhập cân nặng"
                           invalid={checkForm2.weight && !form.weight}
                           className="w-full"
-                          inputClassName="w-12"
                           onFocus={() =>
                             setCheckForm2({ ...checkForm2, weight: false })
                           }
@@ -364,21 +375,18 @@ const SetupInfoModal = ({ onClose }) => {
                         <span className="p-inputgroup-addon hidden md:block">
                           <i className="pi pi-arrows-v" />
                         </span>
-                        <InputNumber
+                        <InputText
                           inputId="height"
                           value={form.height}
-                          onValueChange={(e) =>
-                            setForm({ ...form, height: e.value })
+                          onChange={(e) =>
+                            setForm({ ...form, height: e.target.value })
                           }
-                          mode="decimal"
-                          useGrouping={false}
                           placeholder="Nhập chiều cao"
                           onFocus={() =>
                             setCheckForm2({ ...checkForm2, height: false })
                           }
                           invalid={checkForm2.height && !form.height}
                           className="w-full"
-                          inputClassName="w-12"
                         />
                         <span className="p-inputgroup-addon hidden md:block">
                           cm

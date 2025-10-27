@@ -6,7 +6,6 @@ import { Avatar } from "primereact/avatar";
 import { Card } from "primereact/card";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
-import { InputNumber } from "primereact/inputnumber";
 import { Calendar } from "primereact/calendar";
 import { AuthContext } from "../../common/context/AuthContext";
 import { useApi } from "../../common/hooks/useApi";
@@ -119,8 +118,18 @@ const HealthProfile = () => {
       address: !checkAddress(),
       gender: !info.gender,
       age: !info.brith,
-      weight: !info.weight,
-      height: !info.height,
+      height:
+        !info.height ||
+        info.height <= 0 ||
+        info.height >= 300 ||
+        !/^-?\d+$/.test(info.height) ||
+        isNaN(info.height),
+      weight:
+        !info.weight ||
+        info.weight <= 0 ||
+        info.weight >= 500 ||
+        !/^-?\d+$/.test(info.weight) ||
+        isNaN(info.weight),
     };
 
     setErrorForm(newErrors);
@@ -141,7 +150,7 @@ const HealthProfile = () => {
     formData.append("avatar", info.avatarUrl);
 
     try {
-      const res =  await callApi(() => infoApi.update(info.hoSoId, formData));
+      const res = await callApi(() => infoApi.update(info.hoSoId, formData));
       showToast("success", "Thành công", "Lưu thông tin thành công");
       updateProfile(res);
       setIsEdit(false);
@@ -191,7 +200,7 @@ const HealthProfile = () => {
                 onChange={handleFileChange}
               />
             </div>
-            <div className="mt-2">#{auth?.id}</div>
+            <div className="mt-2 opacity-50">#{auth?.id}</div>
           </div>
         </div>
 
@@ -314,7 +323,16 @@ const HealthProfile = () => {
                   invalid={errorForm.age}
                   disabled={!isEdit}
                   readOnlyInput={true}
+                  maxDate={new Date()} // không cho chọn ngày tương lai
+                  minDate={
+                    new Date(
+                      new Date().setFullYear(new Date().getFullYear() - 120)
+                    )
+                  }
                 />
+                {errorForm.age && info.brith && (
+                  <small className="p-error">Ngày sinh không hợp lệ! </small>
+                )}
               </div>
             </div>
             <div className="lg:w-4">
@@ -326,22 +344,23 @@ const HealthProfile = () => {
                   className="pi pi-shopping-bag absolute"
                   style={{ marginLeft: "0.75rem" }}
                 />
-                <InputNumber
+                <InputText
                   inputId="weight"
                   value={info.weight || null}
                   onValueChange={(e) => setInfo({ ...info, weight: e.value })}
                   placeholder="Nhập cân nặng"
-                  min={1}
-                  mode="decimal"
-                  minFractionDigits={0}
-                  maxFractionDigits={0}
-                  useGrouping={false}
                   invalid={errorForm.weight}
                   onFocus={() => setErrorForm({ ...errorForm, weight: false })}
-                  className="w-full"
-                  inputClassName="pl-5 w-12"
+                  className="pl-5 w-12"
                   disabled={!isEdit}
                 />
+                {info.weight && errorForm.weight && (
+                  <small className="p-error">
+                    {info.weight <= 0 || info.weight >= 500
+                      ? "Dữ liệu phải làm trong khoảng 0-500 kg"
+                      : "Cân nặng không hợp lệ! Vui lòng nhập lại!"}
+                  </small>
+                )}
               </div>
             </div>
             <div className="lg:w-4">
@@ -353,22 +372,23 @@ const HealthProfile = () => {
                   className="pi pi-arrows-v absolute"
                   style={{ marginLeft: "0.75rem" }}
                 />
-                <InputNumber
+                <InputText
                   inputId="height"
                   value={info.height || null}
                   onValueChange={(e) => setInfo({ ...info, height: e.value })}
                   onFocus={() => setErrorForm({ ...errorForm, height: false })}
                   placeholder="Nhập chiều cao"
-                  min={1}
-                  mode="decimal"
-                  minFractionDigits={0}
-                  maxFractionDigits={0}
-                  useGrouping={false}
                   invalid={errorForm.height}
-                  className="w-full"
-                  inputClassName="pl-5 w-12"
+                  className="pl-5 w-12"
                   disabled={!isEdit}
                 />
+                {info.height && errorForm.height && (
+                  <small className="p-error">
+                    {info.height <= 0 || info.height >= 300
+                      ? "Dữ liệu phải làm trong khoảng 0-300 cm"
+                      : "Chiều cao không hợp lệ! Vui lòng nhập lại!"}
+                  </small>
+                )}
               </div>
             </div>
           </div>

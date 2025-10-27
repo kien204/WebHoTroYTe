@@ -43,8 +43,8 @@ const SetUpAlerts = () => {
   const checkMinHeart = () => {
     if (!formData.minHeartRate) return true;
     if (isNaN(formData.minHeartRate)) return true;
-    if (formData.minHeartRate < 40) return true;
-    if (formData.minHeartRate > 200) return true;
+    if (formData.minHeartRate < 30) return true;
+    if (formData.minHeartRate > 300) return true;
     if (formData.maxHeartRate && formData.minHeartRate > formData.maxHeartRate)
       return true;
   };
@@ -52,15 +52,15 @@ const SetUpAlerts = () => {
   const checkMaxHeart = () => {
     if (!formData.maxHeartRate) return true;
     if (isNaN(formData.maxHeartRate)) return true;
-    if (formData.maxHeartRate < 40) return true;
-    if (formData.maxHeartRate > 200) return true;
+    if (formData.maxHeartRate < 30) return true;
+    if (formData.maxHeartRate > 300) return true;
   };
 
   const checkMinBlood = () => {
     if (!formData.minBloodSugar) return true;
     if (isNaN(formData.minBloodSugar)) return true;
-    if (formData.minBloodSugar < 40) return true;
-    if (formData.minBloodSugar > 300) return true;
+    if (formData.minBloodSugar < 0) return true;
+    if (formData.minBloodSugar > 200) return true;
     if (
       formData.maxBloodSugar &&
       formData.minBloodSugar > formData.maxBloodSugar
@@ -71,8 +71,8 @@ const SetUpAlerts = () => {
   const checkMaxBlood = () => {
     if (!formData.maxBloodSugar) return true;
     if (isNaN(formData.maxBloodSugar)) return true;
-    if (formData.maxBloodSugar < 40) return true;
-    if (formData.maxBloodSugar > 300) return true;
+    if (formData.maxBloodSugar < 0) return true;
+    if (formData.maxBloodSugar > 200) return true;
   };
 
   const checkMinSleep = () => {
@@ -92,8 +92,8 @@ const SetUpAlerts = () => {
   const checkMinSystolic = () => {
     if (!formData.minSystolicBP) return true;
     if (isNaN(formData.minSystolicBP)) return true;
-    if (formData.minSystolicBP < 80) return true;
-    if (formData.minSystolicBP > 200) return true;
+    if (formData.minSystolicBP < 30) return true;
+    if (formData.minSystolicBP > 250) return true;
     if (
       formData.maxSystolicBP &&
       formData.minSystolicBP > formData.maxSystolicBP
@@ -104,14 +104,14 @@ const SetUpAlerts = () => {
   const checkMaxSystolic = () => {
     if (!formData.maxSystolicBP) return true;
     if (isNaN(formData.maxSystolicBP)) return true;
-    if (formData.maxSystolicBP < 80) return true;
-    if (formData.maxSystolicBP > 200) return true;
+    if (formData.maxSystolicBP < 30) return true;
+    if (formData.maxSystolicBP > 250) return true;
   };
 
   const checkMinDiastolic = () => {
     if (!formData.minDiastolicBP) return true;
     if (isNaN(formData.minDiastolicBP)) return true;
-    if (formData.minDiastolicBP < 80) return true;
+    if (formData.minDiastolicBP < 20) return true;
     if (formData.minDiastolicBP > 200) return true;
     if (
       formData.maxDiastolicBP &&
@@ -123,7 +123,7 @@ const SetUpAlerts = () => {
   const checkMaxDiastolic = () => {
     if (!formData.maxDiastolicBP) return true;
     if (isNaN(formData.maxDiastolicBP)) return true;
-    if (formData.maxDiastolicBP < 80) return true;
+    if (formData.maxDiastolicBP < 20) return true;
     if (formData.maxDiastolicBP > 200) return true;
   };
 
@@ -171,8 +171,9 @@ const SetUpAlerts = () => {
                   <div className="relative flex align-items-center justify-content-end">
                     <InputText
                       id="ip2"
-                      className="w-full w-full pr-7"
+                      className="w-full w-full pr-8"
                       value={formData.minHeartRate}
+                      placeholder="Nhập giá trị nhịp tim tối thiểu"
                       onFocus={() =>
                         setErrorFormData({
                           ...errorFormData,
@@ -192,20 +193,21 @@ const SetUpAlerts = () => {
                   {errorFormData.errorMinHeartRate && formData.minHeartRate && (
                     <small className="p-error">
                       {isNaN(formData.minHeartRate)
-                        ? "Giá trị nhập phải là số"
-                        : formData.minHeartRate > 200 ||
-                          formData.maxHeartRate < 40
-                        ? "Giá trị nhập không phải nằm trong khoảng 40 - 200"
+                        ? "Giá trị phải là số nguyên dương! Vui lòng nhập lại!"
+                        : formData.minHeartRate > 300 ||
+                          formData.maxHeartRate < 30
+                        ? "Giá trị nhịp tim phải nằm trong khoảng 30 - 300 BPM!"
                         : "Giá trị tối thiểu không được lớn hơn giá trị tối đa"}
                     </small>
                   )}
                 </div>
                 <div>
-                  <label htmlFor="ip2">Giá trị tối thiểu</label>
+                  <label htmlFor="ip2">Giá trị tối đa</label>
                   <div className="relative flex align-items-center justify-content-end">
                     <InputText
                       id="ip2"
-                      className="w-full w-full pr-7"
+                      className="w-full w-full pr-8"
+                      placeholder="Nhập giá trị nhịp tim tối đa"
                       value={formData.maxHeartRate}
                       onFocus={() =>
                         setErrorFormData({
@@ -227,8 +229,8 @@ const SetUpAlerts = () => {
                 {errorFormData.errorMaxHeartRate && formData.maxHeartRate && (
                   <small className="p-error">
                     {isNaN(formData.maxHeartRate)
-                      ? "Giá trị nhập phải là số"
-                      : "Giá trị nhập không phải nằm trong khoảng 40 - 200"}
+                      ? "Giá trị phải là số nguyên dương! Vui lòng nhập lại!"
+                      : "Giá trị nhịp tim phải nằm trong khoảng 30 - 300 BPM!"}
                   </small>
                 )}
               </div>
@@ -242,7 +244,8 @@ const SetUpAlerts = () => {
                   <div className="relative flex align-items-center justify-content-end">
                     <InputText
                       id="ip2"
-                      className="w-full w-full pr-7"
+                      className="w-full w-full pr-8"
+                      placeholder="Nhập giá trị đường huyết tối thiểu"
                       value={formData.minBloodSugar}
                       onFocus={() =>
                         setErrorFormData({
@@ -264,20 +267,21 @@ const SetUpAlerts = () => {
                     formData.minBloodSugar && (
                       <small className="p-error">
                         {isNaN(formData.minBloodSugar)
-                          ? "Giá trị nhập phải là số"
+                          ? "Giá trị phải là số nguyên dương! Vui lòng nhập lại!"
                           : formData.minBloodSugar > formData.maxBloodSugar
                           ? "Giá trị tối thiểu không được lớn hơn giá trị tối đa"
-                          : "Giá trị nhập không phải nằm trong khoảng 40 - 300"}
+                          : "Giá trị đường huyết phải nằm trong khoảng 0 - 200 mg/dL!"}
                       </small>
                     )}
                 </div>
                 <div>
-                  <label htmlFor="ip2">Giá trị tối thiểu</label>
+                  <label htmlFor="ip2">Giá trị tối đa</label>
                   <div className="relative flex align-items-center justify-content-end">
                     <InputText
                       id="ip2"
-                      className="w-full w-full pr-7"
+                      className="w-full w-full pr-8"
                       value={formData.maxBloodSugar}
+                      placeholder="Nhập giá trị đường huyết tối đa"
                       onFocus={() =>
                         setErrorFormData({
                           ...errorFormData,
@@ -298,8 +302,8 @@ const SetUpAlerts = () => {
                     formData.maxBloodSugar && (
                       <small className="p-error">
                         {isNaN(formData.maxBloodSugar)
-                          ? "Giá trị nhập phải là số"
-                          : "Giá trị nhập không phải nằm trong khoảng 40 - 300"}
+                          ? "Giá trị phải là số nguyên dương! Vui lòng nhập lại!"
+                          : "Giá trị đường huyết phải nằm trong khoảng 0 - 200 mg/dL!"}
                       </small>
                     )}
                 </div>
@@ -307,15 +311,16 @@ const SetUpAlerts = () => {
             </div>
 
             <div className="flex flex-column card-1 p-3  mt-5">
-              <div className="font-bold text-xl mb-4">Giờ ngủ</div>
+              <div className="font-bold text-xl mb-4">Giấc ngủ</div>
               <div className="flex flex-column gap-3">
                 <div>
                   <label htmlFor="ip1">Giá trị tối thiểu</label>
                   <div className="relative flex align-items-center justify-content-end">
                     <InputText
                       id="ip2"
-                      className="w-full w-full pr-7"
+                      className="w-full w-full pr-8"
                       value={formData.minSleepHours}
+                      placeholder="Nhập giá trị giấc ngủ tối thiểu"
                       onFocus={() =>
                         setErrorFormData({
                           ...errorFormData,
@@ -336,8 +341,8 @@ const SetUpAlerts = () => {
                     formData.minSleepHours && (
                       <small className="p-error">
                         {isNaN(formData.minSleepHours)
-                          ? "Giá trị nhập phải là số"
-                          : "Giá trị nhập không phải nằm trong khoảng 0 - 24"}
+                          ? "Giá trị phải là số nguyên dương! Vui lòng nhập lại!"
+                          : "Giá trị giấc ngủ phải nằm trong khoảng 0 - 24 giờ!"}
                       </small>
                     )}
                 </div>
@@ -346,7 +351,8 @@ const SetUpAlerts = () => {
                   <div className="relative flex align-items-center justify-content-end">
                     <InputText
                       id="ip2"
-                      className="w-full w-full pr-7"
+                      className="w-full w-full pr-8"
+                      placeholder="Nhập giá trị giấc ngủ tối đa"
                       value={formData.maxSleepHours}
                       onFocus={() =>
                         setErrorFormData({
@@ -368,8 +374,8 @@ const SetUpAlerts = () => {
                     formData.maxSleepHours && (
                       <small className="p-error">
                         {isNaN(formData.maxSleepHours)
-                          ? "Giá trị nhập phải là số"
-                          : "Giá trị nhập không phải nằm trong khoảng 0 - 24"}
+                          ? "Giá trị phải là số nguyên dương! Vui lòng nhập lại!"
+                          : "Giá trị giấc ngủ phải nằm trong khoảng 0 - 24 giờ!"}
                       </small>
                     )}
                 </div>
@@ -387,7 +393,8 @@ const SetUpAlerts = () => {
                     <div className="relative flex align-items-center justify-content-end">
                       <InputText
                         id="ip2"
-                        className="w-full w-full pr-7"
+                        className="w-full w-full pr-8"
+                        placeholder="Nhập giá trị tâm thu tối thiểu"
                         value={formData.minSystolicBP}
                         onFocus={() =>
                           setErrorFormData({
@@ -409,20 +416,21 @@ const SetUpAlerts = () => {
                       formData.minSystolicBP && (
                         <small className="p-error">
                           {isNaN(formData.minSystolicBP)
-                            ? "Giá trị nhập phải là số"
-                            : formData.minSystolicBP > 200 ||
-                              formData.maxSystolicBP < 80
-                            ? "Giá trị nhập không phải nằm trong khoảng 80 - 200"
+                            ? "Giá trị phải là số nguyên dương! Vui lòng nhập lại!"
+                            : formData.minSystolicBP > 250 ||
+                              formData.maxSystolicBP < 30
+                            ? "Giá trị huyết áp tâm thu phải nằm trong khoảng 30 - 250 mmHg!"
                             : "Giá trị tối thiểu không được lớn hơn giá trị tối đa"}
                         </small>
                       )}
                   </div>
                   <div>
-                    <label htmlFor="ip2">Giá trị tối thiểu</label>
+                    <label htmlFor="ip2">Giá trị tối đa</label>
                     <div className="relative flex align-items-center justify-content-end">
                       <InputText
                         id="ip2"
-                        className="w-full w-full pr-7"
+                        className="w-full w-full pr-8"
+                        placeholder="Nhập giá trị tâm thu tối đa"
                         value={formData.maxSystolicBP}
                         onFocus={() =>
                           setErrorFormData({
@@ -444,8 +452,8 @@ const SetUpAlerts = () => {
                       formData.maxSystolicBP && (
                         <small className="p-error">
                           {isNaN(formData.maxSystolicBP)
-                            ? "Giá trị nhập phải là số"
-                            : "Giá trị nhập không phải nằm trong khoảng 80 - 200"}
+                            ? "Giá trị phải là số nguyên dương! Vui lòng nhập lại!"
+                            : "Giá trị huyết áp tâm thu phải nằm trong khoảng 30 - 250 mmHg!"}
                         </small>
                       )}
                   </div>
@@ -459,7 +467,8 @@ const SetUpAlerts = () => {
                       <div className="relative flex align-items-center justify-content-end">
                         <InputText
                           id="ip2"
-                          className="w-full w-full pr-7"
+                          className="w-full w-full pr-8"
+                          placeholder="Nhập giá trị tâm trương tối thiểu"
                           value={formData.minDiastolicBP}
                           onFocus={() =>
                             setErrorFormData({
@@ -481,20 +490,21 @@ const SetUpAlerts = () => {
                         formData.minDiastolicBP && (
                           <small className="p-error">
                             {isNaN(formData.minDiastolicBP)
-                              ? "Giá trị nhập phải là số"
-                              : formData.minDiastolicBP > 150 ||
-                                formData.maxDiastolicBP < 50
-                              ? "Giá trị nhập không phải nằm trong khoảng 50 - 150"
+                              ? "Giá trị phải là số nguyên dương! Vui lòng nhập lại!"
+                              : formData.minDiastolicBP > 200 ||
+                                formData.maxDiastolicBP < 20
+                              ? "Giá trị huyết áp tâm trương phải nằm trong khoảng 20 - 200 mmHg!"
                               : "Giá trị tối thiểu không được lớn hơn giá trị tối đa"}
                           </small>
                         )}
                     </div>
                     <div>
-                      <label htmlFor="ip2">Giá trị tối thiểu</label>
+                      <label htmlFor="ip2">Giá trị tối đa</label>
                       <div className="relative flex align-items-center justify-content-end">
                         <InputText
                           id="ip2"
-                          className="w-full w-full pr-7"
+                          className="w-full w-full pr-8"
+                          placeholder="Nhập giá trị tâm trương tối đa"
                           value={formData.maxDiastolicBP}
                           onFocus={() =>
                             setErrorFormData({
@@ -516,8 +526,8 @@ const SetUpAlerts = () => {
                         formData.maxDiastolicBP && (
                           <small className="p-error">
                             {isNaN(formData.maxDiastolicBP)
-                              ? "Giá trị nhập phải là số"
-                              : "Giá trị nhập không phải nằm trong khoảng 50 - 150"}
+                              ? "Giá trị phải là số nguyên dương! Vui lòng nhập lại!"
+                              : "Giá trị huyết áp tâm trương phải nằm trong khoảng 20 - 200 mmHg!"}
                           </small>
                         )}
                     </div>

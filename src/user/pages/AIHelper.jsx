@@ -1,6 +1,6 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { Button } from "primereact/button";
-import { InputText } from "primereact/inputtext";
+import { InputTextarea } from "primereact/inputtextarea";
 import { Card } from "primereact/card";
 import { Avatar } from "primereact/avatar";
 import { Divider } from "primereact/divider";
@@ -22,6 +22,7 @@ const AIHelper = () => {
   const [loadingMes, setLoadingMes] = useState(false);
   const [date, setDate] = useState(null);
   const [history, setHistory] = useState([]);
+  const messagesEndRef = useRef(null);
 
   const [messages, setMessages] = useState([
     {
@@ -35,12 +36,18 @@ const AIHelper = () => {
   const [input, setInput] = useState("");
 
   useEffect(() => {
-    let isMounted = true; 
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
+  useEffect(() => {
+    let isMounted = true;
 
     const fetchHistory = async () => {
       try {
         const res = await callApi(() => aiHelperAPI.getHistory(auth?.id));
-        if (isMounted) setHistory(res.data.reverse()); 
+        if (isMounted) setHistory(res.data.reverse());
       } catch {
         //
       }
@@ -49,50 +56,53 @@ const AIHelper = () => {
     fetchHistory();
 
     return () => {
-      isMounted = false; 
+      isMounted = false;
     };
   }, [auth?.id, callApi]);
 
   const handleSend = async () => {
     if (!input.trim()) return;
+
+    const userMessage = {
+      id: null, // id tạm
+      question: input,
+      answer: null,
+      date: date,
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
     setLoadingMes(true);
+
+    // Thêm placeholder trả lời ngay lập tức
     setMessages((prev) => [
       ...prev,
       {
-        id: null,
-        question: input,
-        answer: null,
+        id: -1,
+        question: null,
+        answer: "Chatbot đang trả lời...",
         date: null,
       },
     ]);
 
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: -1,
-          question: null,
-          answer: "Chatbot đang trả lời...",
-          date: null,
-        },
-      ]);
-    }, 500);
-
     const reData = {
       tkID: auth?.id,
       question: input,
-      time: date,
+      time: userMessage.date,
     };
-
-    setInput("");
-    console.log(reData);
 
     try {
       const res = await callApi(() => aiHelperAPI.sendChat(reData));
+
+      // Cập nhật câu trả lời thật thay cho placeholder
       setMessages((prev) =>
         prev.map((msg) =>
           msg.id === -1
-            ? { ...msg, id: null, answer: res.answer } // cập nhật nội dung thật
+            ? {
+                ...msg,
+                id: null,
+                answer: res?.answer || "Không nhận được phản hồi.",
+              }
             : msg
         )
       );
@@ -102,7 +112,7 @@ const AIHelper = () => {
           msg.id === -1
             ? {
                 ...msg,
-                id: null,
+                id: Date.now(),
                 answer: "Xin lỗi, có lỗi xảy ra. Vui lòng thử lại.",
               }
             : msg
@@ -278,15 +288,19 @@ const AIHelper = () => {
                     )}
                   </div>
                 ))}
+                <div ref={messagesEndRef}></div>
               </div>
             </ScrollPanel>
 
             <div className="flex align-items-center gap-2 mt-5">
-              <InputText
+              <InputTextarea
+                autoResize
+                rows={1}
+                cols={5}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Hỏi về sức khỏe của bạn..."
-                className="w-full"
+                className="w-full max-h-7rem overflow-y-scroll"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") handleSend();
                 }}

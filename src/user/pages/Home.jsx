@@ -11,8 +11,8 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 
 const Home = () => {
-  const videoSrc = "/public/video/video.mp4";
-  const poster = "/public/video/poster.png";
+  const videoSrc = "/src/assets/video/video.mp4";
+  const poster = "/src/assets/video/poster.png";
 
   const [value2, setValue2] = useState("");
 
@@ -72,7 +72,7 @@ const Home = () => {
           Đánh giá thực tế từ người dùng giúp bạn yên tâm hơn khi chọn dịch vụ.
         </div>
         <div className="flex flex-column md:flex-row gap-3">
-          <Card className="p-card1" data-aos="zoom-in-right">
+          <Card className="p-card1">
             <img
               src="/src/assets/anhpv1.png"
               alt=""
@@ -83,7 +83,7 @@ const Home = () => {
             </div>
             <h2 className="text-center m-2">Nguyễn Văn An</h2>
           </Card>
-          <Card className="p-card1" data-aos="zoom-in">
+          <Card className="p-card1">
             <img
               src="/src/assets/anhpv2.png"
               alt=""
@@ -95,7 +95,7 @@ const Home = () => {
             </div>
             <h2 className="text-center m-2">Nguyễn Văn An</h2>
           </Card>
-          <Card className="p-card1" data-aos="zoom-in-left">
+          <Card className="p-card1">
             <img
               src="/src/assets/anhpv3.png"
               alt=""
@@ -254,8 +254,8 @@ const Home = () => {
       <div className="flex flex-column justify-content-center gap-3">
         <h1 className="text-main3 text-center">Sản phẩm chăm sóc sức khỏe </h1>
         <div className="flex flex-column md:flex-row gap-4">
-          <Card>
-            <div className="flex flex-column w-12">
+          <Card className="cursor-pointer">
+            <div className="flex flex-column w-12 hover-2">
               <img
                 src="/src/assets/sanpham1.png"
                 alt=""
@@ -268,8 +268,8 @@ const Home = () => {
               </div>
             </div>
           </Card>
-          <Card>
-            <div className="flex flex-column w-12">
+          <Card className="cursor-pointer">
+            <div className="flex flex-column w-12 hover-2">
               <img
                 src="/src/assets/sanpham2.png"
                 alt=""
@@ -282,9 +282,38 @@ const Home = () => {
               </div>
             </div>
           </Card>
+          <Card className="hidden lg:block  cursor-pointer">
+            <div className="flex flex-column w-12 hover-2">
+              <img
+                src="/src/assets/sanpham2.png"
+                alt=""
+                className="max-w-full h-auto border-round-sm"
+              />
+              <h2>Dầu cá Omega 3</h2>
+              <div className="flex flex-row">
+                <div className="text-main2 mr-auto">Giá: 599.000đ</div>
+                <Button severity="danger">Mua ngay</Button>
+              </div>
+            </div>
+          </Card>
+          <Card className="hidden xl:block cursor-pointer">
+            <div className="flex flex-column w-12 hover-2">
+              <img
+                src="/src/assets/sanpham1.png"
+                alt=""
+                className="max-w-full h-auto border-round-sm"
+              />
+              <h2>Vitamin C 1000mg</h2>
+              <div className="flex flex-row">
+                <div className="text-main2 mr-auto">Giá: 299.000đ</div>
+                <Button severity="danger">Mua ngay</Button>
+              </div>
+            </div>
+          </Card>
         </div>
         <div className="flex justify-content-center">
           <Button
+            className="hover-button"
             label="Khám phá thêm sản phẩm"
             severity="help"
             rounded
@@ -293,9 +322,9 @@ const Home = () => {
         </div>
         <div className="flex flex-column justify-content-center gap-3">
           <h1 className="text-main3 text-center">Mẹo sức khỏe & Blog</h1>
-          <div className="flex flex-column lg:flex-row gap-3">
+          <div className="flex flex-column md:flex-row gap-3">
             <Card
-              className="blog lg:w-4"
+              className="blog w-full md:w-6 lg:w-4 hover-3"
               style={{ border: "1px solid #0596b3ff" }}
             >
               <div
@@ -314,8 +343,7 @@ const Home = () => {
                 </h2>
                 <div className="text-main2 mb-auto">
                   Một giấc ngủ ngon vô cùng quan trọng đối với sức khỏe và tinh
-                  thần của con người. Ngủ ngon sẽ giúp bạn có một tinh thần
-                  thoải mái ...
+                  thần của con người. Ngủ ngon sẽ giúp bạn có một tinh thần ...
                 </div>
                 <div className="mt-5 flex justify-content-center">
                   <a
@@ -323,13 +351,19 @@ const Home = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <Button label="Đọc thêm" severity="info" rounded outlined />
+                    <Button
+                      className="hover-button2"
+                      label="Đọc thêm"
+                      severity="info"
+                      rounded
+                      outlined
+                    />
                   </a>
                 </div>
               </div>
             </Card>
             <Card
-              className="blog lg:w-4"
+              className="blog w-full md:w-6 lg:w-4 hover-3"
               style={{ border: "1px solid #0596b3ff" }}
             >
               <div
@@ -357,13 +391,19 @@ const Home = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <Button label="Đọc thêm" severity="info" rounded outlined />
+                    <Button
+                      className="hover-button2"
+                      label="Đọc thêm"
+                      severity="info"
+                      rounded
+                      outlined
+                    />
                   </a>
                 </div>
               </div>
             </Card>
             <Card
-              className="blog lg:w-4"
+              className="blog hidden lg:block lg:w-4 hover-3"
               style={{ border: "1px solid #0596b3ff" }}
             >
               <div
@@ -392,11 +432,11 @@ const Home = () => {
                     rel="noopener noreferrer"
                   >
                     <Button
+                      className="hover-button2"
                       label="Đọc thêm"
                       severity="info"
                       rounded
                       outlined
-                      className="hover-button"
                     />
                   </a>
                 </div>
@@ -407,7 +447,7 @@ const Home = () => {
       </div>
 
       <div className="flex justify-content-end my-3">
-        <div className="card-1 mr-5 p-2 font-bold">
+        <div className="card-1 mr-5 p-2 font-bold cursor-pointer">
           Nhận tư vấn miễn phí về dịch vụ của chúng tôi
         </div>
       </div>
