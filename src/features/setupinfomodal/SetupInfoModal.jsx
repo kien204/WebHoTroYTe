@@ -274,7 +274,7 @@ const SetupInfoModal = ({ onClose }) => {
                           style={{ marginLeft: "0.75rem" }}
                         />
                         <Dropdown
-                          inputId="gender"
+                          id="gender"
                           value={form.gender}
                           onChange={(e) =>
                             setForm({ ...form, gender: e.value })
@@ -359,7 +359,7 @@ const SetupInfoModal = ({ onClose }) => {
                           <i className="pi pi-shopping-bag" />
                         </span>
                         <InputText
-                          inputId="weight"
+                          id="weight"
                           value={form.weight}
                           onChange={(e) =>
                             setForm({ ...form, weight: e.target.value })
@@ -391,7 +391,7 @@ const SetupInfoModal = ({ onClose }) => {
                           <i className="pi pi-arrows-v" />
                         </span>
                         <InputText
-                          inputId="height"
+                          id="height"
                           value={form.height}
                           onChange={(e) =>
                             setForm({ ...form, height: e.target.value })

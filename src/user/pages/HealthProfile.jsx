@@ -99,7 +99,31 @@ const HealthProfile = () => {
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
+
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+    if (!allowedTypes.includes(file.type)) {
+      showToast(
+        "warn",
+        "Lỗi",
+        "Lỗi! Vui lòng chọn file có định dạng ảnh như .JPEG, .PNG hoặc .JPG!!"
+      );
+      event.target.value = ""; // reset input
+      return;
+    }
+
     if (file) {
+      // Kiểm tra dung lượng file
+      const maxSize = 2 * 1024 * 1024;
+      if (file.size > maxSize) {
+        showToast(
+          "warn",
+          "Tệp quá lớn",
+          "Lỗi! Vui lòng chọn file kích thước < 2MB!"
+        );
+        event.target.value = ""; // reset input file
+        return;
+      }
+
       const imageUrl = URL.createObjectURL(file);
       setAvatarUrl(imageUrl);
       setInfo({ ...info, avatarUrl: file });
@@ -147,7 +171,9 @@ const HealthProfile = () => {
     formData.append("Height", Number(info.height));
     formData.append("Weight", Number(info.weight));
     formData.append("Adress", info.address);
-    formData.append("avatar", info.avatarUrl);
+    if (info.avatarUrl instanceof File) {
+      formData.append("avatar", info.avatarUrl);
+    }
 
     try {
       const res = await callApi(() => infoApi.update(info.hoSoId, formData));
@@ -286,7 +312,7 @@ const HealthProfile = () => {
                   style={{ marginLeft: "0.75rem" }}
                 />
                 <Dropdown
-                  inputId="gender"
+                  id="gender"
                   value={info.gender || ""}
                   onChange={(e) => setInfo({ ...info, gender: e.target.value })}
                   options={selectedGender}
@@ -345,9 +371,9 @@ const HealthProfile = () => {
                   style={{ marginLeft: "0.75rem" }}
                 />
                 <InputText
-                  inputId="weight"
-                  value={info.weight || null}
-                  onValueChange={(e) => setInfo({ ...info, weight: e.value })}
+                  id="weight"
+                  value={info.weight || ""}
+                  onChange={(e) => setInfo({ ...info, weight: e.target.value })}
                   placeholder="Nhập cân nặng"
                   invalid={errorForm.weight}
                   onFocus={() => setErrorForm({ ...errorForm, weight: false })}
@@ -373,9 +399,9 @@ const HealthProfile = () => {
                   style={{ marginLeft: "0.75rem" }}
                 />
                 <InputText
-                  inputId="height"
-                  value={info.height || null}
-                  onValueChange={(e) => setInfo({ ...info, height: e.value })}
+                  id="height"
+                  value={info.height || ""}
+                  onChange={(e) => setInfo({ ...info, height: e.target.value })}
                   onFocus={() => setErrorForm({ ...errorForm, height: false })}
                   placeholder="Nhập chiều cao"
                   invalid={errorForm.height}
