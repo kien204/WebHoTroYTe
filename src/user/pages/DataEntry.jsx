@@ -2,11 +2,11 @@ import React, { useState, useContext, useEffect } from "react";
 
 import { TabView, TabPanel } from "primereact/tabview";
 import { Card } from "primereact/card";
-
 import { useWindowWidth } from "../../common/hooks/useWindowWidth";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
+import dayjs from "dayjs";
 
 import { AuthContext } from "../../common/context/AuthContext";
 import { useToast } from "../../common/hooks/useToast";
@@ -26,26 +26,39 @@ const DataEntry = () => {
   else tableWidthPx = width;
 
   const [form1, setForm1] = useState({
-    userProfileId: null,
-    systolic: null,
-    diastolic: null,
+    userProfileId: "",
+    systolic: "",
+    diastolic: "",
     note: "",
   });
   const [form2, setForm2] = useState({
-    userProfileId: null,
-    heartRate: null,
+    userProfileId: "",
+    heartRate: "",
     note: "",
   });
   const [form3, setForm3] = useState({
-    userProfileId: null,
-    bloodSugar: null,
+    userProfileId: "",
+    bloodSugar: "",
     note: "",
   });
   const [form4, setForm4] = useState({
-    userProfileId: null,
-    timeSleep: null,
+    userProfileId: "",
+    timeSleep: "",
     note: "",
   });
+
+  const [recentlyForm1, setRecentlyForm1] = useState("");
+  const [recentlyForm2, setRecentlyForm2] = useState("");
+  const [recentlyForm3, setRecentlyForm3] = useState("");
+  const [recentlyForm4, setRecentlyForm4] = useState("");
+
+  const [errorform1, seterrorForm1] = useState({
+    data1: false,
+    data2: false,
+  });
+  const [errorform2, seterrorForm2] = useState(false);
+  const [errorform3, seterrorForm3] = useState(false);
+  const [errorform4, seterrorForm4] = useState(false);
 
   useEffect(() => {
     if (profile?.hoSoId) {
@@ -56,13 +69,54 @@ const DataEntry = () => {
     }
   }, [profile]);
 
-  const [errorform1, seterrorForm1] = useState({
-    data1: false,
-    data2: false,
-  });
-  const [errorform2, seterrorForm2] = useState(false);
-  const [errorform3, seterrorForm3] = useState(false);
-  const [errorform4, seterrorForm4] = useState(false);
+  const getRecentlyForm1 = async () => {
+    try {
+      const res = await callApi(() => dataEntryApi.getnewfrom1(profile.hoSoId));
+      setRecentlyForm1(res.record);
+    } catch {
+      //
+    }
+  };
+
+  const getRecentlyForm2 = async () => {
+    try {
+      const res = await callApi(() => dataEntryApi.getnewfrom2(profile.hoSoId));
+      setRecentlyForm2(res.record);
+    } catch {
+      //
+    }
+  };
+
+  const getRecentlyForm3 = async () => {
+    try {
+      const res = await callApi(() => dataEntryApi.getnewfrom3(profile.hoSoId));
+      setRecentlyForm3(res.record);
+    } catch {
+      //
+    }
+  };
+
+  const getRecentlyForm4 = async () => {
+    try {
+      const res = await callApi(() => dataEntryApi.getnewfrom4(profile.hoSoId));
+      setRecentlyForm4(res.record);
+    } catch {
+      //
+    }
+  };
+
+  useEffect(() => {
+    if (!profile?.hoSoId) return;
+    (async () => {
+      await Promise.all([
+        getRecentlyForm1(),
+        getRecentlyForm2(),
+        getRecentlyForm3(),
+        getRecentlyForm4(),
+      ]);
+    })();
+  }, [profile?.hoSoId]);
+
 
   const checkForm12 = () => {
     if (!form1.diastolic) return true;
@@ -87,6 +141,7 @@ const DataEntry = () => {
 
   const checkForm3 = () => {
     if (!form3.bloodSugar) return true;
+    if (!/^-?\d+$/.test(form3.bloodSugar)) return true;
     if (isNaN(form3.bloodSugar)) return true;
     if (form3.bloodSugar < 0 || form3.bloodSugar > 200) return true;
   };
@@ -98,50 +153,90 @@ const DataEntry = () => {
     if (form4.timeSleep < 0 || form4.timeSleep > 24) return true;
   };
 
-  const handleForm1 = () => {
+  const handleForm1 = async () => {
     const newError = {
       data1: checkForm11(),
       data2: checkForm12(),
     };
     seterrorForm1(newError);
-    console.log(form1, errorform1);
 
-    if (Object.values(newError).some((value) => value === true)) return;
+    if (Object.values(newError).some((v) => v)) return;
 
-    console.log(form1);
-
-    // const res = callApi(() => dataEntryApi.createform1(form1));
-    // console.log(res);
+    try {
+      const res = await callApi(() => dataEntryApi.createform1(form1));
+      console.log(res);
+      showToast("success", "Thành công", "Lưu huyết áp Thành công");
+      setForm1((prev) => ({
+        ...prev,
+        systolic: "",
+        diastolic: "",
+        note: "",
+      }));
+      getRecentlyForm1();
+    } catch {
+      //
+    }
   };
 
-  const handleForm2 = () => {
-    seterrorForm2(checkForm2);
+  const handleForm2 = async () => {
+    seterrorForm2(checkForm2());
     if (errorform2) return;
 
-    console.log(form2);
-
-    // const res = callApi(() => dataEntryApi.createform1(form1));
-    // console.log(res);
+    try {
+      const res = await callApi(() => dataEntryApi.createform2(form2));
+      console.log(res);
+      showToast("success", "Thành công", "Lưu nhịp tim Thành công");
+      setForm2((prev) => ({
+        ...prev,
+        heartRate: "",
+        note: "",
+      }));
+      getRecentlyForm2();
+    } catch {
+      //
+    }
   };
 
-  const handleForm3 = () => {
-    seterrorForm3(checkForm3);
+  const handleForm3 = async () => {
+    seterrorForm3(checkForm3());
     if (errorform3) return;
 
     console.log(form3);
 
-    // const res = callApi(() => dataEntryApi.createform3(form3));
-    // console.log(res);
+    try {
+      const res = await callApi(() => dataEntryApi.createform3(form3));
+      console.log(res);
+      showToast("success", "Thành công", "Lưu đường huyết Thành công");
+      setForm1((prev) => ({
+        ...prev,
+        bloodSugar: "",
+        note: "",
+      }));
+      getRecentlyForm3();
+    } catch {
+      //
+    }
   };
 
-  const handleForm4 = () => {
-    seterrorForm4(checkForm4);
+  const handleForm4 = async () => {
+    seterrorForm4(checkForm4());
     if (errorform4) return;
 
     console.log(form4);
 
-    // const res = callApi(() => dataEntryApi.createform4(form4));
-    // console.log(res);
+    try {
+      const res = await callApi(() => dataEntryApi.createform4(form4));
+      console.log(res);
+      showToast("success", "Thành công", "Lưu giấc ngủ Thành công");
+      setForm1((prev) => ({
+        ...prev,
+        timeSleep: "",
+        note: "",
+      }));
+      getRecentlyForm4();
+    } catch {
+      //
+    }
   };
 
   return (
@@ -266,9 +361,9 @@ const DataEntry = () => {
                   <div className="mt-3">
                     <label htmlFor="ip3">Ghi chú (tùy chọn)</label>
                     <InputTextarea
-                      value={form2.data2}
+                      value={form2.note}
                       onChange={(e) =>
-                        setForm2({ ...form2, data2: e.target.value })
+                        setForm2({ ...form2, note: e.target.value })
                       }
                       rows={5}
                       cols={30}
@@ -394,9 +489,15 @@ const DataEntry = () => {
               <div className="flex flex-row align-items-center gap-3">
                 <i className="pi pi-chart-line text-main1 text-2xl font-bold" />
                 <div className="flex flex-column">
-                  <div className="font-bold">120/80 mmHg</div>
-                  <div className="text-sm">08:30 12/06/2024</div>
-                  <div>Sau khi nghỉ 5 phút</div>
+                  <div className="font-bold">
+                    {recentlyForm1?.systolic}/{recentlyForm1?.diastolic} mmHg
+                  </div>
+                  <div className="text-sm">
+                    {dayjs(recentlyForm1?.recordedAt).format(
+                      "HH:mm DD/MM/YYYY"
+                    )}
+                  </div>
+                  <div>{recentlyForm1?.note}</div>
                 </div>
               </div>
             </Card>
@@ -404,9 +505,15 @@ const DataEntry = () => {
               <div className="flex flex-row align-items-center gap-3">
                 <i className="pi pi-heart text-main1 text-2xl font-bold" />
                 <div className="flex flex-column">
-                  <div className="font-bold">72 BPM</div>
-                  <div className="text-sm">08:30 12/06/2024</div>
-                  <div>Sau khi nghỉ 5 phút</div>
+                  <div className="font-bold">
+                    {recentlyForm2?.heartRate} BPM
+                  </div>
+                  <div className="text-sm">
+                    {dayjs(recentlyForm2?.recordedAt).format(
+                      "HH:mm DD/MM/YYYY"
+                    )}
+                  </div>
+                  <div>{recentlyForm2?.note}</div>
                 </div>
               </div>
             </Card>
@@ -414,9 +521,15 @@ const DataEntry = () => {
               <div className="flex flex-row align-items-center gap-3">
                 <i className="pi pi-wave-pulse text-main1 text-2xl font-bold" />
                 <div className="flex flex-column">
-                  <div className="font-bold">95 mg/dL</div>
-                  <div className="text-sm">08:30 12/06/2024</div>
-                  <div>Sau khi ăn tối</div>
+                  <div className="font-bold">
+                    {recentlyForm3?.bloodSugar} mg/dL
+                  </div>
+                  <div className="text-sm">
+                    {dayjs(recentlyForm3?.recordedAt).format(
+                      "HH:mm DD/MM/YYYY"
+                    )}
+                  </div>
+                  <div>{recentlyForm3?.note}</div>
                 </div>
               </div>
             </Card>
@@ -424,9 +537,15 @@ const DataEntry = () => {
               <div className="flex flex-row align-items-center gap-3">
                 <i className="pi pi-moon text-main1 text-2xl font-bold" />
                 <div className="flex flex-column">
-                  <div className="font-bold">7 tiếng</div>
-                  <div className="text-sm">08:30 12/06/2024</div>
-                  <div>Ngủ ngon</div>
+                  <div className="font-bold">
+                    {recentlyForm4?.timeSleep} tiếng
+                  </div>
+                  <div className="text-sm">
+                    {dayjs(recentlyForm4?.recordedAt).format(
+                      "HH:mm DD/MM/YYYY"
+                    )}
+                  </div>
+                  <div>{recentlyForm4?.note}</div>
                 </div>
               </div>
             </Card>

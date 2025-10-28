@@ -24,9 +24,14 @@
 }
 
 .p-card1 {
-  overflow: hidden; /* Chặn ảnh tràn ra */
   transition: box-shadow 0.5s ease, transform 0.3s ease;
   cursor: pointer;
+  border: 1px solid rgba(5, 150, 179, 0);
+  overflow: visible !important;
+
+  .p-card-body {
+    padding: 0.5rem;
+  }
 }
 
 .p-card1:hover {

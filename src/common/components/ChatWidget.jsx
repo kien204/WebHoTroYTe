@@ -16,7 +16,7 @@ import aiHelperAPI from "../../services/api/aiHelperAPI";
 import "./MiniChat.css";
 
 const ChatWidget = () => {
-  const { auth, info } = useContext(AuthContext);
+  const { auth, profile } = useContext(AuthContext);
   const { showToast } = useToast();
   const { callApi } = useApi(showToast, false);
 
@@ -169,7 +169,7 @@ const ChatWidget = () => {
                             </span>
                             <Avatar
                               image={
-                                info?.avatarUrl ||
+                                profile?.avatarUrl ||
                                 "https://www.w3schools.com/howto/img_avatar.png"
                               }
                               shape="circle"
@@ -225,7 +225,7 @@ const ChatWidget = () => {
                     placeholder="Hỏi về sức khỏe của bạn..."
                     className="w-full max-h-7rem overflow-y-scroll"
                     onKeyDown={(e) => {
-                      if (e.key === "Enter") handleSend();
+                      if (e.key === "Enter" && !loadingMes) handleSend();
                     }}
                   />
                   <Button

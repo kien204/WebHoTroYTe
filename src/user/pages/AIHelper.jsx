@@ -15,7 +15,7 @@ import { useToast } from "../../common/hooks/useToast";
 import aiHelperAPI from "../../services/api/aiHelperAPI";
 
 const AIHelper = () => {
-  const { auth, info } = useContext(AuthContext);
+  const { auth, profile } = useContext(AuthContext);
   const { showToast } = useToast();
   const { callApi } = useApi(showToast, false);
 
@@ -152,7 +152,7 @@ const AIHelper = () => {
         </div>
       </div>
 
-      <div className="flex flex-column lg:flex-row ">
+      <div className="flex flex-column lg:flex-row aihelper">
         <div className="col-12 lg:col-3">
           <Card
             title={
@@ -246,7 +246,7 @@ const AIHelper = () => {
                         </span>
                         <Avatar
                           image={
-                            info?.avatarUrl ||
+                            profile?.avatarUrl ||
                             "https://www.w3schools.com/howto/img_avatar.png"
                           }
                           shape="circle"
@@ -292,7 +292,7 @@ const AIHelper = () => {
               </div>
             </ScrollPanel>
 
-            <div className="flex align-items-center gap-2 mt-5">
+            <div className="flex align-items-center gap-2 mt-3">
               <InputTextarea
                 autoResize
                 rows={1}
@@ -302,7 +302,7 @@ const AIHelper = () => {
                 placeholder="Hỏi về sức khỏe của bạn..."
                 className="w-full max-h-7rem overflow-y-scroll"
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") handleSend();
+                  if (e.key === "Enter" && !loadingMes) handleSend();
                 }}
               />
               <Button

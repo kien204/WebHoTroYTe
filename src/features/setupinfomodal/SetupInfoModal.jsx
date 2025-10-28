@@ -57,6 +57,18 @@ const SetupInfoModal = ({ onClose }) => {
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
+
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+    if (!allowedTypes.includes(file.type)) {
+      showToast(
+        "warn",
+        "Lỗi",
+        "Lỗi! Vui lòng chọn file có định dạng ảnh như .JPEG, .PNG hoặc .JPG!!"
+      );
+      event.target.value = ""; // reset input
+      return;
+    }
+
     if (file) {
       // Kiểm tra dung lượng file
       const maxSize = 2 * 1024 * 1024;
@@ -287,6 +299,9 @@ const SetupInfoModal = ({ onClose }) => {
                 icon="pi pi-arrow-right"
                 iconPos="right"
                 onClick={handleNext}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleNext();
+                }}
               />
             </div>
           </StepperPanel>
@@ -417,6 +432,9 @@ const SetupInfoModal = ({ onClose }) => {
                 icon="pi pi-save"
                 iconPos="right"
                 onClick={handleSave}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSave();
+                }}
               />
             </div>
           </StepperPanel>

@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  // baseURL: "https://td6tscmq-5092.asse.devtunnels.ms/api",
-  baseURL: "http://10.15.52.49:5092/api",
+ // baseURL: "https://td6tscmq-5092.asse.devtunnels.ms/api",
+  //  baseURL: "http://10.15.110.226:5092/api",
   headers: {
     "Content-Type": "application/json",
   },

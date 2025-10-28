@@ -10,10 +10,11 @@ const Topbar = ({ onMenuToggle }) => {
       style={{ borderBottom: "1px solid #E3E3E3" }}
     >
       {/* Logo */}
-      <Link to="/" className="flex align-items-center gap-2">
+      <Link to="/" className="flex align-items-center gap-2 md:hidden">
         <img src={logo} alt="Logo" height="36" />
         <span className="text-xl font-bold text-primary">HealthCare</span>
       </Link>
+      <i className="pi pi-bars hidden md:block cursor-pointer" />
       {/* Actions */}
       <div className="flex align-items-center gap-2">
         <Button icon="pi pi-bell" className="p-button-rounded p-button-text" />

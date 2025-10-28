@@ -30,7 +30,10 @@ const Layout = ({ children }) => {
 
       <div className="flex flex-column flex-1">
         <Topbar onMenuToggle={() => setSidebarVisible(true)} />
-        <div className="flex-1 p-4 overflow-auto bg-main4">{children}</div>
+        <div className="flex-1 overflow-auto">
+          <div className="p-4  bg-main4">{children}</div>
+          <Footer />
+        </div>
       </div>
 
       {sidebarVisible && (

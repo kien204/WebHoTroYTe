@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import "./style/Home.css";
 import VideoPlayer from "react-video-js-player";
 import "video.js/dist/video-js.css";
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
-import { Tag } from "primereact/tag";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import AOS from "aos";
@@ -14,14 +13,14 @@ const Home = () => {
   const videoSrc = "/src/assets/video/video.mp4";
   const poster = "/src/assets/video/poster.png";
 
-  const [value2, setValue2] = useState("");
-
   useEffect(() => {
     AOS.init({
-      duration: 1000, // thời gian chạy animation
-      once: true, // chỉ chạy 1 lần, không ẩn sau khi chạy
+      startEvent: "DOMContentLoaded",
+      once: true,
+      mirror: true,
+      offset: 0,
+      duration: 1000,
     });
-    AOS.refresh(); // đảm bảo đồng bộ các element mới
   }, []);
 
   return (
@@ -72,7 +71,7 @@ const Home = () => {
           Đánh giá thực tế từ người dùng giúp bạn yên tâm hơn khi chọn dịch vụ.
         </div>
         <div className="flex flex-column md:flex-row gap-3">
-          <Card className="p-card1">
+          <Card className="p-card1 w-full">
             <img
               src="/src/assets/anhpv1.png"
               alt=""
@@ -83,7 +82,7 @@ const Home = () => {
             </div>
             <h2 className="text-center m-2">Nguyễn Văn An</h2>
           </Card>
-          <Card className="p-card1">
+          <Card className="p-card1 w-full">
             <img
               src="/src/assets/anhpv2.png"
               alt=""
@@ -95,7 +94,7 @@ const Home = () => {
             </div>
             <h2 className="text-center m-2">Nguyễn Văn An</h2>
           </Card>
-          <Card className="p-card1">
+          <Card className="p-card1 w-full">
             <img
               src="/src/assets/anhpv3.png"
               alt=""
@@ -118,7 +117,7 @@ const Home = () => {
         <div className="flex flex-column justify-content-center gap-1">
           <h1 className="text-main3 text-center m-0 mb-3">Phòng khám uy tín</h1>
           <div className="flex flex-column md:flex-row gap-3">
-            <div className="w-12 md:w-6">
+            <div className="w-12 md:w-6 cursor-pointer">
               <div
                 className="shadow-1 w-12 border-round-xl"
                 style={{
@@ -127,7 +126,7 @@ const Home = () => {
                 }}
               >
                 <div className="flex flex-column bg-white p-3 gap-1">
-                  <h3 className="m-0 mb-2">Phòng khám Đa Khoa Quốc Tế</h3>
+                  <h3 className="m-0 mb-2">Phòng khám Đa Khoa</h3>
                   <div className="text-main2">Địa chỉ: Cầu giấy, Hà Nội</div>
                   <div className="text-main2">Liên hệ: 09876543</div>
                   <div className="text-main2">Chuyên Khoa: Nội tổng quát </div>
@@ -159,7 +158,7 @@ const Home = () => {
                 </div>
               </div>
             </div>
-            <div className="w-12 md:w-6">
+            <div className="w-12 md:w-6 cursor-pointer">
               <div
                 className="shadow-1 w-12 border-round-xl"
                 style={{
@@ -449,63 +448,6 @@ const Home = () => {
       <div className="flex justify-content-end my-3">
         <div className="card-1 mr-5 p-2 font-bold cursor-pointer">
           Nhận tư vấn miễn phí về dịch vụ của chúng tôi
-        </div>
-      </div>
-
-      <div
-        className="flex flex-column gap-5 py-4 px-5"
-        style={{ background: "#0054A6" }}
-      >
-        <div className="flex flex-column md:flex-row gap-7">
-          <div className="flex flex-column gap-4">
-            <div className="flex flex-row align-items-center gap-3">
-              <img
-                src="/src/assets/logo.png"
-                alt=""
-                className="max-h-full h-5rem"
-              />
-              <div className="font-bold text-xl text-white">
-                HealthCare - Nền tảng chăm sóc sức khỏe cho mọi người
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <i className="pi pi-map-marker text-white" />
-              <span className="text-white">
-                Tầng 2, nhà C, 136 Xuân Thủy, Cầu Giấy, Hà Nội
-              </span>
-            </div>
-            <div className="flex gap-3">
-              <i className="pi pi-whatsapp text-white" />
-              <span className="text-white">098765432</span>
-            </div>
-            <div className="flex gap-3">
-              <i className="pi pi-envelope text-white" />
-              <span className="text-white">healthcare@gmail.com</span>
-            </div>
-            <div className="flex gap-3">
-              <i className="pi pi-globe text-white" />
-              <span className="text-white">https://healthcare.vn</span>
-            </div>
-          </div>
-          <div className="flex flex-column gap-4">
-            <div className="font-bold text-xl text-white">
-              Góp ý với về chúng tôi
-            </div>
-            <InputTextarea
-              value={value2}
-              onChange={(e) => setValue2(e.target.value)}
-              rows={5}
-              cols={30}
-              placeholder="Góp ý"
-              className="w-full"
-            />
-            <div>
-              <Button severity="warning">Gửi</Button>
-            </div>
-          </div>
-        </div>
-        <div className="text-center text-white">
-          © 2025 Nhóm 5 CĐTN - Trường Đại học Sư phạm Hà Nội
         </div>
       </div>
     </div>
