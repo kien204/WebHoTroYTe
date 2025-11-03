@@ -22,7 +22,7 @@ const AIHelper = () => {
   const [loadingMes, setLoadingMes] = useState(false);
   const [date, setDate] = useState(null);
   const [history, setHistory] = useState([]);
-  const messagesEndRef = useRef(null);
+  const scrollRef = useRef(null);
 
   const [messages, setMessages] = useState([
     {
@@ -36,10 +36,18 @@ const AIHelper = () => {
   const [input, setInput] = useState("");
 
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    if (scrollRef.current) {
+      const el = scrollRef.current.getElement(); // 👈 lấy thẳng phần tử DOM gốc
+      const content = el.querySelector(".p-scrollpanel-content"); // 👈 phần nội dung thực tế cuộn
+      if (content) {
+        content.scrollTo({
+          top: content.scrollHeight,
+          behavior: "smooth",
+        });
+      }
     }
   }, [messages]);
+
 
   useEffect(() => {
     let isMounted = true;
@@ -226,7 +234,11 @@ const AIHelper = () => {
               </div>
             }
           >
-            <ScrollPanel style={{ height: "350px" }} className="mb-3">
+            <ScrollPanel
+              ref={scrollRef}
+              style={{ height: "350px" }}
+              className="mb-3"
+            >
               <div className="flex flex-column gap-3 w-full">
                 {messages.map((msg, i) => (
                   <div key={i} className="flex flex-column">
@@ -288,7 +300,6 @@ const AIHelper = () => {
                     )}
                   </div>
                 ))}
-                <div ref={messagesEndRef}></div>
               </div>
             </ScrollPanel>
 

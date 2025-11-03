@@ -71,8 +71,16 @@ ol {
   color: #6d28d9;
 }
 
+.text-main4 {
+  color: #004d68;
+}
+
 .text-white {
   color: #ffffff;
+}
+
+.text-black {
+  color: #000000;
 }
 
 .card-1 {
@@ -93,7 +101,7 @@ ol {
   border-radius: 5px;
   border: 2px solid #cbcd51;
   background-color: #f9fad0;
-  color: #006d94;
+  color: #8c8d39;
 }
 
 .card-2 {
@@ -101,6 +109,12 @@ ol {
   border: 2px solid #a1ec8e;
   background-color: #e5ffe0;
   color: #3bd315;
+}
+
+.card-5 {
+  border-radius: 8px;
+  border: 2px solid #b8b8b8;
+  background-color: #f0eeee;
 }
 
 .active-sidebar {
@@ -171,5 +185,11 @@ ol {
 .blog {
   .p-card-body {
     padding: 0 !important;
+  }
+}
+
+.slider-over {
+  .p-slider-range {
+    width: 0px !important;
   }
 }

@@ -400,7 +400,7 @@ const SystemManager = () => {
         >
           <Column body={sttBodyTemplate} header="STT" />
           <Column field="id" header="ID user" />
-          <Column field="us1erName" header="Họ và tên" />
+          <Column field="userName" header="Họ và tên" />
           <Column field="email" header="Email" />
           <Column field="creatAt" header="Ngày tạo" />
           <Column field="updateAt" header="Cập nhật lần cuối" />
