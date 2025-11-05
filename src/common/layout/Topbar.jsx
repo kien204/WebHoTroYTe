@@ -14,7 +14,7 @@ const Topbar = ({ onMenuToggle }) => {
         <img src={logo} alt="Logo" height="36" />
         <span className="text-xl font-bold text-primary">HealthCare</span>
       </Link>
-      <i className="pi pi-bars hidden md:block cursor-pointer" />
+      <div className="mr-auto"></div>
       {/* Actions */}
       <div className="flex align-items-center gap-2">
         <Button icon="pi pi-bell" className="p-button-rounded p-button-text" />

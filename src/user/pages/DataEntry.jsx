@@ -5,6 +5,7 @@ import { Card } from "primereact/card";
 import { useWindowWidth } from "../../common/hooks/useWindowWidth";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
+import { Calendar } from "primereact/calendar";
 import { Button } from "primereact/button";
 import dayjs from "dayjs";
 
@@ -25,6 +26,16 @@ const DataEntry = () => {
   else if (width < 1440) tableWidthPx = width - 550;
   else tableWidthPx = width;
 
+  const [firstForm1, setfirstForm1] = useState(false);
+  const [firstForm2, setfirstForm2] = useState(false);
+  const [firstForm3, setfirstForm3] = useState(false);
+  const [firstForm4, setfirstForm4] = useState(false);
+
+  const [editForm1, setEditForm1] = useState(false);
+  const [editForm2, setEditForm2] = useState(false);
+  const [editForm3, setEditForm3] = useState(false);
+  const [editForm4, setEditForm4] = useState(false);
+
   const [form1, setForm1] = useState({
     userProfileId: "",
     systolic: "",
@@ -44,6 +55,7 @@ const DataEntry = () => {
   const [form4, setForm4] = useState({
     userProfileId: "",
     timeSleep: "",
+    timeWake: "",
     note: "",
   });
 
@@ -58,7 +70,10 @@ const DataEntry = () => {
   });
   const [errorform2, seterrorForm2] = useState(false);
   const [errorform3, seterrorForm3] = useState(false);
-  const [errorform4, seterrorForm4] = useState(false);
+  const [errorform4, seterrorForm4] = useState({
+    data1: false,
+    data2: false,
+  });
 
   useEffect(() => {
     if (profile?.hoSoId) {
@@ -67,41 +82,120 @@ const DataEntry = () => {
       setForm3((prev) => ({ ...prev, userProfileId: profile.hoSoId }));
       setForm4((prev) => ({ ...prev, userProfileId: profile.hoSoId }));
     }
-  }, [profile]);
+  }, [profile?.hoSoId]);
 
   const getRecentlyForm1 = async () => {
     try {
-      const res = await callApi(() => dataEntryApi.getnewfrom1(profile.hoSoId));
+      const res = await callApi(
+        () => dataEntryApi.getnewfrom1(profile.hoSoId),
+        false,
+        false
+      );
       setRecentlyForm1(res.record);
     } catch {
       //
+    }
+    try {
+      const res = await callApi(
+        () => dataEntryApi.getTodayfrom1(profile.hoSoId),
+        false,
+        false
+      );
+      setForm1({
+        ...form1,
+        diastolic: res.record.diastolic,
+        systolic: res.record.systolic,
+        note: res.record.note,
+      });
+      setfirstForm1(false);
+    } catch {
+      setfirstForm1(true);
     }
   };
 
   const getRecentlyForm2 = async () => {
     try {
-      const res = await callApi(() => dataEntryApi.getnewfrom2(profile.hoSoId));
+      const res = await callApi(
+        () => dataEntryApi.getnewfrom2(profile.hoSoId),
+        false,
+        false
+      );
       setRecentlyForm2(res.record);
     } catch {
       //
+    }
+    try {
+      const res = await callApi(
+        () => dataEntryApi.getTodayfrom2(profile.hoSoId),
+        false,
+        false
+      );
+      setForm2({
+        ...form2,
+        heartRate: res.record.heartRate,
+        note: res.record.note,
+      });
+      setfirstForm2(false);
+    } catch {
+      setfirstForm2(true);
     }
   };
 
   const getRecentlyForm3 = async () => {
     try {
-      const res = await callApi(() => dataEntryApi.getnewfrom3(profile.hoSoId));
+      const res = await callApi(
+        () => dataEntryApi.getnewfrom3(profile.hoSoId),
+        false,
+        false
+      );
       setRecentlyForm3(res.record);
     } catch {
       //
+    }
+    try {
+      const res = await callApi(
+        () => dataEntryApi.getTodayfrom3(profile.hoSoId),
+        false,
+        false
+      );
+      setForm3({
+        ...form3,
+        bloodSugar: res.record.bloodSugar,
+        note: res.record.note,
+      });
+      setfirstForm3(false);
+    } catch {
+      setfirstForm3(true);
     }
   };
 
   const getRecentlyForm4 = async () => {
     try {
-      const res = await callApi(() => dataEntryApi.getnewfrom4(profile.hoSoId));
+      const res = await callApi(
+        () => dataEntryApi.getnewfrom4(profile.hoSoId),
+        false,
+        false
+      );
       setRecentlyForm4(res.record);
     } catch {
       //
+    }
+    try {
+      const res = await callApi(
+        () => dataEntryApi.getTodayfrom4(profile.hoSoId),
+        false,
+        false
+      );
+      setForm4({
+        ...form4,
+        timeSleep: res.record.sleepTime ? new Date(res.record.sleepTime) : null,
+        timeWake: res.record.wakeTime ? new Date(res.record.wakeTime) : null,
+        note: res.record.sleepAlert,
+      });
+
+      setfirstForm4(false);
+    } catch {
+      setfirstForm4(true);
     }
   };
 
@@ -116,7 +210,6 @@ const DataEntry = () => {
       ]);
     })();
   }, [profile?.hoSoId]);
-
 
   const checkForm12 = () => {
     if (!form1.diastolic) return true;
@@ -147,10 +240,50 @@ const DataEntry = () => {
   };
 
   const checkForm4 = () => {
-    if (!form4.timeSleep) return true;
-    if (!/^-?\d+$/.test(form4.timeSleep)) return true;
-    if (isNaN(form4.timeSleep)) return true;
-    if (form4.timeSleep < 0 || form4.timeSleep > 24) return true;
+    if (!form4.timeSleep || !form4.timeWake) return true;
+    if (form4.timeSleep > form4.timeWake) return true;
+  };
+
+  const handleCancelForm1 = () => {
+    setForm1({
+      ...form1,
+      diastolic: recentlyForm1.diastolic,
+      systolic: recentlyForm1.systolic,
+      note: recentlyForm1.note,
+    });
+    setEditForm1(false);
+  };
+
+  const handleCancelForm2 = () => {
+    setForm2({
+      ...form2,
+      heartRate: recentlyForm2.heartRate,
+      note: recentlyForm2.note,
+    });
+    setEditForm2(false);
+  };
+
+  const handleCancelForm3 = () => {
+    setForm3({
+      ...form3,
+      bloodSugar: recentlyForm3.bloodSugar,
+      note: recentlyForm3.note,
+    });
+    setEditForm3(false);
+  };
+
+  const handleCancelForm4 = () => {
+    setForm4({
+      ...form4,
+      timeSleep: recentlyForm4.sleepTime
+        ? new Date(recentlyForm4.sleepTime)
+        : null,
+      timeWake: recentlyForm4.wakeTime
+        ? new Date(recentlyForm4.wakeTime)
+        : null,
+      note: recentlyForm4.sleepAlert,
+    });
+    setEditForm4(false);
   };
 
   const handleForm1 = async () => {
@@ -163,15 +296,22 @@ const DataEntry = () => {
     if (Object.values(newError).some((v) => v)) return;
 
     try {
-      const res = await callApi(() => dataEntryApi.createform1(form1));
-      console.log(res);
+      if (firstForm1) {
+        await callApi(() => dataEntryApi.createform1(form1));
+      } else {
+        await callApi(() =>
+          dataEntryApi.putform1(
+            {
+              systolic: form1.systolic,
+              diastolic: form1.diastolic,
+              note: form1.note,
+            },
+            profile?.hoSoId
+          )
+        );
+        setEditForm1(false);
+      }
       showToast("success", "Thành công", "Lưu huyết áp Thành công");
-      setForm1((prev) => ({
-        ...prev,
-        systolic: "",
-        diastolic: "",
-        note: "",
-      }));
       getRecentlyForm1();
     } catch {
       //
@@ -180,17 +320,25 @@ const DataEntry = () => {
 
   const handleForm2 = async () => {
     seterrorForm2(checkForm2());
-    if (errorform2) return;
+
+    if (checkForm2()) return;
 
     try {
-      const res = await callApi(() => dataEntryApi.createform2(form2));
-      console.log(res);
+      if (firstForm2) {
+        await callApi(() => dataEntryApi.createform2(form2));
+      } else {
+        await callApi(() =>
+          dataEntryApi.putform2(
+            {
+              heartRate: form2.heartRate,
+              note: form2.note,
+            },
+            profile?.hoSoId
+          )
+        );
+        setEditForm2(false);
+      }
       showToast("success", "Thành công", "Lưu nhịp tim Thành công");
-      setForm2((prev) => ({
-        ...prev,
-        heartRate: "",
-        note: "",
-      }));
       getRecentlyForm2();
     } catch {
       //
@@ -199,19 +347,28 @@ const DataEntry = () => {
 
   const handleForm3 = async () => {
     seterrorForm3(checkForm3());
-    if (errorform3) return;
-
-    console.log(form3);
+    if (checkForm3()) return;
 
     try {
-      const res = await callApi(() => dataEntryApi.createform3(form3));
-      console.log(res);
+      if (firstForm3) {
+        await callApi(() => dataEntryApi.createform3(form3));
+      } else {  
+
+          console.log(form3);
+          
+
+        await callApi(() =>
+          dataEntryApi.putform3(
+            {
+              bloodSugar: form3.bloodSugar,
+              note: form3.note,
+            },
+            profile?.hoSoId
+          )
+        );
+        setEditForm3(false);
+      }
       showToast("success", "Thành công", "Lưu đường huyết Thành công");
-      setForm1((prev) => ({
-        ...prev,
-        bloodSugar: "",
-        note: "",
-      }));
       getRecentlyForm3();
     } catch {
       //
@@ -219,20 +376,31 @@ const DataEntry = () => {
   };
 
   const handleForm4 = async () => {
-    seterrorForm4(checkForm4());
-    if (errorform4) return;
+    const newError = {
+      data1: checkForm4(),
+      data2: checkForm4(),
+    };
+    seterrorForm4(newError);
 
-    console.log(form4);
+    if (Object.values(newError).some((v) => v)) return;
 
     try {
-      const res = await callApi(() => dataEntryApi.createform4(form4));
-      console.log(res);
-      showToast("success", "Thành công", "Lưu giấc ngủ Thành công");
-      setForm1((prev) => ({
-        ...prev,
-        timeSleep: "",
-        note: "",
-      }));
+      if (firstForm4) {
+        await callApi(() => dataEntryApi.createform4(form4));
+      } else {
+        await callApi(() =>
+          dataEntryApi.putform4(
+            {
+              timeSleep: form4.timeSleep,
+              timeWake: form4.timeWake,
+              note: form4.note,
+            },
+            profile?.hoSoId
+          )
+        );
+        setEditForm4(false);
+      }
+      showToast("success", "Thành công", "Lưu đường huyết Thành công");
       getRecentlyForm4();
     } catch {
       //
@@ -265,7 +433,7 @@ const DataEntry = () => {
                     <div>
                       <label htmlFor="ip1">Tâm thu (mmHg)</label>
                       <InputText
-                        inputId="ip1"
+                        id="ip1"
                         placeholder="Nhập tâm thu"
                         className="w-full mt-2"
                         value={form1.systolic}
@@ -276,6 +444,7 @@ const DataEntry = () => {
                         onFocus={() =>
                           seterrorForm1({ ...errorform1, data1: false })
                         }
+                        disabled={!editForm1 && !firstForm1}
                       />
                       {errorform1.data1 && form1.systolic && (
                         <div className="text-sm mt-1" style={{ color: "red" }}>
@@ -288,7 +457,7 @@ const DataEntry = () => {
                     <div>
                       <label htmlFor="ip2">Tâm trương (mmHg)</label>
                       <InputText
-                        inputId="ip2"
+                        id="ip2"
                         placeholder="Nhập tâm trương"
                         className="w-full mt-2"
                         value={form1.diastolic}
@@ -299,6 +468,7 @@ const DataEntry = () => {
                         onFocus={() =>
                           seterrorForm1({ ...errorform1, data2: false })
                         }
+                        disabled={!editForm1 && !firstForm1}
                       />
                       {errorform1.data2 && form1.diastolic && (
                         <div className="text-sm mt-1" style={{ color: "red" }}>
@@ -320,14 +490,47 @@ const DataEntry = () => {
                       cols={30}
                       className="w-full mt-2"
                       placeholder="Ví dụ: Đo sau khi ăn xong và nghỉ ngơi 5 phút"
+                      disabled={!editForm1 && !firstForm1}
                     />
                   </div>
-                  <Button
-                    icon="pi pi-save"
-                    label="Lưu huyết áp"
-                    className="mt-3 w-full"
-                    onClick={handleForm1}
-                  />
+                  <div className="mt-5">
+                    {firstForm1 ? (
+                      <Button
+                        icon="pi pi-save"
+                        label="Lưu huyết áp"
+                        className="mt-3 w-full"
+                        onClick={handleForm1}
+                      />
+                    ) : (
+                      <>
+                        {editForm1 ? (
+                          <>
+                            <Button
+                              className="mr-3"
+                              type="button"
+                              label="Lưu thay đổi"
+                              icon="pi pi-save"
+                              onClick={handleForm1}
+                            />
+                            <Button
+                              type="button"
+                              label="Hủy"
+                              icon="pi pi-times"
+                              severity="secondary"
+                              onClick={handleCancelForm1}
+                            />
+                          </>
+                        ) : (
+                          <Button
+                            type="button"
+                            label="Sửa"
+                            icon="pi pi-pencil"
+                            onClick={() => setEditForm1(true)}
+                          />
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
               </TabPanel>
               <TabPanel header="Nhịp tim">
@@ -339,7 +542,7 @@ const DataEntry = () => {
                   <div>
                     <label htmlFor="ip1">Nhịp tim (BPM)</label>
                     <InputText
-                      inputId="ip1"
+                      id="ip1"
                       placeholder="Nhập nhịp tim"
                       className="w-full mt-2"
                       value={form2.heartRate}
@@ -348,6 +551,7 @@ const DataEntry = () => {
                       }
                       invalid={errorform2}
                       onFocus={() => seterrorForm2(false)}
+                      disabled={!editForm2 && !firstForm2}
                     />
 
                     {errorform2 && form2.heartRate && (
@@ -368,15 +572,48 @@ const DataEntry = () => {
                       rows={5}
                       cols={30}
                       className="w-full mt-2"
+                      disabled={!editForm2 && !firstForm2}
                       placeholder="Ví dụ: Đo sau khi ăn xong và nghỉ ngơi 5 phút"
                     />
                   </div>
-                  <Button
-                    icon="pi pi-save"
-                    label="Lưu nhịp tim"
-                    className="mt-3 w-full"
-                    onClick={handleForm2}
-                  />
+                  <div className="mt-5">
+                    {firstForm2 ? (
+                      <Button
+                        icon="pi pi-save"
+                        label="Lưu huyết áp"
+                        className="mt-3 w-full"
+                        onClick={handleForm2}
+                      />
+                    ) : (
+                      <>
+                        {editForm2 ? (
+                          <>
+                            <Button
+                              className="mr-3"
+                              type="button"
+                              label="Lưu thay đổi"
+                              icon="pi pi-save"
+                              onClick={handleForm2}
+                            />
+                            <Button
+                              type="button"
+                              label="Hủy"
+                              icon="pi pi-times"
+                              severity="secondary"
+                              onClick={handleCancelForm2}
+                            />
+                          </>
+                        ) : (
+                          <Button
+                            type="button"
+                            label="Sửa"
+                            icon="pi pi-pencil"
+                            onClick={() => setEditForm2(true)}
+                          />
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
               </TabPanel>
               <TabPanel header="Đường huyết">
@@ -388,7 +625,7 @@ const DataEntry = () => {
                   <div>
                     <label htmlFor="ip1">Đường huyết (mg/dL)</label>
                     <InputText
-                      inputId="ip1"
+                      id="ip1"
                       placeholder="Nhập đường huyết"
                       className="w-full mt-2"
                       value={form3.bloodSugar}
@@ -397,6 +634,7 @@ const DataEntry = () => {
                       }
                       invalid={errorform3}
                       onFocus={() => seterrorForm3(false)}
+                      disabled={!editForm3 && !firstForm3}
                     />
 
                     {errorform3 && form3.bloodSugar && (
@@ -410,22 +648,55 @@ const DataEntry = () => {
                   <div className="mt-3">
                     <label htmlFor="ip3">Ghi chú (tùy chọn)</label>
                     <InputTextarea
-                      value={form3.data2}
+                      value={form3.note}
                       onChange={(e) =>
-                        setForm3({ ...form3, data2: e.target.value })
+                        setForm3({ ...form3, note: e.target.value })
                       }
                       rows={5}
                       cols={30}
                       className="w-full mt-2"
+                      disabled={!editForm3 && !firstForm3}
                       placeholder="Ví dụ: Đo sau khi ăn xong và nghỉ ngơi 5 phút"
                     />
                   </div>
-                  <Button
-                    icon="pi pi-save"
-                    label="Lưu đường huyết"
-                    className="mt-3 w-full"
-                    onClick={handleForm3}
-                  />
+                  <div className="mt-5">
+                    {firstForm3 ? (
+                      <Button
+                        icon="pi pi-save"
+                        label="Lưu huyết áp"
+                        className="mt-3 w-full"
+                        onClick={handleForm3}
+                      />
+                    ) : (
+                      <>
+                        {editForm3 ? (
+                          <>
+                            <Button
+                              className="mr-3"
+                              type="button"
+                              label="Lưu thay đổi"
+                              icon="pi pi-save"
+                              onClick={handleForm3}
+                            />
+                            <Button
+                              type="button"
+                              label="Hủy"
+                              icon="pi pi-times"
+                              severity="secondary"
+                              onClick={handleCancelForm3}
+                            />
+                          </>
+                        ) : (
+                          <Button
+                            type="button"
+                            label="Sửa"
+                            icon="pi pi-pencil"
+                            onClick={() => setEditForm3(true)}
+                          />
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
               </TabPanel>
               <TabPanel header="Giấc ngủ">
@@ -434,27 +705,62 @@ const DataEntry = () => {
                   <span className="font-bold text-2xl ml-3">Giấc ngủ</span>
                 </div>
                 <div className="mt-4 p-3 card-1">
-                  <div>
-                    <label htmlFor="ip1">Giờ ngủ</label>
-                    <InputText
-                      inputId="ip1"
-                      placeholder="Nhập giở ngủ"
-                      className="w-full mt-2"
-                      value={form4.timeSleep}
-                      onChange={(e) =>
-                        setForm4({ ...form4, timeSleep: e.target.value })
-                      }
-                      invalid={errorform4}
-                      onFocus={() => seterrorForm4(false)}
-                    />
-
-                    {errorform4 && form4.timeSleep && (
+                  <div className="flex flex-column md:flex-row gap-3">
+                    <div>
+                      <label htmlFor="ip1">Ngủ lúc</label> <br />
+                      <Calendar
+                        id="ip1"
+                        value={form4.timeSleep}
+                        locale="vi"
+                        onChange={(e) =>
+                          setForm4({ ...form4, timeSleep: e.target.value })
+                        }
+                        placeholder="dd/mm/yyyy"
+                        dateFormat="dd/mm/yy"
+                        showTime
+                        maxDate={new Date()}
+                        minDate={
+                          new Date(new Date().setDate(new Date().getDate() - 1))
+                        }
+                        hourFormat="24"
+                        className="mt-3"
+                        disabled={!editForm4 && !firstForm4}
+                        invalid={errorform4.data1}
+                        onFocus={() =>
+                          seterrorForm4({ ...errorform4, data1: false })
+                        }
+                      />
+                      {errorform4.data1 && form4.timeSleep && (
                       <div className="text-sm mt-1" style={{ color: "red" }}>
-                        {form4.timeSleep < 0 || form4.timeSleep > 24
-                          ? "Dữ liệu phải làm trong khoảng 0-24"
-                          : "Dữ liệu không hợp lệ"}
+                        Giờ thức phải sau giờ dậy
                       </div>
                     )}
+                    </div>
+                    <div>
+                      <label htmlFor="ip1">Dậy lúc</label> <br />
+                      <Calendar
+                        id="ip1"
+                        value={form4.timeWake}
+                        locale="vi"
+                        onChange={(e) =>
+                          setForm4({ ...form4, timeWake: e.target.value })
+                        }
+                        placeholder="dd/mm/yyyy"
+                        dateFormat="dd/mm/yy"
+                        showTime
+                        maxDate={new Date()}
+                        minDate={
+                          new Date(new Date().setDate(new Date().getDate() - 1))
+                        }
+                        hourFormat="24"
+                        className="mt-3"
+                        disabled={!editForm4 && !firstForm4}
+                        invalid={errorform4.data2}
+                        onFocus={() =>
+                          seterrorForm4({ ...errorform4, data2: false })
+                        }
+                      />
+                    </div>
                   </div>
                   <div className="mt-3">
                     <label htmlFor="ip3">Ghi chú (tùy chọn)</label>
@@ -467,14 +773,47 @@ const DataEntry = () => {
                       cols={30}
                       className="w-full mt-2"
                       placeholder="Ví dụ: Đo sau khi ăn xong và nghỉ ngơi 5 phút"
+                      disabled={!editForm4 && !firstForm4}
                     />
                   </div>
-                  <Button
-                    icon="pi pi-save"
-                    label="Lưu giờ ngủ"
-                    className="mt-3 w-full"
-                    onClick={handleForm4}
-                  />
+                  <div className="mt-5">
+                    {firstForm4 ? (
+                      <Button
+                        icon="pi pi-save"
+                        label="Lưu huyết áp"
+                        className="mt-3 w-full"
+                        onClick={handleForm4}
+                      />
+                    ) : (
+                      <>
+                        {editForm4 ? (
+                          <>
+                            <Button
+                              className="mr-3"
+                              type="button"
+                              label="Lưu thay đổi"
+                              icon="pi pi-save"
+                              onClick={handleForm4}
+                            />
+                            <Button
+                              type="button"
+                              label="Hủy"
+                              icon="pi pi-times"
+                              severity="secondary"
+                              onClick={handleCancelForm4}
+                            />
+                          </>
+                        ) : (
+                          <Button
+                            type="button"
+                            label="Sửa"
+                            icon="pi pi-pencil"
+                            onClick={() => setEditForm4(true)}
+                          />
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
               </TabPanel>
             </TabView>
@@ -482,7 +821,7 @@ const DataEntry = () => {
         </div>
         <div className="w-12 lg:w-5 card-1 p-3">
           <div className="font-bold text-xl mb-3">
-            <i className="pi pi-clock font-bold" /> Dứ liệu gần đây
+            <i className="pi pi-clock font-bold" /> Dữ liệu gần đây
           </div>
           <div className="flex flex-column gap-3 ">
             <Card>
@@ -497,7 +836,17 @@ const DataEntry = () => {
                       "HH:mm DD/MM/YYYY"
                     )}
                   </div>
-                  <div>{recentlyForm1?.note}</div>
+                  <div
+                    style={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {recentlyForm1?.note}
+                  </div>
                 </div>
               </div>
             </Card>
@@ -513,7 +862,17 @@ const DataEntry = () => {
                       "HH:mm DD/MM/YYYY"
                     )}
                   </div>
-                  <div>{recentlyForm2?.note}</div>
+                  <div
+                    style={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {recentlyForm2?.note}
+                  </div>
                 </div>
               </div>
             </Card>
@@ -529,7 +888,17 @@ const DataEntry = () => {
                       "HH:mm DD/MM/YYYY"
                     )}
                   </div>
-                  <div>{recentlyForm3?.note}</div>
+                  <div
+                    style={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {recentlyForm3?.note}
+                  </div>
                 </div>
               </div>
             </Card>
@@ -538,14 +907,24 @@ const DataEntry = () => {
                 <i className="pi pi-moon text-main1 text-2xl font-bold" />
                 <div className="flex flex-column">
                   <div className="font-bold">
-                    {recentlyForm4?.timeSleep} tiếng
+                    {recentlyForm4?.hoursSleep} tiếng
                   </div>
                   <div className="text-sm">
                     {dayjs(recentlyForm4?.recordedAt).format(
                       "HH:mm DD/MM/YYYY"
                     )}
                   </div>
-                  <div>{recentlyForm4?.note}</div>
+                  <div
+                    style={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {recentlyForm4?.note}
+                  </div>
                 </div>
               </div>
             </Card>

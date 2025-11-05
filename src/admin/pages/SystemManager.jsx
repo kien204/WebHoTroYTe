@@ -77,7 +77,7 @@ const SystemManager = () => {
     try {
       const res = await callApi(() => managementAccountApi.getAll());
       console.log(res);
-      
+
       if (res) {
         setListUsers(res);
         setFilteredUsers(res);
@@ -402,8 +402,20 @@ const SystemManager = () => {
           <Column field="id" header="ID user" />
           <Column field="userName" header="Họ và tên" />
           <Column field="email" header="Email" />
-          <Column field="creatAt" header="Ngày tạo" />
-          <Column field="updateAt" header="Cập nhật lần cuối" />
+          <Column
+            field="creatAt"
+            header="Ngày tạo"
+            body={(rowData) =>
+              new Date(rowData.creatAt).toLocaleDateString("vi-VN")
+            }
+          />
+          <Column
+            field="updateAt"
+            header="Cập nhật lần cuối"
+            body={(rowData) =>
+              new Date(rowData.creatAt).toLocaleDateString("vi-VN")
+            }
+          />
           <Column body={setBodyStatus} header="Trạng thái" />
           <Column body={actionBodyTemplate} header="Thao tác" />
         </DataTable>

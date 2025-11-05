@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 
 import { Card } from "primereact/card";
 import { InputText } from "primereact/inputtext";
@@ -11,20 +11,37 @@ import setUpAlertsApi from "../../services/api/setUpAlertsApi";
 
 const SetUpAlerts = () => {
   const { showToast } = useToast();
-  const { user } = React.useContext(AuthContext);
+  const { profile } = useContext(AuthContext);
   const { callApi } = useApi(showToast);
+  const [first, setfirst] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
 
   const [formData, setFormData] = useState({
+    userProfileId: "",
     minHeartRate: "",
     maxHeartRate: "",
     minBloodSugar: "",
     maxBloodSugar: "",
-    minSleepHours: "",
-    maxSleepHours: "",
-    minSystolicBP: "",
-    maxSystolicBP: "",
-    minDiastolicBP: "",
-    maxDiastolicBP: "",
+    minSleep: "",
+    maxSleep: "",
+    minSystolic: "",
+    maxSystolic: "",
+    minDiastolic: "",
+    maxDiastolic: "",
+  });
+
+  const [formDataOld, setFormDataOld] = useState({
+    userProfileId: "",
+    minHeartRate: "",
+    maxHeartRate: "",
+    minBloodSugar: "",
+    maxBloodSugar: "",
+    minSleep: "",
+    maxSleep: "",
+    minSystolic: "",
+    maxSystolic: "",
+    minDiastolic: "",
+    maxDiastolic: "",
   });
 
   const [errorFormData, setErrorFormData] = useState({
@@ -32,118 +49,208 @@ const SetUpAlerts = () => {
     errorMaxHeartRate: false,
     errorMinBloodSugar: false,
     errorMaxBloodSugar: false,
-    errorMinSleepHours: false,
-    errorMaxSleepHours: false,
-    errorMinSystolicBP: false,
-    errorMaxSystolicBP: false,
-    errorMinDiastolicBP: false,
-    errorMaxDiastolicBP: false,
+    errorminSleep: false,
+    errormaxSleep: false,
+    errorminSystolic: false,
+    errormaxSystolic: false,
+    errorminDiastolic: false,
+    errormaxDiastolic: false,
   });
+
+  useEffect(() => {
+    if (profile?.hoSoId) {
+      setFormData((prev) => ({ ...prev, userProfileId: profile.hoSoId }));
+    }
+  }, [profile?.hoSoId]);
+
+  useEffect(() => {
+    if (!profile?.hoSoId) return;
+    (async () => {
+      await getData();
+    })();
+  }, [profile?.hoSoId]);
+
+
+  const getData = async () => {
+    try {
+      const res = await callApi(
+        () => setUpAlertsApi.get(profile.hoSoId),
+        false
+      );
+      const data = {
+        userProfileId: res.userProfileId ?? profile.hoSoId,
+        minHeartRate: res.minHeartRate ?? "",
+        maxHeartRate: res.maxHeartRate ?? "",
+        minBloodSugar: res.minBloodSugar ?? "",
+        maxBloodSugar: res.maxBloodSugar ?? "",
+        minSystolic: res.minSystolic ?? "",
+        maxSystolic: res.maxSystolic ?? "",
+        minDiastolic: res.minDiastolic ?? "",
+        maxDiastolic: res.maxDiastolic ?? "",
+        minSleep: res.minSleep ?? "",
+        maxSleep: res.maxSleep ?? "",
+      };
+      setFormData(data);
+      setFormDataOld(data);
+
+      setfirst(false);
+    } catch {
+      setfirst(true);
+    }
+  };
 
   const checkMinHeart = () => {
     if (!formData.minHeartRate) return true;
     if (isNaN(formData.minHeartRate)) return true;
-    if (formData.minHeartRate < 30) return true;
-    if (formData.minHeartRate > 300) return true;
-    if (formData.maxHeartRate && formData.minHeartRate > formData.maxHeartRate)
-      return true;
+    const min = Number(formData.minHeartRate);
+    const max = Number(formData.maxHeartRate);
+    if (min < 30) return true;
+    if (min > 300) return true;
+    if (max && min > max) return true;
   };
 
   const checkMaxHeart = () => {
     if (!formData.maxHeartRate) return true;
     if (isNaN(formData.maxHeartRate)) return true;
-    if (formData.maxHeartRate < 30) return true;
-    if (formData.maxHeartRate > 300) return true;
+    const max = Number(formData.maxHeartRate);
+    if (max < 30) return true;
+    if (max > 300) return true;
   };
 
   const checkMinBlood = () => {
     if (!formData.minBloodSugar) return true;
     if (isNaN(formData.minBloodSugar)) return true;
-    if (formData.minBloodSugar < 0) return true;
-    if (formData.minBloodSugar > 200) return true;
-    if (
-      formData.maxBloodSugar &&
-      formData.minBloodSugar > formData.maxBloodSugar
-    )
-      return true;
+
+    const min = Number(formData.minBloodSugar);
+    const max = Number(formData.maxBloodSugar);
+    if (min < 0) return true;
+    if (min > 200) return true;
+    if (max && min > max) return true;
   };
 
   const checkMaxBlood = () => {
     if (!formData.maxBloodSugar) return true;
     if (isNaN(formData.maxBloodSugar)) return true;
-    if (formData.maxBloodSugar < 0) return true;
-    if (formData.maxBloodSugar > 200) return true;
+    const max = Number(formData.maxBloodSugar);
+    if (max < 0) return true;
+    if (max > 200) return true;
   };
 
   const checkMinSleep = () => {
-    if (!formData.minSleepHours) return true;
-    if (isNaN(formData.minSleepHours)) return true;
-    if (formData.minSleepHours < 0) return true;
-    if (formData.minSleepHours > 24) return true;
+    if (!formData.minSleep) return true;
+    if (isNaN(formData.minSleep)) return true;
+    const min = Number(formData.minSleep);
+    if (min < 0) return true;
+    if (min > 24) return true;
   };
 
   const checkMaxSleep = () => {
-    if (!formData.maxSleepHours) return true;
-    if (isNaN(formData.maxSleepHours)) return true;
-    if (formData.maxSleepHours < 0) return true;
-    if (formData.maxSleepHours > 24) return true;
+    if (!formData.maxSleep) return true;
+    if (isNaN(formData.maxSleep)) return true;
+    const max = Number(formData.maxSleep);
+    if (max < 0) return true;
+    if (max > 24) return true;
   };
 
   const checkMinSystolic = () => {
-    if (!formData.minSystolicBP) return true;
-    if (isNaN(formData.minSystolicBP)) return true;
-    if (formData.minSystolicBP < 30) return true;
-    if (formData.minSystolicBP > 250) return true;
-    if (
-      formData.maxSystolicBP &&
-      formData.minSystolicBP > formData.maxSystolicBP
-    )
-      return true;
+    if (!formData.minSystolic) return true;
+    if (isNaN(formData.minSystolic)) return true;
+    const min = Number(formData.minSystolic);
+    const max = Number(formData.maxSystolic);
+    if (min < 30) return true;
+    if (min > 250) return true;
+    if (max && min > max) return true;
   };
 
   const checkMaxSystolic = () => {
-    if (!formData.maxSystolicBP) return true;
-    if (isNaN(formData.maxSystolicBP)) return true;
-    if (formData.maxSystolicBP < 30) return true;
-    if (formData.maxSystolicBP > 250) return true;
+    if (!formData.maxSystolic) return true;
+    if (isNaN(formData.maxSystolic)) return true;
+    const max = Number(formData.maxSystolic);
+    if (max < 30) return true;
+    if (max > 250) return true;
   };
 
   const checkMinDiastolic = () => {
-    if (!formData.minDiastolicBP) return true;
-    if (isNaN(formData.minDiastolicBP)) return true;
-    if (formData.minDiastolicBP < 20) return true;
-    if (formData.minDiastolicBP > 200) return true;
-    if (
-      formData.maxDiastolicBP &&
-      formData.minDiastolicBP > formData.maxDiastolicBP
-    )
-      return true;
+    if (!formData.minDiastolic) return true;
+    if (isNaN(formData.minDiastolic)) return true;
+    const min = Number(formData.minDiastolic);
+    const max = Number(formData.maxDiastolic);
+    if (min < 20) return true;
+    if (min > 200) return true;
+    if (max && min > max) return true;
   };
 
   const checkMaxDiastolic = () => {
-    if (!formData.maxDiastolicBP) return true;
-    if (isNaN(formData.maxDiastolicBP)) return true;
-    if (formData.maxDiastolicBP < 20) return true;
-    if (formData.maxDiastolicBP > 200) return true;
+    if (!formData.maxDiastolic) return true;
+    if (isNaN(formData.maxDiastolic)) return true;
+    const max = Number(formData.maxDiastolic);
+    if (max < 20) return true;
+    if (max > 200) return true;
   };
 
-  const handleButton = () => {
+  const parseFormData = () => ({
+    ...formData,
+    userProfileId: Number(profile?.hoSoId),
+    minHeartRate: formData.minHeartRate
+      ? parseInt(formData.minHeartRate)
+      : null,
+    maxHeartRate: formData.maxHeartRate
+      ? parseInt(formData.maxHeartRate)
+      : null,
+    minBloodSugar: formData.minBloodSugar
+      ? parseInt(formData.minBloodSugar)
+      : null,
+    maxBloodSugar: formData.maxBloodSugar
+      ? parseInt(formData.maxBloodSugar)
+      : null,
+    minSystolic: formData.minSystolic ? parseInt(formData.minSystolic) : null,
+    maxSystolic: formData.maxSystolic ? parseInt(formData.maxSystolic) : null,
+    minDiastolic: formData.minDiastolic
+      ? parseInt(formData.minDiastolic)
+      : null,
+    maxDiastolic: formData.maxDiastolic
+      ? parseInt(formData.maxDiastolic)
+      : null,
+    minSleep: formData.minSleep ? parseInt(formData.minSleep) : null,
+    maxSleep: formData.maxSleep ? parseInt(formData.maxSleep) : null,
+  });
+
+  const handleButton = async () => {
     const newError = {
       errorMinHeartRate: checkMinHeart(),
       errorMaxHeartRate: checkMaxHeart(),
       errorMinBloodSugar: checkMinBlood(),
       errorMaxBloodSugar: checkMaxBlood(),
-      errorMinSleepHours: checkMinSleep(),
-      errorMaxSleepHours: checkMaxSleep(),
-      errorMinSystolicBP: checkMinSystolic(),
-      errorMaxSystolicBP: checkMaxSystolic(),
-      errorMinDiastolicBP: checkMinDiastolic(),
-      errorMaxDiastolicBP: checkMaxDiastolic(),
+      errorminSleep: checkMinSleep(),
+      errormaxSleep: checkMaxSleep(),
+      errorminSystolic: checkMinSystolic(),
+      errormaxSystolic: checkMaxSystolic(),
+      errorminDiastolic: checkMinDiastolic(),
+      errormaxDiastolic: checkMaxDiastolic(),
     };
     setErrorFormData(newError);
+
+    const dataToSend = parseFormData();
+
     if (Object.values(newError).some((value) => value === true)) return;
 
-    console.log(formData);
+    try {
+      if (first) {
+        await callApi(() => setUpAlertsApi.setAlertThresholds(dataToSend));
+      } else {
+        await callApi(() => setUpAlertsApi.put(dataToSend, profile?.hoSoId));
+        setIsEdit(false);
+      }
+      showToast("success", "Thành công", "Lưu thiết lập Thành công");
+      getData();
+    } catch {
+      //
+    }
+  };
+
+  const handleCancel = () => {
+    setFormData(formDataOld);
+    setIsEdit(false);
   };
 
   return (
@@ -187,6 +294,7 @@ const SetUpAlerts = () => {
                         })
                       }
                       invalid={errorFormData.errorMinHeartRate}
+                      disabled={!isEdit && !first}
                     />
                     <span className="absolute mr-3">BPM</span>
                   </div>
@@ -222,6 +330,7 @@ const SetUpAlerts = () => {
                         })
                       }
                       invalid={errorFormData.errorMaxHeartRate}
+                      disabled={!isEdit && !first}
                     />
                     <span className="absolute mr-3">BPM</span>
                   </div>
@@ -260,6 +369,7 @@ const SetUpAlerts = () => {
                         })
                       }
                       invalid={errorFormData.errorMinBloodSugar}
+                      disabled={!isEdit && !first}
                     />
                     <span className="absolute mr-3">mg/dL</span>
                   </div>
@@ -295,6 +405,7 @@ const SetUpAlerts = () => {
                         })
                       }
                       invalid={errorFormData.errorMaxBloodSugar}
+                      disabled={!isEdit && !first}
                     />
                     <span className="absolute mr-3">mg/dL</span>
                   </div>
@@ -319,32 +430,32 @@ const SetUpAlerts = () => {
                     <InputText
                       id="ip2"
                       className="w-full w-full pr-8"
-                      value={formData.minSleepHours}
+                      value={formData.minSleep}
                       placeholder="Nhập giá trị giấc ngủ tối thiểu"
                       onFocus={() =>
                         setErrorFormData({
                           ...errorFormData,
-                          errorMinSleepHours: false,
+                          errorminSleep: false,
                         })
                       }
                       onChange={(e) =>
                         setFormData({
                           ...formData,
-                          minSleepHours: e.target.value,
+                          minSleep: e.target.value,
                         })
                       }
-                      invalid={errorFormData.errorMinSleepHours}
+                      invalid={errorFormData.errorminSleep}
+                      disabled={!isEdit && !first}
                     />
                     <span className="absolute mr-3">giờ</span>
                   </div>
-                  {errorFormData.errorMinSleepHours &&
-                    formData.minSleepHours && (
-                      <small className="p-error">
-                        {isNaN(formData.minSleepHours)
-                          ? "Giá trị phải là số nguyên dương! Vui lòng nhập lại!"
-                          : "Giá trị giấc ngủ phải nằm trong khoảng 0 - 24 giờ!"}
-                      </small>
-                    )}
+                  {errorFormData.errorminSleep && formData.minSleep && (
+                    <small className="p-error">
+                      {isNaN(formData.minSleep)
+                        ? "Giá trị phải là số nguyên dương! Vui lòng nhập lại!"
+                        : "Giá trị giấc ngủ phải nằm trong khoảng 0 - 24 giờ!"}
+                    </small>
+                  )}
                 </div>
                 <div>
                   <label htmlFor="ip2">Giá trị tối đa</label>
@@ -353,31 +464,31 @@ const SetUpAlerts = () => {
                       id="ip2"
                       className="w-full w-full pr-8"
                       placeholder="Nhập giá trị giấc ngủ tối đa"
-                      value={formData.maxSleepHours}
+                      value={formData.maxSleep}
                       onFocus={() =>
                         setErrorFormData({
                           ...errorFormData,
-                          errorMaxSleepHours: false,
+                          errormaxSleep: false,
                         })
                       }
                       onChange={(e) =>
                         setFormData({
                           ...formData,
-                          maxSleepHours: e.target.value,
+                          maxSleep: e.target.value,
                         })
                       }
-                      invalid={errorFormData.errorMaxSleepHours}
+                      invalid={errorFormData.errormaxSleep}
+                      disabled={!isEdit && !first}
                     />
                     <span className="absolute mr-3">giờ</span>
                   </div>
-                  {errorFormData.errorMaxSleepHours &&
-                    formData.maxSleepHours && (
-                      <small className="p-error">
-                        {isNaN(formData.maxSleepHours)
-                          ? "Giá trị phải là số nguyên dương! Vui lòng nhập lại!"
-                          : "Giá trị giấc ngủ phải nằm trong khoảng 0 - 24 giờ!"}
-                      </small>
-                    )}
+                  {errorFormData.errormaxSleep && formData.maxSleep && (
+                    <small className="p-error">
+                      {isNaN(formData.maxSleep)
+                        ? "Giá trị phải là số nguyên dương! Vui lòng nhập lại!"
+                        : "Giá trị giấc ngủ phải nằm trong khoảng 0 - 24 giờ!"}
+                    </small>
+                  )}
                 </div>
               </div>
             </div>
@@ -395,34 +506,34 @@ const SetUpAlerts = () => {
                         id="ip2"
                         className="w-full w-full pr-8"
                         placeholder="Nhập giá trị tâm thu tối thiểu"
-                        value={formData.minSystolicBP}
+                        value={formData.minSystolic}
                         onFocus={() =>
                           setErrorFormData({
                             ...errorFormData,
-                            errorMinSystolicBP: false,
+                            errorminSystolic: false,
                           })
                         }
                         onChange={(e) =>
                           setFormData({
                             ...formData,
-                            minSystolicBP: e.target.value,
+                            minSystolic: e.target.value,
                           })
                         }
-                        invalid={errorFormData.errorMinSystolicBP}
+                        invalid={errorFormData.errorminSystolic}
+                        disabled={!isEdit && !first}
                       />
                       <span className="absolute mr-3">mmHg</span>
                     </div>
-                    {errorFormData.errorMinSystolicBP &&
-                      formData.minSystolicBP && (
-                        <small className="p-error">
-                          {isNaN(formData.minSystolicBP)
-                            ? "Giá trị phải là số nguyên dương! Vui lòng nhập lại!"
-                            : formData.minSystolicBP > 250 ||
-                              formData.maxSystolicBP < 30
-                            ? "Giá trị huyết áp tâm thu phải nằm trong khoảng 30 - 250 mmHg!"
-                            : "Giá trị tối thiểu không được lớn hơn giá trị tối đa"}
-                        </small>
-                      )}
+                    {errorFormData.errorminSystolic && formData.minSystolic && (
+                      <small className="p-error">
+                        {isNaN(formData.minSystolic)
+                          ? "Giá trị phải là số nguyên dương! Vui lòng nhập lại!"
+                          : formData.minSystolic > 250 ||
+                            formData.maxSystolic < 30
+                          ? "Giá trị huyết áp tâm thu phải nằm trong khoảng 30 - 250 mmHg!"
+                          : "Giá trị tối thiểu không được lớn hơn giá trị tối đa"}
+                      </small>
+                    )}
                   </div>
                   <div>
                     <label htmlFor="ip2">Giá trị tối đa</label>
@@ -431,31 +542,31 @@ const SetUpAlerts = () => {
                         id="ip2"
                         className="w-full w-full pr-8"
                         placeholder="Nhập giá trị tâm thu tối đa"
-                        value={formData.maxSystolicBP}
+                        value={formData.maxSystolic}
                         onFocus={() =>
                           setErrorFormData({
                             ...errorFormData,
-                            errorMaxSystolicBP: false,
+                            errormaxSystolic: false,
                           })
                         }
                         onChange={(e) =>
                           setFormData({
                             ...formData,
-                            maxSystolicBP: e.target.value,
+                            maxSystolic: e.target.value,
                           })
                         }
-                        invalid={errorFormData.errorMaxSystolicBP}
+                        invalid={errorFormData.errormaxSystolic}
+                        disabled={!isEdit && !first}
                       />
                       <span className="absolute mr-3">mmHg</span>
                     </div>
-                    {errorFormData.errorMaxSystolicBP &&
-                      formData.maxSystolicBP && (
-                        <small className="p-error">
-                          {isNaN(formData.maxSystolicBP)
-                            ? "Giá trị phải là số nguyên dương! Vui lòng nhập lại!"
-                            : "Giá trị huyết áp tâm thu phải nằm trong khoảng 30 - 250 mmHg!"}
-                        </small>
-                      )}
+                    {errorFormData.errormaxSystolic && formData.maxSystolic && (
+                      <small className="p-error">
+                        {isNaN(formData.maxSystolic)
+                          ? "Giá trị phải là số nguyên dương! Vui lòng nhập lại!"
+                          : "Giá trị huyết áp tâm thu phải nằm trong khoảng 30 - 250 mmHg!"}
+                      </small>
+                    )}
                   </div>
                 </div>
 
@@ -469,30 +580,31 @@ const SetUpAlerts = () => {
                           id="ip2"
                           className="w-full w-full pr-8"
                           placeholder="Nhập giá trị tâm trương tối thiểu"
-                          value={formData.minDiastolicBP}
+                          value={formData.minDiastolic}
                           onFocus={() =>
                             setErrorFormData({
                               ...errorFormData,
-                              errorMinDiastolicBP: false,
+                              errorminDiastolic: false,
                             })
                           }
                           onChange={(e) =>
                             setFormData({
                               ...formData,
-                              minDiastolicBP: e.target.value,
+                              minDiastolic: e.target.value,
                             })
                           }
-                          invalid={errorFormData.errorMinDiastolicBP}
+                          invalid={errorFormData.errorminDiastolic}
+                          disabled={!isEdit && !first}
                         />
                         <span className="absolute mr-3">mmHg</span>
                       </div>
-                      {errorFormData.errorMinDiastolicBP &&
-                        formData.minDiastolicBP && (
+                      {errorFormData.errorminDiastolic &&
+                        formData.minDiastolic && (
                           <small className="p-error">
-                            {isNaN(formData.minDiastolicBP)
+                            {isNaN(formData.minDiastolic)
                               ? "Giá trị phải là số nguyên dương! Vui lòng nhập lại!"
-                              : formData.minDiastolicBP > 200 ||
-                                formData.maxDiastolicBP < 20
+                              : formData.minDiastolic > 200 ||
+                                formData.maxDiastolic < 20
                               ? "Giá trị huyết áp tâm trương phải nằm trong khoảng 20 - 200 mmHg!"
                               : "Giá trị tối thiểu không được lớn hơn giá trị tối đa"}
                           </small>
@@ -505,27 +617,28 @@ const SetUpAlerts = () => {
                           id="ip2"
                           className="w-full w-full pr-8"
                           placeholder="Nhập giá trị tâm trương tối đa"
-                          value={formData.maxDiastolicBP}
+                          value={formData.maxDiastolic}
                           onFocus={() =>
                             setErrorFormData({
                               ...errorFormData,
-                              errorMaxDiastolicBP: false,
+                              errormaxDiastolic: false,
                             })
                           }
                           onChange={(e) =>
                             setFormData({
                               ...formData,
-                              maxDiastolicBP: e.target.value,
+                              maxDiastolic: e.target.value,
                             })
                           }
-                          invalid={errorFormData.errorMaxDiastolicBP}
+                          invalid={errorFormData.errormaxDiastolic}
+                          disabled={!isEdit && !first}
                         />
                         <span className="absolute mr-3">mmHg</span>
                       </div>
-                      {errorFormData.errorMaxSystolicBP &&
-                        formData.maxDiastolicBP && (
+                      {errorFormData.errormaxDiastolic &&
+                        formData.maxDiastolic && (
                           <small className="p-error">
-                            {isNaN(formData.maxDiastolicBP)
+                            {isNaN(formData.maxDiastolic)
                               ? "Giá trị phải là số nguyên dương! Vui lòng nhập lại!"
                               : "Giá trị huyết áp tâm trương phải nằm trong khoảng 20 - 200 mmHg!"}
                           </small>
@@ -535,12 +648,44 @@ const SetUpAlerts = () => {
                 </div>
               </div>
             </div>
-            <Button
-              icon="pi pi-save"
-              className="mt-5"
-              label="Lưu thay đổi"
-              onClick={handleButton}
-            />
+            <div className="mt-5">
+              {first ? (
+                <Button
+                  icon="pi pi-save"
+                  label="Lưu huyết áp"
+                  className="mt-3 w-full"
+                  onClick={handleButton}
+                />
+              ) : (
+                <>
+                  {isEdit ? (
+                    <>
+                      <Button
+                        className="mr-3"
+                        type="button"
+                        label="Lưu thay đổi"
+                        icon="pi pi-save"
+                        onClick={handleButton}
+                      />
+                      <Button
+                        type="button"
+                        label="Hủy"
+                        icon="pi pi-times"
+                        severity="secondary"
+                        onClick={handleCancel}
+                      />
+                    </>
+                  ) : (
+                    <Button
+                      type="button"
+                      label="Sửa"
+                      icon="pi pi-pencil"
+                      onClick={() => setIsEdit(true)}
+                    />
+                  )}
+                </>
+              )}
+            </div>
           </Card>
         </div>
       </div>

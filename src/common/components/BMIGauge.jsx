@@ -7,7 +7,7 @@ import {
 } from "@mui/x-charts/Gauge";
 import { Card } from "primereact/card";
 
-const BMIGauge = ({ bmi = 20.5 }) => {
+const BMIGauge = ({ bmi }) => {
   const maxBMI = 40;
 
   const clampedBMI = Math.min(Math.max(bmi, 0), maxBMI);
@@ -45,7 +45,7 @@ const BMIGauge = ({ bmi = 20.5 }) => {
         <GaugeValueArc sx={{ fill: "transparent" }} />
 
         {/* Con trỏ tùy chỉnh - tính toán góc từ giá trị BMI */}
-        <g transform="translate(130, 130)">
+        <g transform="translate(115, 130)">
           <line
             x1={0}
             y1={0}
