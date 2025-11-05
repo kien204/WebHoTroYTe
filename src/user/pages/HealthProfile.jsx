@@ -23,6 +23,7 @@ const HealthProfile = () => {
     fullName: profile?.fullName || "",
     address: profile?.address || "",
     gender: profile?.gender || "",
+    phoneNumber: profile?.phoneNumber || "",
     brith: profile?.brith ? new Date(profile.brith) : null,
     weight: profile?.weight || null,
     height: profile?.height || null,
@@ -34,6 +35,7 @@ const HealthProfile = () => {
     fullName: profile?.fullName || "",
     address: profile?.address || "",
     gender: profile?.gender || "",
+    phoneNumber: profile?.phoneNumber || "",
     brith: profile?.brith ? new Date(profile.brith) : null,
     weight: profile?.weight || null,
     height: profile?.height || null,
@@ -46,6 +48,7 @@ const HealthProfile = () => {
     fullName: false,
     address: false,
     gender: false,
+    phoneNumber: false,
     age: false,
     weight: false,
     height: false,
@@ -63,6 +66,7 @@ const HealthProfile = () => {
         fullName: profile.fullName || "",
         address: profile.address || "",
         gender: profile.gender || "",
+        phoneNumber: profile.phoneNumber || "",
         brith: profile.brith ? new Date(profile.brith) : null,
         weight: profile.weight || null,
         height: profile.height || null,
@@ -141,6 +145,7 @@ const HealthProfile = () => {
       fullName: !checkName(),
       address: !checkAddress(),
       gender: !info.gender,
+      phoneNumber: !info.phoneNumber || !/^(0|\+84)(\d{9})$/.test(info.phoneNumber),
       age: !info.brith,
       height:
         !info.height ||
@@ -163,6 +168,7 @@ const HealthProfile = () => {
     const formData = new FormData();
     formData.append("TaiKhoanId", auth.id);
     formData.append("FullName", info.fullName);
+    formData.append("PhoneNumber", info.phoneNumber);
     formData.append(
       "Birth",
       info.brith ? info.brith.toLocaleDateString("en-CA") : ""
@@ -245,37 +251,58 @@ const HealthProfile = () => {
               />
             </IconField>
           </div>
+          <div className="mt-3">
+            <label className="block mb-1 font-bold" htmlFor="address">
+              Họ và tên
+            </label>
+            <IconField iconPosition="left">
+              <InputIcon className="pi pi-user"> </InputIcon>
+              <InputText
+                id="userName"
+                className="w-12 pl-5"
+                placeholder="Nhập họ và tên"
+                value={info.fullName || ""}
+                onChange={(e) => setInfo({ ...info, fullName: e.target.value })}
+                invalid={errorForm.fullName}
+                onFocus={() => setErrorForm({ ...errorForm, fullName: false })}
+                disabled={!isEdit}
+              />
+            </IconField>
+            {errorForm.fullName && info.fullName && (
+              <div className="text-sm mt-1" style={{ color: "red" }}>
+                {info.fullName.trim().length < 2
+                  ? "Họ và tên phải có ít nhất 2 ký tự"
+                  : info.fullName.trim().length > 100
+                  ? "Họ và tên không được vượt quá 100 ký tự"
+                  : "Họ tên chỉ được chứa chữ, không bao gồm ký tự đặc biệt hoặc số"}
+              </div>
+            )}
+          </div>
           <div className="flex flex-column lg:flex-row gap-3 mt-3">
             <div className="lg:w-4">
-              <label className="block mb-1 font-bold" htmlFor="address">
-                Họ và tên
+              <label className="block mb-1 font-bold" htmlFor="gender">
+                Giới tính
               </label>
-              <IconField iconPosition="left">
-                <InputIcon className="pi pi-user"> </InputIcon>
-                <InputText
-                  id="userName"
-                  className="w-12 pl-5"
-                  placeholder="Nhập họ và tên"
-                  value={info.fullName || ""}
-                  onChange={(e) =>
-                    setInfo({ ...info, fullName: e.target.value })
-                  }
-                  invalid={errorForm.fullName}
-                  onFocus={() =>
-                    setErrorForm({ ...errorForm, fullName: false })
-                  }
+              <div className="flex align-items-center relative">
+                <InputIcon
+                  className={`pi pi-users text-main2 absolute ${
+                    isEdit ? "z-1" : ""
+                  }`}
+                  style={{ marginLeft: "0.75rem" }}
+                />
+                <Dropdown
+                  id="gender"
+                  value={info.gender || ""}
+                  onChange={(e) => setInfo({ ...info, gender: e.target.value })}
+                  options={selectedGender}
+                  optionLabel="name"
+                  placeholder="Chọn giới tính"
+                  className="pl-4 w-full"
+                  onFocus={() => setErrorForm({ ...errorForm, gender: false })}
+                  invalid={errorForm.gender}
                   disabled={!isEdit}
                 />
-              </IconField>
-              {errorForm.fullName && info.fullName && (
-                <div className="text-sm mt-1" style={{ color: "red" }}>
-                  {info.fullName.trim().length < 2
-                    ? "Họ và tên phải có ít nhất 2 ký tự"
-                    : info.fullName.trim().length > 100
-                    ? "Họ và tên không được vượt quá 100 ký tự"
-                    : "Họ tên chỉ được chứa chữ, không bao gồm ký tự đặc biệt hoặc số"}
-                </div>
-              )}
+              </div>
             </div>
             <div className="lg:w-4">
               <label className="block mb-1 font-bold" htmlFor="address">
@@ -303,27 +330,27 @@ const HealthProfile = () => {
               )}
             </div>
             <div className="lg:w-4">
-              <label className="block mb-1 font-bold" htmlFor="gender">
-                Giới tính
+              <label className="block mb-1 font-bold" htmlFor="phoneNumber">
+                Số điện thoại
               </label>
-              <div className="flex align-items-center relative">
-                <InputIcon
-                  className={`pi pi-users absolute ${isEdit ? "z-1" : ""}`}
-                  style={{ marginLeft: "0.75rem" }}
-                />
-                <Dropdown
-                  id="gender"
-                  value={info.gender || ""}
-                  onChange={(e) => setInfo({ ...info, gender: e.target.value })}
-                  options={selectedGender}
-                  optionLabel="name"
-                  placeholder="Chọn giới tính"
-                  className="pl-4 w-full"
-                  onFocus={() => setErrorForm({ ...errorForm, gender: false })}
-                  invalid={errorForm.gender}
+              <IconField iconPosition="left">
+                <InputIcon className="pi pi-phoneNumber"> </InputIcon>
+                <InputText
+                  id="phoneNumber"
+                  className="w-12 "
+                  placeholder="Nhập số điện thoại"
+                  value={info.phoneNumber || ""}
+                  onChange={(e) => setInfo({ ...info, phoneNumber: e.target.value })}
+                  invalid={errorForm.phoneNumber}
+                  onFocus={() => setErrorForm({ ...errorForm, phoneNumber: false })}
                   disabled={!isEdit}
                 />
-              </div>
+              </IconField>
+              {errorForm.phoneNumber && info.phoneNumber && (
+                <div className="text-sm mt-1" style={{ color: "red" }}>
+                  Số điện thoại không hợp lệ!
+                </div>
+              )}
             </div>
           </div>
           <div className="flex flex-column lg:flex-row gap-3 mt-3">
@@ -333,7 +360,7 @@ const HealthProfile = () => {
               </label>
               <div className="p-input-icon-left w-full">
                 <i
-                  className={`pi pi-calendar ${isEdit ? "z-1" : ""}`}
+                  className={`pi pi-calendar text-main2 ${isEdit ? "z-1" : ""}`}
                   style={{ paddingLeft: "0.70rem" }}
                 />
                 <Calendar
@@ -361,43 +388,13 @@ const HealthProfile = () => {
                 )}
               </div>
             </div>
-            <div className="lg:w-4">
-              <label className="block mb-1 font-bold" htmlFor="weight">
-                Cân nặng
-              </label>
-              <div className="flex align-items-center relative">
-                <InputIcon
-                  className="pi pi-shopping-bag absolute"
-                  style={{ marginLeft: "0.75rem" }}
-                />
-                <InputText
-                  id="weight"
-                  value={info.weight || ""}
-                  onChange={(e) => setInfo({ ...info, weight: e.target.value })}
-                  placeholder="Nhập cân nặng"
-                  invalid={errorForm.weight}
-                  onFocus={() => setErrorForm({ ...errorForm, weight: false })}
-                  className="pl-5 w-12"
-                  disabled={!isEdit}
-                />
-                {info.weight && errorForm.weight && (
-                  <small className="p-error">
-                    {info.weight <= 0 || info.weight >= 500
-                      ? "Dữ liệu phải làm trong khoảng 0-500 kg"
-                      : "Cân nặng không hợp lệ! Vui lòng nhập lại!"}
-                  </small>
-                )}
-              </div>
-            </div>
+
             <div className="lg:w-4">
               <label className="block mb-1 font-bold" htmlFor="height">
                 Chiều cao
               </label>
-              <div className="flex align-items-center relative">
-                <InputIcon
-                  className="pi pi-arrows-v absolute"
-                  style={{ marginLeft: "0.75rem" }}
-                />
+              <IconField iconPosition="left">
+                <InputIcon className="pi pi-arrows-v" />
                 <InputText
                   id="height"
                   value={info.height || ""}
@@ -405,17 +402,42 @@ const HealthProfile = () => {
                   onFocus={() => setErrorForm({ ...errorForm, height: false })}
                   placeholder="Nhập chiều cao"
                   invalid={errorForm.height}
-                  className="pl-5 w-12"
+                  className="w-12"
                   disabled={!isEdit}
                 />
-                {info.height && errorForm.height && (
-                  <small className="p-error">
-                    {info.height <= 0 || info.height >= 300
-                      ? "Dữ liệu phải làm trong khoảng 0-300 cm"
-                      : "Chiều cao không hợp lệ! Vui lòng nhập lại!"}
-                  </small>
-                )}
-              </div>
+              </IconField>
+              {info.height && errorForm.height && (
+                <small className="p-error">
+                  {info.height <= 0 || info.height >= 300
+                    ? "Dữ liệu phải làm trong khoảng 0-300 cm"
+                    : "Chiều cao không hợp lệ! Vui lòng nhập lại!"}
+                </small>
+              )}
+            </div>
+            <div className="lg:w-4">
+              <label className="block mb-1 font-bold" htmlFor="weight">
+                Cân nặng
+              </label>
+              <IconField iconPosition="left">
+                <InputIcon className="pi pi-shopping-bag " />
+                <InputText
+                  id="weight"
+                  value={info.weight || ""}
+                  onChange={(e) => setInfo({ ...info, weight: e.target.value })}
+                  placeholder="Nhập cân nặng"
+                  invalid={errorForm.weight}
+                  onFocus={() => setErrorForm({ ...errorForm, weight: false })}
+                  className="w-12"
+                  disabled={!isEdit}
+                />
+              </IconField>
+              {info.weight && errorForm.weight && (
+                <small className="p-error">
+                  {info.weight <= 0 || info.weight >= 500
+                    ? "Dữ liệu phải làm trong khoảng 0-500 kg"
+                    : "Cân nặng không hợp lệ! Vui lòng nhập lại!"}
+                </small>
+              )}
             </div>
           </div>
         </div>
