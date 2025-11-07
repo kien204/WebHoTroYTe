@@ -76,7 +76,6 @@ const SystemManager = () => {
   const getListUser = async () => {
     try {
       const res = await callApi(() => managementAccountApi.getAll());
-      console.log(res);
 
       if (res) {
         setListUsers(res);
@@ -139,11 +138,11 @@ const SystemManager = () => {
       }
     };
 
-    window.addEventListener("scroll", hideAll, true);
+  //  window.addEventListener("scroll", hideAll);
     window.addEventListener("resize", hideAll);
 
     return () => {
-      window.removeEventListener("scroll", hideAll, true);
+    //  window.removeEventListener("scroll", hideAll);
       window.removeEventListener("resize", hideAll);
       hideAll();
     };
@@ -351,7 +350,7 @@ const SystemManager = () => {
               </div>
               <i className="pi pi-users font-bold" />
             </div>
-            <div className="font-bold">{listUsers.length}</div>
+            <div className="font-bold">{listUsers?.length}</div>
             <div>+12% so với tháng trước</div>
           </div>
           <div className="flex flex-column w-full lg:w-4 card-2 p-3">
@@ -362,7 +361,7 @@ const SystemManager = () => {
               <i className="pi pi-globe font-bold" />
             </div>
             <div className="font-bold">
-              {listUsers.filter((user) => user.lockStatus).length}
+              {listUsers?.filter((user) => user.lockStatus).length}
             </div>
             <div>+12% so với tháng trước</div>
           </div>
@@ -372,7 +371,7 @@ const SystemManager = () => {
               <i className="pi pi-ban font-bold" />
             </div>
             <div className="font-bold">
-              {listUsers.filter((user) => !user.lockStatus).length}
+              {listUsers?.filter((user) => !user.lockStatus).length}
             </div>
             <div>+12% so với tháng trước</div>
           </div>
