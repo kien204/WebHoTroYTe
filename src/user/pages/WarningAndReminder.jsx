@@ -278,6 +278,7 @@ const WarningAndReminder = () => {
                 className="w-full md:w-6"
                 maxSelectedLabels={2}
                 placeholder="Chọn ngày hẹn"
+                selectAllLabel="Mỗi ngày"
               />
             </div>
           </div>

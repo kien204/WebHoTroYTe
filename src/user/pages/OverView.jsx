@@ -9,6 +9,7 @@ import { Avatar } from "primereact/avatar";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { InputIcon } from "primereact/inputicon";
+import { Link } from "react-router-dom";
 
 import anh from "../../assets/anh1.png";
 import BMIGauge from "../../common/components/BMIGauge";
@@ -30,12 +31,16 @@ import {
 
 import { useWindowWidth } from "../../common/hooks/useWindowWidth";
 import { AuthContext } from "../../common/context/AuthContext";
+import overViewAPI from "../../services/api/overViewAPI";
+import { useApi } from "../../common/hooks/useApi";
+import { useToast } from "../../common/hooks/useToast";
 
 ChartJS.register(zoomPlugin);
 
-const Home = () => {
+const OverView = () => {
+  const { showToast } = useToast();
+  const { callApi } = useApi(showToast);
   const { profile } = useContext(AuthContext);
-
   const [visible, setVisible] = useState(false);
   const [dataBMI, setDataBMI] = useState({
     height: "",
@@ -46,6 +51,10 @@ const Home = () => {
     height: false,
   });
   const [ketqua, setKetQUa] = useState("");
+  const [data1, setData1] = useState({});
+  const [data2, setData2] = useState({});
+  const [data3, setData3] = useState({});
+  const [data4, setData4] = useState({});
 
   const width = useWindowWidth();
   let tableWidthPx;
@@ -58,102 +67,96 @@ const Home = () => {
 
   useEffect(() => {
     if (profile) {
-      setDataBMI({
-        weight: profile.weight,
-        height: profile.height,
-      });
-      const heightInMeters = dataBMI.height / 100;
-      setKetQUa(dataBMI.weight / (heightInMeters * heightInMeters));
+      const { height, weight } = profile;
+      setDataBMI({ height, weight });
+      const heightInMeters = height / 100;
+      setKetQUa(weight / (heightInMeters * heightInMeters));
     }
   }, [profile]);
 
   useEffect(() => {
-    const documentStyle = getComputedStyle(document.documentElement);
-    const textColor = documentStyle.getPropertyValue("--text-color");
-    const textColorSecondary = documentStyle.getPropertyValue(
-      "--text-color-secondary"
-    );
-    const surfaceBorder = documentStyle.getPropertyValue("--surface-border");
+    if (!profile) return;
 
-    const data = {
-      labels: [
-        "Thứ 2",
-        "Thứ 3",
-        "Thứ 4",
-        "Thứ 5",
-        "Thứ 6",
-        "Thứ 7",
-        "Chủ nhật",
-      ],
-      datasets: [
-        {
-          label: "Huyết áp tâm thu",
-          data: [120, 122, 121, 124, 119, 118, 123],
-          fill: false,
-          borderColor: documentStyle.getPropertyValue("--blue-500"),
-          tension: 0.4,
-        },
-        {
-          label: "Huyết áp tâm trương",
-          data: [78, 80, 77, 76, 79, 81, 78],
-          fill: false,
-          borderColor: documentStyle.getPropertyValue("--pink-500"),
-          tension: 0.4,
-        },
-      ],
+    const fetchData = async () => {
+      try {
+        const [res1, res2, res3, res4] = await Promise.all([
+          callApi(() => overViewAPI.getdata1(profile.hoSoId), false, false),
+          callApi(() => overViewAPI.getdata2(profile.hoSoId), false, false),
+          callApi(() => overViewAPI.getdata3(profile.hoSoId), false, false),
+          callApi(() => overViewAPI.getdata4(profile.hoSoId), false, false),
+        ]);
+
+        setData1(res1);
+        setData2(res2);
+        setData3(res3);
+        setData4(res4);
+
+        // ✅ cập nhật chart sau khi có data2
+        const documentStyle = getComputedStyle(document.documentElement);
+        const textColor = documentStyle.getPropertyValue("--text-color");
+        const textColorSecondary = documentStyle.getPropertyValue(
+          "--text-color-secondary"
+        );
+        const surfaceBorder =
+          documentStyle.getPropertyValue("--surface-border");
+
+        setChartData({
+          labels: res2?.labels ?? [],
+          datasets: [
+            {
+              label: "Huyết áp tâm thu",
+              data: res2?.datasets?.[0]?.data ?? [],
+              fill: false,
+              borderColor: documentStyle.getPropertyValue("--blue-500"),
+              tension: 0.4,
+            },
+            {
+              label: "Huyết áp tâm trương",
+              data: res2?.datasets?.[1]?.data ?? [],
+              fill: false,
+              borderColor: documentStyle.getPropertyValue("--pink-500"),
+              tension: 0.4,
+            },
+          ],
+        });
+
+        setChartOptions({
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: textColor },
+            },
+            zoom: {
+              zoom: {
+                wheel: { enabled: true },
+                pinch: { enabled: true },
+                mode: "x",
+              },
+              pan: {
+                enabled: true,
+                mode: "x",
+              },
+            },
+          },
+          scales: {
+            x: {
+              ticks: { color: textColorSecondary },
+              grid: { color: surfaceBorder },
+            },
+            y: {
+              ticks: { color: textColorSecondary },
+              grid: { color: surfaceBorder },
+            },
+          },
+        });
+      } catch (err) {
+        console.error("fetch overview error:", err);
+      }
     };
 
-    const options = {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          labels: {
-            color: textColor,
-          },
-        },
-        zoom: {
-          zoom: {
-            wheel: {
-              enabled: true, // cho phép zoom bằng cuộn chuột
-            },
-            pinch: {
-              enabled: true, // cho phép zoom bằng 2 ngón trên mobile
-            },
-            mode: "x", // zoom theo trục X
-          },
-          pan: {
-            enabled: true, // cho phép kéo để di chuyển
-            mode: "x", // kéo ngang
-          },
-          limits: {
-            x: { min: "original", max: "original" },
-          },
-        },
-      },
-      scales: {
-        x: {
-          ticks: {
-            color: textColorSecondary,
-          },
-          grid: {
-            color: surfaceBorder,
-          },
-        },
-        y: {
-          ticks: {
-            color: textColorSecondary,
-          },
-          grid: {
-            color: surfaceBorder,
-          },
-        },
-      },
-    };
-
-    setChartData(data);
-    setChartOptions(options);
-  }, []);
+    fetchData();
+  }, [profile]);
 
   const handleBMI = () => {
     const newErrors = {
@@ -202,9 +205,17 @@ const Home = () => {
                   <span className="text-black">Huyết áp</span>
                   <i className="pi pi-chart-line"></i>
                 </div>
-                <div className="mt-3">140/80</div>
+                <div className="mt-3">
+                  <div className="mt-3">
+                    {data1?.bloodPressure?.record?.systolic ?? "--"}/
+                    {data1?.bloodPressure?.record?.diastolic ?? "--"}
+                  </div>
+                </div>
                 <div className="w-full flex justify-content-between">
-                  <div className="text-xs text-main2">mmHg - Bình thường</div>
+                  <div className="text-xs text-main2">
+                    mmHg -{" "}
+                    {data1?.bloodPressure?.record?.bloodPressureAlert ?? "--"}
+                  </div>
                   <div>
                     <i className="pi pi-thumbs-up text-xs mr-2 opacity-60"></i>
                     <span className="text-xs opacity-60">Tốt</span>
@@ -216,9 +227,13 @@ const Home = () => {
                   <span className="text-black">Nhịp tim</span>
                   <i className="pi pi-heart"></i>
                 </div>
-                <div className="mt-3">72</div>
+                <div className="mt-3">
+                  {data1?.bloodSugar?.record?.bloodSugar ?? "--"}
+                </div>
                 <div className="w-full flex justify-content-between">
-                  <div className="text-xs text-main2">BPM - Tốt</div>
+                  <div className="text-xs text-main2">
+                    BPM - {data1?.bloodSugar?.record?.bloodSugarAlert ?? "--"}
+                  </div>
                   <div>
                     <i className="pi pi-arrow-up-right text-xs mr-2 opacity-60"></i>
                     <span className="text-xs opacity-60">Cải thiện</span>
@@ -232,9 +247,13 @@ const Home = () => {
                   <span className="text-black">Đường huyết</span>
                   <i className="pi pi-wave-pulse"></i>
                 </div>
-                <div className="mt-3">100 mg/Dl</div>
+                <div className="mt-3">
+                  {data1?.heartRate?.record?.heartRate ?? "--"} mg/dL
+                </div>
                 <div className="w-full flex justify-content-between">
-                  <div className="text-xs text-main2">Ổn định</div>
+                  <div className="text-xs text-main2">
+                    {data1?.heartRate?.record?.heartRateAlert ?? "--"}
+                  </div>
                   <div>
                     <i className="pi pi-thumbs-up text-xs mr-2 opacity-60"></i>
                     <span className="text-xs opacity-60">Tốt</span>
@@ -246,9 +265,13 @@ const Home = () => {
                   <span className="text-black">Giấc ngủ</span>
                   <i className="pi pi-moon"></i>
                 </div>
-                <div className="mt-3">7.5 giờ</div>
+                <div className="mt-3">
+                  {data1?.sleep?.record?.hoursSleep ?? "--"} giờ
+                </div>
                 <div className="w-full flex justify-content-between">
-                  <div className="text-xs text-main2">Tốt</div>
+                  <div className="text-xs text-main2">
+                    {data1?.sleep?.record?.sleepAlert ?? "--"}
+                  </div>
                   <div>
                     <i className="pi pi-thumbs-up text-xs mr-2 opacity-60"></i>
                     <span className="text-xs opacity-60">Tốt</span>
@@ -286,27 +309,37 @@ const Home = () => {
               <div className="card-4 flex flex-row align-items-center gap-2 p-2">
                 <i className="pi pi-exclamation-circle font-bold"></i>
                 <div className="flex flex-column gap-2">
-                  <div className="text-black">Huyết áp cao</div>
+                  <div className="text-black">
+                    {data3?.bloodSugarSummary?.current?.alert ?? "--"}
+                  </div>
                   <div className="text-black text-xs">
-                    2 giờ trước - 145/95 mmHg
+                    {data3?.bloodSugarSummary?.current?.recordedAt ?? "--"}
+                    {" - "}
+                    {data3?.bloodSugarSummary?.current?.value ?? "--"} mg/dL
                   </div>
                 </div>
               </div>
               <div className="card-3 flex flex-row align-items-center gap-2 p-2">
                 <i className="pi pi-heart font-bold"></i>
                 <div className="flex flex-column gap-2">
-                  <div className="text-black">Nhịp tim giảm</div>
+                  <div className="text-black">
+                    {data3?.heartRateSummary?.current?.alert ?? "--"}
+                  </div>
                   <div className="text-black text-xs">
-                    30 phút trước - 72 BPM
+                    {data3?.heartRateSummary?.current?.recordedAt ?? "--"} -{" "}
+                    {data3?.heartRateSummary?.current?.value ?? "--"} BPM
                   </div>
                 </div>
               </div>
               <div className="card-1 flex flex-row align-items-center gap-2 p-2">
                 <i className="pi pi-moon font-bold"></i>
                 <div className="flex flex-column gap-2">
-                  <div className="text-black">Huyết áp cao</div>
+                  <div className="text-black">
+                    {data3?.sleepComparison?.compare ?? "--"}
+                  </div>
                   <div className="text-black text-xs">
-                    1 giờ trước - Ngủ muộn hơn lần trước
+                    {data3?.sleepComparison?.sleepTime ?? "--"} -{" "}
+                    {data3?.sleepComparison?.compare ?? "--"}
                   </div>
                 </div>
               </div>
@@ -326,21 +359,27 @@ const Home = () => {
                 style={{ borderBottom: "1px solid #acacacff" }}
               >
                 <div className="opacity-80 text-sm">Tổng thời lượng</div>
-                <div className="text-black text-sm">7h 30p</div>
+                <div className="text-black text-sm">
+                  {data3?.sleepComparison?.time ?? "--"}
+                </div>
               </div>
               <div
                 className="flex flex-row justify-content-between"
                 style={{ borderBottom: "1px solid #acacacff" }}
               >
                 <div className="opacity-80 text-sm">Thời gian đi ngủ</div>
-                <div className="text-black text-sm">23:15</div>
+                <div className="text-black text-sm">
+                  {data3?.sleepComparison?.sleepTime ?? "--"}
+                </div>
               </div>
               <div
                 className="flex flex-row justify-content-between"
                 style={{ borderBottom: "1px solid #acacacff" }}
               >
                 <div className="opacity-80 text-sm">So sánh lần trước</div>
-                <div className="text-black text-sm">Ngủ muộn hơn 45p</div>
+                <div className="text-black text-sm">
+                  {data3?.sleepComparison?.compare ?? "--"}
+                </div>
               </div>
               <div
                 className="flex flex-row align-items-center gap-3"
@@ -397,7 +436,9 @@ const Home = () => {
                 style={{ borderBottom: "1px solid #acacacff" }}
               >
                 <div className="opacity-80 text-sm">Hôm nay</div>
-                <div className="text-black text-sm">72 BPM</div>
+                <div className="text-black text-sm">
+                  {data3?.heartRateSummary?.current?.value ?? "--"} BPM
+                </div>
               </div>
               <div className="text-black text-sm">So sánh trong 7 ngày</div>
               <div
@@ -405,24 +446,30 @@ const Home = () => {
                 style={{ borderBottom: "1px solid #acacacff" }}
               >
                 <div className="opacity-80 text-sm">Cao nhất</div>
-                <div className="text-black text-sm">98 BPM</div>
+                <div className="text-black text-sm">
+                  {data3?.heartRateSummary?.max ?? "--"} BPM
+                </div>
               </div>
               <div
                 className="flex flex-row justify-content-between"
                 style={{ borderBottom: "1px solid #acacacff" }}
               >
                 <div className="opacity-80 text-sm">Thấp nhất</div>
-                <div className="text-black text-sm">65 BPM</div>
+                <div className="text-black text-sm">
+                  {data3?.heartRateSummary?.min ?? "--"} BPM
+                </div>
               </div>
               <div
                 className="flex flex-row justify-content-between"
                 style={{ borderBottom: "1px solid #acacacff" }}
               >
                 <div className="opacity-80 text-sm">Trung bình</div>
-                <div className="text-black text-sm">80 BPM</div>
+                <div className="text-black text-sm">
+                  {data3?.heartRateSummary?.average ?? "--"} BPM
+                </div>
               </div>
               <div className="text-main1 flex justify-content-end font-italic">
-                Rất tốt
+                {data3?.heartRateSummary?.averageAlert ?? "--"}
               </div>
               <div
                 className="flex flex-row align-items-center gap-3"
@@ -430,16 +477,17 @@ const Home = () => {
               >
                 <HandHeart className="pi pi-moon text-main4 font-bold" />
                 <div className="flex flex-column w-10 md:w-12">
-                  <div className="text-black text-sm">Nhịp tim ổn định</div>
+                  <div className="text-black text-sm">
+                    {data3?.heartRateSummary?.averageAlert ?? "--"}
+                  </div>
                   <div className="text-xs opacity-60">
-                    Nhịp tim hôm nay ổn định, ở mức bình thường và cho thất cơ
-                    thể đang hoạt động khỏe mạnh.
+                    {data3?.heartRateSummary?.evaluation ?? "--"}
                   </div>
                 </div>
               </div>
 
               <Slider
-                value={72}
+                value={data3?.heartRateSummary?.current?.value ?? 72}
                 min={30}
                 max={300}
                 className="slider-over"
@@ -448,7 +496,9 @@ const Home = () => {
                     "linear-gradient(to right, #fdcb02ff,  #28c522ff,  #06b6d4,  #0062ffff, #0400ffff,  #ff0000ff )",
                 }}
               />
-              <div>72 BPM - Thư giãn</div>
+              <div>
+                {data3?.heartRateSummary?.current?.value ?? "--"} BPM - Thư giãn
+              </div>
             </div>
             <div className="flex flex-column gap-3 card-5 lg:w-4 p-3 shadow-1">
               <div className="flex flex-row justify-content-center text-main4">
@@ -460,7 +510,9 @@ const Home = () => {
                 style={{ borderBottom: "1px solid #acacacff" }}
               >
                 <div className="opacity-80 text-sm">Hôm nay</div>
-                <div className="text-black text-sm">90 mg/dL</div>
+                <div className="text-black text-sm">
+                  {data3?.bloodSugarSummary?.current?.value ?? "--"} BPM mg/dL
+                </div>
               </div>
               <div className="text-black text-sm">So sánh trong 7 ngày</div>
               <div
@@ -468,14 +520,18 @@ const Home = () => {
                 style={{ borderBottom: "1px solid #acacacff" }}
               >
                 <div className="opacity-80 text-sm">Cao nhất</div>
-                <div className="text-black text-sm">150 mg/dL</div>
+                <div className="text-black text-sm">
+                  {data3?.bloodSugarSummary?.max ?? "--"} mg/dL
+                </div>
               </div>
               <div
                 className="flex flex-row justify-content-between"
                 style={{ borderBottom: "1px solid #acacacff" }}
               >
                 <div className="opacity-80 text-sm">Thấp nhất</div>
-                <div className="text-black text-sm">70 mg/dL</div>
+                <div className="text-black text-sm">
+                  {data3?.bloodSugarSummary?.min ?? "--"} mg/dL
+                </div>
               </div>
               <div
                 className="flex flex-row align-items-center gap-3"
@@ -483,10 +539,11 @@ const Home = () => {
               >
                 <Stethoscope className="pi pi-moon text-main4 font-bold" />
                 <div className="flex flex-column w-10 md:w-12">
-                  <div className="text-black text-sm">Đường huyết ổn định</div>
+                  <div className="text-black text-sm">
+                    {data3?.bloodSugarSummary?.averageAlert ?? "--"}
+                  </div>
                   <div className="text-xs opacity-60">
-                    Đường huyết hôm nay ổn định, trong giới hạn an toàn; hãy
-                    tiếp tục duy trì chế độ ăn uống và sinh hoạt lành mạnh.
+                    {data3?.bloodSugarSummary?.evaluation ?? "--"}
                   </div>
                 </div>
               </div>
@@ -497,20 +554,6 @@ const Home = () => {
         <Card>
           <div>
             <h3>Cân nặng lý tưởng </h3>
-            <div className="flex flex-column lg:flex-row gap-3">
-              <div className="w-7">
-                <Slider
-                  value={72}
-                  min={30}
-                  max={300}
-                  className="slider-over"
-                  style={{
-                    background:
-                      "linear-gradient(to right, #0062ffff,  #28c522ff,  #d46606ff,  #ff0000ff )",
-                  }}
-                />
-              </div>
-            </div>
           </div>
           <div className="flex flex-column lg:flex-row gap-3">
             <div className="w-full lg:w-4">
@@ -546,21 +589,15 @@ const Home = () => {
             <div className="card-2 flex flex-row align-items-center gap-2 p-2">
               <TrendingUp />
               <div className="flex flex-column gap-2 w-10">
-                <div className="text-black">Huyết áp cao</div>
-                <div className="text-black text-xs">
-                  2 giờ trước - 145/95 mmHg
-                </div>
+                <div className="text-black">{data4?.positive?.[0]}</div>
+                <div className="text-black">{data4?.positive?.[1]}</div>
               </div>
             </div>
             <div className="card-4 flex flex-row align-items-center gap-2 p-2">
               <ClipboardPenLine />
               <div className="flex flex-column gap-2 w-10">
-                <div>Cải thiện tích cực</div>
-                <div className="text-black text-xs">
-                  Nhịp tim trung bình và huyết áp trung bình ở mức ổn, cho thấy
-                  sức khỏe tim mach của bạn khá tốt, nên duy trì thoi quen lành
-                  mạnh mỗi ngày
-                </div>
+                <div className="text-black">{data4?.warn?.[0]}</div>
+                <div className="text-black">{data4?.warn?.[1]}</div>
               </div>
             </div>
             <div className="card-1 flex flex-row align-items-center gap-2 p-2">
@@ -620,28 +657,40 @@ const Home = () => {
               <div className="flex  gap-2 font-bold text-main1 text-xl">
                 <Siren /> Gợi ý cho bạn
               </div>
-              <div
-                className="flex align-items-center gap-2 p-2 border-round-sm bg-main3"
-                style={{
-                  border: "1px solid #b8b8b8ff",
-                }}
+              <Link
+                to="https://nhathuoclongchau.com.vn/bai-viet/goi-y-thuc-don-bua-sang-cho-7-ngay-day-du-dinh-duong-va-tien-loi.html"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                <Utensils className="text-main4" />
-                <span className="opacity-80 w-10">
-                  Xem gợi ý dinh dưỡng cho ngày mới
-                </span>
-              </div>
-              <div
-                className="flex align-items-center gap-2 p-2 border-round-sm bg-main3"
-                style={{
-                  border: "1px solid #b8b8b8ff",
-                }}
+                <div
+                  className="flex align-items-center gap-2 p-2 border-round-sm bg-main3"
+                  style={{
+                    border: "1px solid #b8b8b8ff",
+                  }}
+                >
+                  <Utensils className="text-main4" />
+                  <span className="opacity-80 w-10">
+                    Xem gợi ý dinh dưỡng cho ngày mới
+                  </span>
+                </div>
+              </Link>
+              <Link
+                to="https://tamanhhospital.vn/cach-ngu-sau-giac/"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                <MoonStar className="text-main4" />
-                <span className="opacity-80 w-10">
-                  Đặt mục tiêu ngủ 7 tiếng mỗi đêm
-                </span>
-              </div>
+                <div
+                  className="flex align-items-center gap-2 p-2 border-round-sm bg-main3"
+                  style={{
+                    border: "1px solid #b8b8b8ff",
+                  }}
+                >
+                  <MoonStar className="text-main4" />
+                  <span className="opacity-80 w-10">
+                    Đặt mục tiêu ngủ 7 tiếng mỗi đêm
+                  </span>
+                </div>
+              </Link>
             </div>
           </div>
         </Card>
@@ -709,4 +758,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default OverView;

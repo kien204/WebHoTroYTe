@@ -4,6 +4,7 @@ Body body {
   line-height: 1.5;
   background-color: #f9f9f9;
   color: #525252;
+  height: 100%;
 }
 
 /* Link */
@@ -12,6 +13,15 @@ a {
   color: inherit;
   cursor: pointer;
   transition: all 0.3s ease;
+}
+
+.min-h-dvh {
+  min-height: 100dvh;
+}
+
+/* Footer padding cho điện thoại có tai thỏ (iPhone, Pixel...) */
+.footer-safe {
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* List */
