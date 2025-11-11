@@ -74,89 +74,129 @@ const OverView = () => {
     }
   }, [profile]);
 
+  const getDatas1 = async () => {
+    try {
+      const res1 = await callApi(
+        () => overViewAPI.getdata1(profile.hoSoId),
+        false,
+        false
+      );
+
+      setData1(res1);
+    } catch {
+      //
+    }
+  };
+
+  const getDatas4 = async () => {
+    try {
+      const res4 = await callApi(
+        () => overViewAPI.getdata4(profile.hoSoId),
+        false,
+        false
+      );
+
+      setData4(res4);
+    } catch {
+      //
+    }
+  };
+
+  const getDatas3 = async () => {
+    try {
+      const res3 = await callApi(
+        () => overViewAPI.getdata3(profile.hoSoId),
+        false,
+        false
+      );
+
+      setData3(res3);
+    } catch {
+      //
+    }
+  };
+
+  const getDatas2 = async () => {
+    try {
+      const res2 = await callApi(
+        () => overViewAPI.getdata2(profile.hoSoId),
+        false,
+        false
+      );
+
+      setData2(res2);
+
+      // ✅ cập nhật chart sau khi có data2
+      const documentStyle = getComputedStyle(document.documentElement);
+      const textColor = documentStyle.getPropertyValue("--text-color");
+      const textColorSecondary = documentStyle.getPropertyValue(
+        "--text-color-secondary"
+      );
+      const surfaceBorder = documentStyle.getPropertyValue("--surface-border");
+
+      setChartData({
+        labels: res2?.labels ?? [],
+        datasets: [
+          {
+            label: "Huyết áp tâm thu",
+            data: res2?.datasets?.[0]?.data ?? [],
+            fill: false,
+            borderColor: documentStyle.getPropertyValue("--blue-500"),
+            tension: 0.4,
+          },
+          {
+            label: "Huyết áp tâm trương",
+            data: res2?.datasets?.[1]?.data ?? [],
+            fill: false,
+            borderColor: documentStyle.getPropertyValue("--pink-500"),
+            tension: 0.4,
+          },
+        ],
+      });
+
+      setChartOptions({
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: { color: textColor },
+          },
+          zoom: {
+            zoom: {
+              wheel: { enabled: true },
+              pinch: { enabled: true },
+              mode: "x",
+            },
+            pan: {
+              enabled: true,
+              mode: "x",
+            },
+          },
+        },
+        scales: {
+          x: {
+            ticks: { color: textColorSecondary },
+            grid: { color: surfaceBorder },
+          },
+          y: {
+            ticks: { color: textColorSecondary },
+            grid: { color: surfaceBorder },
+          },
+        },
+      });
+    } catch {
+      //
+    }
+  };
+
   useEffect(() => {
     if (!profile) return;
 
-    const fetchData = async () => {
-      try {
-        const [res1, res2, res3, res4] = await Promise.all([
-          callApi(() => overViewAPI.getdata1(profile.hoSoId), false, false),
-          callApi(() => overViewAPI.getdata2(profile.hoSoId), false, false),
-          callApi(() => overViewAPI.getdata3(profile.hoSoId), false, false),
-          callApi(() => overViewAPI.getdata4(profile.hoSoId), false, false),
-        ]);
-
-        setData1(res1);
-        setData2(res2);
-        setData3(res3);
-        setData4(res4);
-
-        // ✅ cập nhật chart sau khi có data2
-        const documentStyle = getComputedStyle(document.documentElement);
-        const textColor = documentStyle.getPropertyValue("--text-color");
-        const textColorSecondary = documentStyle.getPropertyValue(
-          "--text-color-secondary"
-        );
-        const surfaceBorder =
-          documentStyle.getPropertyValue("--surface-border");
-
-        setChartData({
-          labels: res2?.labels ?? [],
-          datasets: [
-            {
-              label: "Huyết áp tâm thu",
-              data: res2?.datasets?.[0]?.data ?? [],
-              fill: false,
-              borderColor: documentStyle.getPropertyValue("--blue-500"),
-              tension: 0.4,
-            },
-            {
-              label: "Huyết áp tâm trương",
-              data: res2?.datasets?.[1]?.data ?? [],
-              fill: false,
-              borderColor: documentStyle.getPropertyValue("--pink-500"),
-              tension: 0.4,
-            },
-          ],
-        });
-
-        setChartOptions({
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              labels: { color: textColor },
-            },
-            zoom: {
-              zoom: {
-                wheel: { enabled: true },
-                pinch: { enabled: true },
-                mode: "x",
-              },
-              pan: {
-                enabled: true,
-                mode: "x",
-              },
-            },
-          },
-          scales: {
-            x: {
-              ticks: { color: textColorSecondary },
-              grid: { color: surfaceBorder },
-            },
-            y: {
-              ticks: { color: textColorSecondary },
-              grid: { color: surfaceBorder },
-            },
-          },
-        });
-      } catch (err) {
-        console.error("fetch overview error:", err);
-      }
-    };
-
-    fetchData();
-  }, [profile]);
+    getDatas1();
+    getDatas2();
+    getDatas3();
+    getDatas4();
+  }, [profile, profile.hoSoId]);
 
   const handleBMI = () => {
     const newErrors = {
