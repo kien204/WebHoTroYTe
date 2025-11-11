@@ -200,7 +200,7 @@ const DataEntry = () => {
   };
 
   useEffect(() => {
-    if (!profile?.hoSoId) return;
+    if (Object.keys(profile).length === 0 || !profile?.hoSoId) return;
     (async () => {
       await Promise.all([
         getRecentlyForm1(),
@@ -352,10 +352,8 @@ const DataEntry = () => {
     try {
       if (firstForm3) {
         await callApi(() => dataEntryApi.createform3(form3));
-      } else {  
-
-          console.log(form3);
-          
+      } else {
+        console.log(form3);
 
         await callApi(() =>
           dataEntryApi.putform3(
@@ -731,10 +729,10 @@ const DataEntry = () => {
                         }
                       />
                       {errorform4.data1 && form4.timeSleep && (
-                      <div className="text-sm mt-1" style={{ color: "red" }}>
-                        Giờ thức phải sau giờ dậy
-                      </div>
-                    )}
+                        <div className="text-sm mt-1" style={{ color: "red" }}>
+                          Giờ thức phải sau giờ dậy
+                        </div>
+                      )}
                     </div>
                     <div>
                       <label htmlFor="ip1">Dậy lúc</label> <br />

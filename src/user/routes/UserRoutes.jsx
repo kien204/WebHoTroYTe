@@ -8,18 +8,15 @@ import NotFoundPage from "../../features/notfoundpage/NotFoundPage";
 import Demo2 from "../../demo/demo-chatbot/demo-chatbot";
 import OverView from "../pages/OverView";
 import Home from "../pages/Home";
-import AiHelper from "../pages/AiHelper";
+import AiHelper from "../pages/AIHelper";
 import DataEntry from "../pages/DataEntry";
 import Reports from "../pages/Reports";
 import HealthProfile from "../pages/HealthProfile";
 import SetUpAlerts from "../pages/SetUpAlerts";
 import WarningAndReminder from "../pages/WarningAndReminder";
- 
 
 const UserRoutes = () => {
-  const privateRouters = [
-    { path: "/a", component: Demo2 },
-  ];
+  const privateRouters = [{ path: "/a", component: Demo2 }];
 
   const publicRouters = [
     { path: "/", component: Home },

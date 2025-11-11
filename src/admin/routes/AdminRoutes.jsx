@@ -7,26 +7,18 @@ import ProtectedRoute from "../../routes/ProtectedRoute";
 import SystemManager from "../pages/SystemManager";
 
 const AdminRoutes = () => {
-  const adminRouters = [{ path: "/system-manager", component: SystemManager }];
-
   return (
     <Routes>
-      {adminRouters.map((item, key) => (
-        <Route
-          key={key}
-          path={item.path}
-          element={
-            // <ProtectedRoute requireAdmin>
-            //   <AdminLayout>
-            //     <item.component />
-            //   </AdminLayout>
-            // </ProtectedRoute>
-            <AdminLayout>
-              <item.component />
-            </AdminLayout>
-          }
-        />
-      ))}
+      <Route
+        element={
+          <ProtectedRoute requireAdmin>
+            <AdminLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="/system-manager" element={<SystemManager />} />
+        <Route path="*" element={<SystemManager />} /> {/* fallback */}
+      </Route>
     </Routes>
   );
 };

@@ -10,11 +10,6 @@ export const handleApiError = (error, showToast, opShowToast = true) => {
           error.response.data?.message || "Vui lòng kiểm tra lại"
         );
         break;
-      case 401:
-        showToast("error", "Phiên hết hạn", "Vui lòng đăng nhập lại");
-        localStorage.removeItem("token");
-        window.location.href = "/login";
-        break;
       case 403:
         showToast(
           "warn",
@@ -31,7 +26,6 @@ export const handleApiError = (error, showToast, opShowToast = true) => {
           "Lỗi",
           error.response.data?.message || "Có sự cố xảy ra"
         );
-        
     }
   } else if (error.request) {
     showToast(
