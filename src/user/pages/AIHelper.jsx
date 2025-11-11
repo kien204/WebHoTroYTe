@@ -48,7 +48,6 @@ const AIHelper = () => {
     }
   }, [messages]);
 
-
   useEffect(() => {
     let isMounted = true;
 
@@ -176,7 +175,7 @@ const AIHelper = () => {
             }
             className="h-full"
           >
-            <div className="flex flex-column gap-3">
+            <div className="flex flex-column max-h-full overflow-y-scroll gap-3">
               {history.map((item, i) => (
                 <div
                   key={i}
@@ -226,7 +225,7 @@ const AIHelper = () => {
                   </div>
                   <div
                     className="ml-auto text-xs font-normal flex align-items-center hidden"
-                    style={{ color: "#0083AD" }}
+                    style={{ color: "#6D9CCB" }}
                   >
                     Phản hồi trong vài giây
                   </div>
@@ -237,7 +236,6 @@ const AIHelper = () => {
             <ScrollPanel
               ref={scrollRef}
               style={{ height: "350px" }}
-              className="mb-3"
             >
               <div className="flex flex-column gap-3 w-full">
                 {messages.map((msg, i) => (
@@ -248,7 +246,7 @@ const AIHelper = () => {
                         <span
                           className="p-2 border-round-3xl shadow-1"
                           style={{
-                            background: "#F1F1F1",
+                            background: "#6D9CCB",
                             maxWidth: "70%",
                             wordBreak: "break-word",
                             whiteSpace: "pre-wrap",

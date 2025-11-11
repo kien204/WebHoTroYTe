@@ -4,7 +4,6 @@ Body body {
   line-height: 1.5;
   background-color: #f9f9f9;
   color: #525252;
-  height: 100%;
 }
 
 /* Link */
@@ -13,15 +12,6 @@ a {
   color: inherit;
   cursor: pointer;
   transition: all 0.3s ease;
-}
-
-.min-h-dvh {
-  min-height: 100dvh;
-}
-
-/* Footer padding cho điện thoại có tai thỏ (iPhone, Pixel...) */
-.footer-safe {
-  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* List */
@@ -172,9 +162,6 @@ ol {
 }
 
 .aihelper {
-  .p-scrollpanel-content {
-    padding: 18px 18px 0px 0px !important;
-  }
 
   .p-scrollpanel .p-scrollpanel-bar {
     background: #777777;
@@ -201,5 +188,11 @@ ol {
 .slider-over {
   .p-slider-range {
     width: 0px !important;
+  }
+}
+
+.warningandreminder {
+  .p-tabview-panels {
+    padding: 0px !important;
   }
 }

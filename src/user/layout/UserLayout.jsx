@@ -24,11 +24,11 @@ const Layout = ({ children }) => {
 
   return (
     <div className="flex h-screen">
-      <div className="hidden md:block w-[18rem] bg-white border-r surface-border min-h-screen flex-shrink-0">
+      <div className="hidden md:block bg-white border-r surface-border min-h-screen flex-shrink-0">
         <MenuSidebar />
       </div>
 
-      <div className="flex flex-column min-h-screen">
+      <div className="flex flex-column min-h-screen w-full">
         <Topbar onMenuToggle={() => setSidebarVisible(true)} />
         <div className="flex-1 overflow-auto">
           <div className="p-4  bg-main4">{children}</div>
@@ -42,7 +42,7 @@ const Layout = ({ children }) => {
             className="absolute h-screen w-screen bg-main2 opacity-70"
             onClick={() => setSidebarVisible(false)}
           />
-          <div className="relative w-[18rem] min-h-screen bg-white shadow-2 z-10 animate-slide-in">
+          <div className="relative min-h-screen bg-white shadow-2 z-10 animate-slide-in">
             <MenuSidebar />
           </div>
         </div>

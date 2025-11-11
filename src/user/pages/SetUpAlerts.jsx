@@ -278,7 +278,7 @@ const SetUpAlerts = () => {
                   <div className="relative flex align-items-center justify-content-end">
                     <InputText
                       id="ip2"
-                      className="w-full w-full pr-8"
+                      className="w-full pr-8"
                       value={formData.minHeartRate}
                       placeholder="Nhập giá trị nhịp tim tối thiểu"
                       onFocus={() =>
