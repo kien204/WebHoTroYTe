@@ -256,7 +256,7 @@ const Reports = () => {
             </div>
             <div className="flex flex-column md:align-items-end md:flex-row gap-3">
               <Button className="" label="7 ngày gần nhất" />
-              <Button label="30 ngày gần nhất" outline />
+              <Button label="30 ngày gần nhất" />
             </div>
           </div>
         </div>

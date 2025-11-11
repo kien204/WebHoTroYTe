@@ -4,14 +4,10 @@ import { Route, Routes } from "react-router-dom";
 import AdminLayout from "../layout/AdminLayout";
 import ProtectedRoute from "../../routes/ProtectedRoute";
 
-import Home from "../pages/Home";
 import SystemManager from "../pages/SystemManager";
 
 const AdminRoutes = () => {
-  const adminRouters = [
-    { path: "/", component: Home },
-    { path: "/system-manager", component: SystemManager },
-  ];
+  const adminRouters = [{ path: "/system-manager", component: SystemManager }];
 
   return (
     <Routes>

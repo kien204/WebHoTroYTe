@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 
 import { TabView, TabPanel } from "primereact/tabview";
 import { Card } from "primereact/card";
@@ -9,23 +9,30 @@ import { Dialog } from "primereact/dialog";
 
 import { useWindowWidth } from "../../common/hooks/useWindowWidth";
 import { Calendar } from "primereact/calendar";
-import { MultiSelect } from "primereact/multiselect";
+
+import { useApi } from "../../common/hooks/useApi";
+import { useToast } from "../../common/hooks/useToast";
+import { AuthContext } from "../../common/context/AuthContext";
+import remindAPI from "../../services/api/remindAPI";
 
 const WarningAndReminder = () => {
   const width = useWindowWidth();
   let tableWidthPx;
   if (width < 768) tableWidthPx = width - 50;
-  else if (width < 992) tableWidthPx = width - 330;
+  else if (width < 992) tableWidthPx = width - 350;
   else tableWidthPx = width;
 
-  const statusRef = useRef(null);
+  const { showToast } = useToast();
+  const { auth } = useContext(AuthContext);
+  const { callApi } = useApi(showToast);
 
+  const [data, setData] = useState(null);
+  const statusRef = useRef(null);
   const [selectedStatus, setSelectedStatus] = useState(1);
   const [formAddReminder, setFormAddReminder] = useState({
     title: 1,
     content: "",
     time: "",
-    day: [],
   });
   const [visibleDialog, setVisibleDialog] = useState(false);
 
@@ -33,7 +40,6 @@ const WarningAndReminder = () => {
     title: false,
     content: false,
     time: false,
-    day: false,
   });
 
   const status = [
@@ -45,23 +51,13 @@ const WarningAndReminder = () => {
   ];
 
   const title = [
-    { name: "Sinh hoạt hằng ngày", code: 1 },
-    { name: "Sử dụng thuốc & điều trị", code: 2 },
-    { name: "Theo dõi sức khỏe", code: 3 },
-    { name: "Dinh dưỡng & lối sống", code: 4 },
-    { name: "Sức khỏe tinh thần", code: 5 },
-    { name: "Kiểm tra & báo cáo", code: 6 },
-    { name: "Khám & theo dõi bệnh", code: 7 },
-  ];
-
-  const day = [
-    { name: "Thứ 2", code: 1 },
-    { name: "Thứ 3", code: 2 },
-    { name: "Thứ 4", code: 3 },
-    { name: "Thứ 5", code: 4 },
-    { name: "Thứ 6", code: 5 },
-    { name: "Thứ 7", code: 6 },
-    { name: "Chủ nhật", code: 7 },
+    { name: "Sinh hoạt hằng ngày", code: "Sinh hoạt hằng ngày" },
+    { name: "Sử dụng thuốc & điều trị", code: "Sử dụng thuốc & điều trị" },
+    { name: "Theo dõi sức khỏe", code: "Theo dõi sức khỏe" },
+    { name: "Dinh dưỡng & lối sống", code: "Dinh dưỡng & nối sống" },
+    { name: "Sức khỏe tinh thần", code: "Sức khỏe tinh thần" },
+    { name: "Kiểm tra & báo cáo", code: "Kiểm tra & báo cáo" },
+    { name: "Khám & theo dõi bệnh", code: "Khám & theo dõi bệnh" },
   ];
 
   useEffect(() => {
@@ -86,21 +82,71 @@ const WarningAndReminder = () => {
     };
   }, []);
 
- 
-  const handleAddReminder = () => {
+  useEffect(() => {
+    if (!auth?.id) return;
+
+    const getData = async () => {
+      try {
+        const res = await callApi(() => remindAPI.get(auth.id));
+        setData(res.water);
+
+        console.log(res.water);
+      } catch {
+        //
+      }
+    };
+
+    getData();
+  }, [auth]);
+
+  const toDecimalHour = (time) => {
+    if (!time) return null;
+    const date = new Date(time);
+    const h = date.getHours();
+    const m = date.getMinutes();
+    const s = date.getSeconds();
+    return h + m / 60 + s / 3600;
+  };
+  
+  const handleAddReminder = async () => {
     setErrorAddReminder({
       title: !formAddReminder.title,
       content: !formAddReminder.content,
       time: !formAddReminder.time,
-      day: !formAddReminder.day?.length,
     });
 
     if (Object.values(errorAddReminder).some((v) => v)) return;
+    const decimal = toDecimalHour(formAddReminder.time);
+    try {
+      await callApi(() =>
+        remindAPI.create({
+          tkId: auth?.id,
+          timeRemind: decimal,
+          title: formAddReminder.title,
+          content: formAddReminder.content,
+        })
+      );
+
+      showToast("success", "Thành công", "Thêm nhắc nhở mới thành công");
+      setVisibleDialog(false);
+    } catch {
+      //
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!id) return;
+    try {
+      await callApi(remindAPI.delete(id));
+      showToast("success", "Thành công", "Xóa nhắc nhở thành công");
+    } catch {
+      //
+    }
   };
 
   return (
     <>
-      <div className="flex flex-column">
+      <div className="flex flex-column warningandreminder">
         <div>
           <div className="font-bold text-2xl">Cảnh báo & nhắc nhở </div>
           <div className="text-main2 mb-3">
@@ -108,12 +154,12 @@ const WarningAndReminder = () => {
           </div>
         </div>
         <div className="flex flex-column lg:flex-row gap-3">
-          <div className="w-12 ">
+          <div className="w-12">
             <Card
-              style={{ width: width >= 768 ? "100%" : `${tableWidthPx}px` }}
+              style={{ width: width >= 992 ? "100%" : `${tableWidthPx}px` }}
             >
               <TabView>
-                <TabPanel header="Cảnh báo tự động">
+                <TabPanel contentClassName="mt-4" header="Cảnh báo tự động">
                   <div className="flex flex-column gap-5">
                     <Card>
                       <div className="flex flex-column gap-3 md:flex-row ">
@@ -141,7 +187,7 @@ const WarningAndReminder = () => {
                     </Card>
                   </div>
                 </TabPanel>
-                <TabPanel header="Nhắc nhở định kỳ">
+                <TabPanel contentClassName="mt-4" header="Nhắc nhở định kỳ">
                   <div className="flex flex-column gap-4">
                     <div className="flex justify-content-end">
                       <Button
@@ -150,42 +196,51 @@ const WarningAndReminder = () => {
                         onClick={() => setVisibleDialog(true)}
                       />
                     </div>
-                    <div className="max-h-ful">
-                      <Card>
-                        <div className="flex flex-row gap-3">
-                          <i
-                            className="pi pi-heart text-main1 p-3 text-2xl border-round-xl"
-                            style={{ background: "#E7E7FF8F" }}
-                          />
-                          <div>
-                            <div>
-                              <span className="font-bold">
-                                Sinh hoạt hằng ngày
-                              </span>
-                              <span className="opacity-80 ml-3">
-                                - Uống 2 lit nước
-                              </span>
+                    <div className="max-h-full flex flex-column gap-3">
+                      {data?.map((item) => (
+                        <Card key={item.id}>
+                          <div className="flex flex-row gap-3 align-items-center">
+                            <i
+                              className="pi pi-heart text-main1 p-3 text-2xl border-round-xl"
+                              style={{ background: "#E7E7FF8F" }}
+                            />
+                            <div className="flex flex-column">
+                              <div
+                                style={{
+                                  display: "-webkit-box",
+                                  WebkitLineClamp: 2,
+                                  WebkitBoxOrient: "vertical",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                }}
+                              >
+                                <span className="font-bold">{item.title}</span>
+                                <span className="opacity-80 ml-3">
+                                  - {item.content}
+                                </span>
+                              </div>
+                              <div>
+                                <span className="opacity-80">
+                                  <i className="pi pi-calendar mr-3" />
+                                  Mỗi ngày
+                                </span>
+                                <span className="opacity-80 ml-3">
+                                  <i className="pi pi-stopwatch mr-3" />
+                                  {item.timeVert}
+                                </span>
+                              </div>
                             </div>
-                            <div>
-                              <span className="opacity-80">
-                                <i className="pi pi-calendar mr-3" />
-                                Mỗi ngày
-                              </span>
-                              <span className="opacity-80 ml-3">
-                                <i className="pi pi-stopwatch mr-3" />
-                                10:00
-                              </span>
-                            </div>
+                            <Button
+                              className="ml-auto text-2xl"
+                              icon="pi pi-trash"
+                              severity="danger"
+                              outlined
+                              style={{ border: "none" }}
+                              onClick={() => handleDelete(item.id)} // xóa theo id
+                            />
                           </div>
-                          <Button
-                            className="ml-auto text-2xl"
-                            icon="pi pi-trash"
-                            severity="danger"
-                            outlined
-                            style={{ border: "none" }}
-                          />
-                        </div>
-                      </Card>
+                        </Card>
+                      ))}
                     </div>
                   </div>
                 </TabPanel>
@@ -249,7 +304,7 @@ const WarningAndReminder = () => {
           </div>
           <div>
             <p className="mt-0 text-main1">Thời gian nhắc nhở</p>
-            <div className="flex flex-column md:flex-row gap-3">
+            <div className="relative w-full">
               <Calendar
                 value={formAddReminder.time}
                 onChange={(e) =>
@@ -259,27 +314,25 @@ const WarningAndReminder = () => {
                   })
                 }
                 invalid={errorAddReminder.time}
-                className="w-full md:w-6"
+                className="w-full"
                 timeOnly
-                readOnlyInput={true}
+                readOnlyInput
                 placeholder="Nhập thời gian nhắc nhở"
                 onClick={() =>
                   setErrorAddReminder({ ...errorAddReminder, time: false })
                 }
               />
-              <MultiSelect
-                value={formAddReminder.day}
-                onChange={(e) =>
-                  setFormAddReminder({ ...formAddReminder, day: e.value })
-                }
-                invalid={errorAddReminder.day}
-                options={day}
-                optionLabel="name"
-                className="w-full md:w-6"
-                maxSelectedLabels={2}
-                placeholder="Chọn ngày hẹn"
-                selectAllLabel="Mỗi ngày"
-              />
+              <span
+                className="absolute text-main1"
+                style={{
+                  right: "12px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  pointerEvents: "none",
+                }}
+              >
+                Mỗi ngày
+              </span>
             </div>
           </div>
           <div className="flex flex-column justify-content-center gap-3 md:gap-5 md:flex-row">
