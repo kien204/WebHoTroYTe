@@ -190,13 +190,16 @@ const OverView = () => {
   };
 
   useEffect(() => {
-    if (!profile) return;
+
+    if (Object.keys(profile).length === 0 || profile?.hoSoId)
+      return;
+    console.log("sao van lay");
 
     getDatas1();
     getDatas2();
     getDatas3();
     getDatas4();
-  }, [profile, profile.hoSoId]);
+  }, [profile, profile?.hoSoId]);
 
   const handleBMI = () => {
     const newErrors = {

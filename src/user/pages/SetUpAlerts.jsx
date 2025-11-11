@@ -64,7 +64,7 @@ const SetUpAlerts = () => {
   }, [profile?.hoSoId]);
 
   useEffect(() => {
-    if (!profile?.hoSoId) return;
+    if (Object.keys(profile).length === 0 || !profile?.hoSoId) return;
     (async () => {
       await getData();
     })();
@@ -74,11 +74,11 @@ const SetUpAlerts = () => {
   const getData = async () => {
     try {
       const res = await callApi(
-        () => setUpAlertsApi.get(profile.hoSoId),
+        () => setUpAlertsApi.get(profile?.hoSoId),
         false
       );
       const data = {
-        userProfileId: res.userProfileId ?? profile.hoSoId,
+        userProfileId: res.userProfileId ?? profile?.hoSoId,
         minHeartRate: res.minHeartRate ?? "",
         maxHeartRate: res.maxHeartRate ?? "",
         minBloodSugar: res.minBloodSugar ?? "",

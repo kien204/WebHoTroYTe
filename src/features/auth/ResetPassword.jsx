@@ -89,7 +89,11 @@ const ResetPassword = () => {
     if (Object.values(newErrors).some((v) => v)) return;
 
     try {
-      await callApi(() => authApi.reset_password({ email, otp, newPassword }));
+      await callApi(
+        () => authApi.reset_password({ email, otp, newPassword }),
+        true,
+        true
+      );
       localStorage.removeItem("resetEmail");
       showToast("success", "Thành công", "Đổi mật khẩu thành công");
       navigate("/login");
@@ -104,7 +108,7 @@ const ResetPassword = () => {
     setTimeLeft(60);
 
     try {
-      await callApi(() => authApi.resend_otp({ email }));
+      await callApi(() => authApi.resend_otp({ email }), true, true);
       showToast("success", "Thành công", "Gửi lại mã OTP thành công!");
     } catch {
       //

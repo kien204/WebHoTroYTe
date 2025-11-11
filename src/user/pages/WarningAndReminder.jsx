@@ -30,7 +30,7 @@ const WarningAndReminder = () => {
   const statusRef = useRef(null);
   const [selectedStatus, setSelectedStatus] = useState(1);
   const [formAddReminder, setFormAddReminder] = useState({
-    title: 1,
+    title: "",
     content: "",
     time: "",
   });
@@ -81,21 +81,17 @@ const WarningAndReminder = () => {
       hideAll();
     };
   }, []);
+  const getData = async () => {
+    try {
+      const res = await callApi(() => remindAPI.get(auth.id));
+      setData(res.water);
+    } catch {
+      //
+    }
+  };
 
   useEffect(() => {
     if (!auth?.id) return;
-
-    const getData = async () => {
-      try {
-        const res = await callApi(() => remindAPI.get(auth.id));
-        setData(res.water);
-
-        console.log(res.water);
-      } catch {
-        //
-      }
-    };
-
     getData();
   }, [auth]);
 
@@ -107,7 +103,7 @@ const WarningAndReminder = () => {
     const s = date.getSeconds();
     return h + m / 60 + s / 3600;
   };
-  
+
   const handleAddReminder = async () => {
     setErrorAddReminder({
       title: !formAddReminder.title,
@@ -115,7 +111,13 @@ const WarningAndReminder = () => {
       time: !formAddReminder.time,
     });
 
-    if (Object.values(errorAddReminder).some((v) => v)) return;
+    if (
+      !formAddReminder.title ||
+      !formAddReminder.content ||
+      !formAddReminder.time
+    )
+      return;
+
     const decimal = toDecimalHour(formAddReminder.time);
     try {
       await callApi(() =>
@@ -128,6 +130,11 @@ const WarningAndReminder = () => {
       );
 
       showToast("success", "Thành công", "Thêm nhắc nhở mới thành công");
+      setFormAddReminder({
+        title: "",
+        content: "",
+        time: "",
+      });
       setVisibleDialog(false);
     } catch {
       //
@@ -137,8 +144,9 @@ const WarningAndReminder = () => {
   const handleDelete = async (id) => {
     if (!id) return;
     try {
-      await callApi(remindAPI.delete(id));
+      await callApi(() => remindAPI.delete(id));
       showToast("success", "Thành công", "Xóa nhắc nhở thành công");
+      getData();
     } catch {
       //
     }

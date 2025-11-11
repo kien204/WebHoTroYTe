@@ -48,7 +48,7 @@ const Login = () => {
     }
 
     try {
-      const res = await callApi(() => authApi.login({ email, password }));
+      const res = await callApi(() => authApi.login({ email, password }), true, true);
       if (res.status === 1) {
         showToast("success", "Thành công", "Đăng nhập thành công!");
         login(res.auth, res.token);
@@ -97,7 +97,7 @@ const Login = () => {
     }
     setOtpError(false);
     try {
-      await callApi(() => authApi.verify_otp({ email, otp }));
+      await callApi(() => authApi.verify_otp({ email, otp }), true, true);
       showToast("success", "Thành công", "Xác thực tài khoản thành công!");
       localStorage.removeItem("expireTime");
       login(data.auth, data.token);
@@ -112,7 +112,7 @@ const Login = () => {
     setTimeLeft(60);
 
     try {
-      await authApi.resend_otp({ email });
+      await callApi(() => authApi.resend_otp({ email }), true, true);
       showToast("success", "Thành công", "Gửi lại mã OTP thành công!");
     } catch {
       //

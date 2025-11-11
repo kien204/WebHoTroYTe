@@ -52,6 +52,7 @@ const AIHelper = () => {
     let isMounted = true;
 
     const fetchHistory = async () => {
+      if (!auth?.id) return;
       try {
         const res = await callApi(() => aiHelperAPI.getHistory(auth?.id));
         if (isMounted) setHistory(res.data.reverse());
@@ -173,43 +174,40 @@ const AIHelper = () => {
                 />
               </div>
             }
-            className="h-full"
           >
-            <div className="flex flex-column max-h-full overflow-y-scroll gap-3">
-              {history.map((item, i) => (
-                <div
-                  key={i}
-                  className="flex justify-content-between align-items-center border-1 border-round p-2 hover:surface-100 cursor-pointer"
-                  style={{ borderColor: "#e0e0e0" }}
-                  onClick={() => handleSelect(item)}
-                >
-                  <div className="flex flex-column w-full pr-2">
-                    <div
-                      className="font-medium text-sm line-clamp"
-                      style={{
-                        display: "-webkit-box",
-                        WebkitBoxOrient: "vertical",
-                        WebkitLineClamp: 2,
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "normal",
-                      }}
-                    >
-                      {item[0].question}
+            <ScrollPanel style={{ height: "405px" }}>
+              <div className="flex flex-column gap-3 flex-1">
+                {history.map((item, i) => (
+                  <div
+                    key={i}
+                    className="flex justify-content-between align-items-center border-1 border-round p-2 hover:surface-100 cursor-pointer"
+                    style={{ borderColor: "#e0e0e0" }}
+                    onClick={() => handleSelect(item)}
+                  >
+                    <div className="flex flex-column w-full pr-2">
+                      <div
+                        className="font-medium text-sm line-clamp"
+                        style={{
+                          display: "-webkit-box",
+                          WebkitBoxOrient: "vertical",
+                          WebkitLineClamp: 2,
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "normal",
+                        }}
+                      >
+                        {item[0].question}
+                      </div>
+                      <small className="text-xs text-500">{item[0].date}</small>
                     </div>
-                    <small className="text-xs text-500">{item[0].date}</small>
+                    <Button
+                      icon="pi pi-trash"
+                      className="p-button-text p-button-danger"
+                    />
                   </div>
-                  <Button
-                    icon="pi pi-trash"
-                    className="p-button-text p-button-danger"
-                    // onClick={(e) => {
-                    //   e.stopPropagation(); // 👈 tránh bị click cả item
-                    //   handleDelete(item);
-                    // }}
-                  />
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </ScrollPanel>
           </Card>
         </div>
 
@@ -233,10 +231,7 @@ const AIHelper = () => {
               </div>
             }
           >
-            <ScrollPanel
-              ref={scrollRef}
-              style={{ height: "350px" }}
-            >
+            <ScrollPanel ref={scrollRef} style={{ height: "350px" }}>
               <div className="flex flex-column gap-3 w-full">
                 {messages.map((msg, i) => (
                   <div key={i} className="flex flex-column">
@@ -284,7 +279,7 @@ const AIHelper = () => {
                         <span
                           className="p-2 border-round-3xl shadow-1"
                           style={{
-                            background: "#F1F1F1",
+                            background: "#6D9CCB",
                             maxWidth: "70%",
                             wordBreak: "break-word",
                             whiteSpace: "pre-wrap",

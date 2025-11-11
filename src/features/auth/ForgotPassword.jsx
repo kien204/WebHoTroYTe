@@ -35,7 +35,7 @@ const ForgetPassword = () => {
     }
 
     try {
-      await callApi(() => authApi.forgot_password({ email }));
+      await callApi(() => authApi.forgot_password({ email }), true, true);
 
       localStorage.setItem("resetEmail", email);
 

@@ -93,7 +93,11 @@ const Register = () => {
     if (Object.values(newErrors).some((v) => v)) return;
 
     try {
-      const res = await callApi(() => authApi.register({ userName, email, password }));
+      const res = await callApi(
+        () => authApi.register({ userName, email, password }),
+        true,
+        true
+      );
       setCheckStatusUser(res.s0TP);
       setIsDialog(true);
     } catch {
@@ -137,7 +141,7 @@ const Register = () => {
     }
     setOtpError(false);
     try {
-      await callApi(() => authApi.verify_otp({ email, otp }));
+      await callApi(() => authApi.verify_otp({ email, otp }), true, true);
       showToast("success", "Thành công", "Xác thực tài khoản thành công!");
       localStorage.removeItem("expireTime");
       navigate("/login");
@@ -152,7 +156,7 @@ const Register = () => {
     setTimeLeft(60);
 
     try {
-      await authApi.resend_otp({ email });
+      await callApi(() => authApi.resend_otp({ email }, true, true));
       showToast("success", "Thành công", "Gửi lại mã OTP thành công!");
     } catch {
       //
