@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
@@ -11,7 +11,10 @@ import zoomPlugin from "chartjs-plugin-zoom";
 import { Chart as ChartJS } from "chart.js";
 
 import { useWindowWidth } from "../../common/hooks/useWindowWidth";
-
+import { useToast } from "../../common/hooks/useToast";
+import reportAPI from "../../services/api/reportAPI";
+import { useApi } from "../../common/hooks/useApi";
+import { AuthContext } from "../../common/context/AuthContext";
 ChartJS.register(zoomPlugin);
 
 const Reports = () => {
@@ -25,6 +28,10 @@ const Reports = () => {
   if (width < 768) tableWidthPx1 = width - 90;
   else tableWidthPx1 = width - 400;
 
+  const { showToast } = useToast();
+  const { callApi } = useApi(showToast);
+  const { profile } = useContext(AuthContext);
+
   const [chartData1, setChartData1] = useState({});
   const [chartData2, setChartData2] = useState({});
   const [chartData3, setChartData3] = useState({});
@@ -32,44 +39,11 @@ const Reports = () => {
 
   const [chartOptions, setChartOptions] = useState({});
 
-  const [dates, setDates] = useState(null);
   const opCalender = useRef(null);
-  const [dataTable, setDataTable] = useState([
-    {
-      ngay: 20 / 10,
-      data1: 120 / 80,
-      data2: 72,
-      data3: 96,
-      data4: 7.5,
-      note: "",
-    },
-    {
-      ngay: 20 / 10,
-      data1: 120 / 80,
-      data2: 72,
-      data3: 96,
-      data4: 7.5,
-      note: "",
-    },
-    {
-      ngay: 20 / 10,
-      data1: 120 / 80,
-      data2: 72,
-      data3: 96,
-      data4: 7.5,
-      note: "",
-    },
-    {
-      ngay: 20 / 10,
-      data1: 120 / 80,
-      data2: 72,
-      data3: 96,
-      data4: 7.5,
-      note: "sau an ds sa sad ad a sd sd ád ádad  kiển skienw  sa  sadsa ád á",
-    },
-  ]);
+  const [dataTable, setDataTable] = useState([]);
+  const [summary, setSummary] = useState(null);
 
-  useEffect(() => {
+  const setChart = (chart1, chart2, chart3, chart4) => {
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue("--text-color");
     const textColorSecondary = documentStyle.getPropertyValue(
@@ -78,18 +52,18 @@ const Reports = () => {
     const surfaceBorder = documentStyle.getPropertyValue("--surface-border");
 
     const data1 = {
-      labels: ["01/10", "02/10", "03/10", "04/10", "05/10", "06/10", "07/10"],
+      labels: chart1.labels,
       datasets: [
         {
           label: "Huyết áp tâm thu",
-          data: [120, 122, 121, 124, 119, 118, 123],
+          data: chart1.datasets[0].data,
           fill: false,
           borderColor: "#FF0000",
           tension: 0.4,
         },
         {
           label: "Huyết áp tâm trương",
-          data: [78, 80, 77, 76, 79, 81, 78],
+          data: chart1.datasets[1].data,
           fill: false,
           borderColor: "#FF0000",
           tension: 0.4,
@@ -98,11 +72,11 @@ const Reports = () => {
     };
 
     const data2 = {
-      labels: ["01/10", "02/10", "03/10", "04/10", "05/10", "06/10", "07/10"],
+      labels: chart2.labels,
       datasets: [
         {
           label: "Huyết áp tâm thu",
-          data: [90, 72, 91, 84, 109, 88, 93],
+          data: chart2.datasets[0].data,
           fill: false,
           borderColor: "#227B00",
           tension: 0.4,
@@ -111,11 +85,11 @@ const Reports = () => {
     };
 
     const data3 = {
-      labels: ["01/10", "02/10", "03/10", "04/10", "05/10", "06/10", "07/10"],
+      labels: chart3.labels,
       datasets: [
         {
           label: "Huyết áp tâm thu",
-          data: [90, 72, 91, 84, 109, 88, 93],
+          data: chart3.datasets[0].data,
           fill: false,
           borderColor: "#10004A",
           tension: 0.4,
@@ -124,11 +98,11 @@ const Reports = () => {
     };
 
     const data4 = {
-      labels: ["01/10", "02/10", "03/10", "04/10", "05/10", "06/10", "07/10"],
+      labels: chart4.labels,
       datasets: [
         {
           label: "Huyết áp tâm thu",
-          data: [7.8, 8, 9.3, 6, 4, 7.5, 8],
+          data: chart4.datasets[0].data,
           fill: false,
           borderColor: "#0032A6",
           tension: 0.4,
@@ -190,7 +164,7 @@ const Reports = () => {
     setChartData4(data4);
 
     setChartOptions(options);
-  }, []);
+  };
 
   useEffect(() => {
     const hideAll = () => {
@@ -213,6 +187,50 @@ const Reports = () => {
       hideAll();
     };
   }, []);
+
+  const getRangeDays = (days) => {
+    const end = new Date();
+    const start = new Date();
+    start.setDate(end.getDate() - (days - 1));
+    return [start, end];
+  };
+  const [dates, setDates] = useState(getRangeDays(30));
+  useEffect(() => {
+    if (dates?.[0] && dates?.[1]) {
+      handleFilter(
+        dates[0].toISOString().split("T")[0],
+        dates[1].toISOString().split("T")[0]
+      );
+    }
+  }, [profile, dates]);
+
+  const handleFilter = async (start, end) => {
+    if (Object.keys(profile).length === 0 || !profile?.hoSoId) return;
+
+    const res = await callApi(
+      () => reportAPI.getdata1(profile?.hoSoId, start, end),
+      false
+    );
+    const res1 = await callApi(() =>
+      reportAPI.getdata3(profile?.hoSoId, start, end)
+    );
+    setDataTable(res?.data);
+    setSummary(res?.total);
+    if (!res1 || res1 != "underline") {
+      setChart(res1.bloodPressure, res1.bloodSugar, res1.heartRate, res1.sleep);
+    }
+  };
+
+  const handleExport = async () => {
+    if (Object.keys(profile).length === 0 || !profile?.hoSoId) return;
+
+    const res = await callApi(
+      () => reportAPI.getdata2(profile?.hoSoId, dates?.[0], dates?.[1]),
+      false
+    );
+    console.log(res);
+  };
+
   return (
     <>
       <div className="flex gap-5 flex-column">
@@ -255,8 +273,14 @@ const Reports = () => {
               </div>
             </div>
             <div className="flex flex-column md:align-items-end md:flex-row gap-3">
-              <Button className="" label="7 ngày gần nhất" />
-              <Button label="30 ngày gần nhất" />
+              <Button
+                label="7 ngày gần nhất"
+                onClick={() => setDates(getRangeDays(7))}
+              />
+              <Button
+                label="30 ngày gần nhất"
+                onClick={() => setDates(getRangeDays(30))}
+              />
             </div>
           </div>
         </div>
@@ -283,23 +307,48 @@ const Reports = () => {
               paginator
               rows={10}
               size="small"
-              rowsPerPageOptions={[5, 10, 25]}
+              rowsPerPageOptions={[5, 10, 30]}
               paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
               currentPageReportTemplate="Hiển thị {first} đến {last} trong {totalRecords} người dùng"
               emptyMessage="Không có dữ liệu người dùng."
             >
-              <Column field="ngay" header="Ngày" className="w-2" />
-              <Column field="data1" header="Huyết áp" className="w-2" />
-              <Column field="data2" header="Nhịp tim" className="w-2" />
-              {/* <Column
-                field="creatAt"
-                header="Ngày tạo"
-                body={(rowData) =>
-                  new Date(rowData.creatAt).toLocaleDateString("vi-VN")
-                }
-              /> */}
-              <Column field="data3" header="Đường huyết" className="w-2" />
-              <Column field="data4" header="Giấc ngủ" className="w-2" />
+              <Column
+                body={(rowData) => (
+                  <div>{rowData.date ? rowData.date : "--"}</div>
+                )}
+                header="Ngày"
+                className="w-2"
+              />
+              <Column
+                body={(rowData) => (
+                  <div>
+                    {rowData.bloodPressure ? rowData.bloodPressure : "--"}
+                  </div>
+                )}
+                header="Huyết áp"
+                className="w-2"
+              />
+              <Column
+                body={(rowData) => (
+                  <div>{rowData.heartRate ? rowData.heartRate : "--"}</div>
+                )}
+                header="Nhịp tim"
+                className="w-2"
+              />
+              <Column
+                body={(rowData) => (
+                  <div>{rowData.bloodSugar ? rowData.bloodSugar : "--"}</div>
+                )}
+                header="Đường huyết"
+                className="w-2"
+              />
+              <Column
+                body={(rowData) => (
+                  <div>{rowData.sleep ? rowData.sleep : "--"}</div>
+                )}
+                header="Giấc ngủ"
+                className="w-2"
+              />
               <Column
                 header="Ghi chú"
                 body={(rowData) => (
@@ -313,7 +362,7 @@ const Reports = () => {
                       whiteSpace: "normal", // để xuống dòng
                     }}
                   >
-                    {rowData.note ? rowData.note : "------"}
+                    {rowData.note ? rowData.note : "--"}
                   </div>
                 )}
               />
@@ -332,9 +381,11 @@ const Reports = () => {
           </h3>
           <div className="text-white opacity-80">
             Trong 7 ngày qua, các chỉ số sức khỏe của bạn nhìn chung đang ổn
-            định. Huyết áp trung bình 120/80 mmHg, nhịp tim 72 BPM, đường huyết
-            95 mg/dL và giấc ngủ trung bình 7.6 giờ/đêm. Tiếp tục duy trì lối
-            sống lành mạnh và theo dõi thường xuyên.
+            định. Huyết áp trung bình {summary?.bloodPressure ?? "--"}, nhịp tim{" "}
+            {summary?.heartRate ?? "--"}, đường huyết{" "}
+            {summary?.bloodSugar ?? "--"} và giấc ngủ trung bình{" "}
+            {summary?.sleep ?? "--"}. Tiếp tục duy trì lối sống lành mạnh và
+            theo dõi thường xuyên.
           </div>
         </div>
         <div

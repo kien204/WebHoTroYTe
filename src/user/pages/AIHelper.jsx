@@ -54,7 +54,7 @@ const AIHelper = () => {
     const fetchHistory = async () => {
       if (!auth?.id) return;
       try {
-        const res = await callApi(() => aiHelperAPI.getHistory(auth?.id));
+        const res = await callApi(() => aiHelperAPI.getHistory(auth?.id), true, true);
         if (isMounted) setHistory(res.data.reverse());
       } catch {
         //

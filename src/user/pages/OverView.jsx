@@ -632,15 +632,15 @@ const OverView = () => {
             <div className="card-2 flex flex-row align-items-center gap-2 p-2">
               <TrendingUp />
               <div className="flex flex-column gap-2 w-10">
-                <div className="text-black">{data4?.positive?.[0]}</div>
-                <div className="text-black">{data4?.positive?.[1]}</div>
+                <div className="text-black">{data4?.positive?.[0] ?? "--"}</div>
+                <div className="text-black">{data4?.positive?.[1] ?? "--"}</div>
               </div>
             </div>
             <div className="card-4 flex flex-row align-items-center gap-2 p-2">
               <ClipboardPenLine />
               <div className="flex flex-column gap-2 w-10">
-                <div className="text-black">{data4?.warn?.[0]}</div>
-                <div className="text-black">{data4?.warn?.[1]}</div>
+                <div className="text-black">{data4?.warn?.[0] ?? "--"}</div>
+                <div className="text-black">{data4?.warn?.[1] ?? "--"}</div>
               </div>
             </div>
             <div className="card-1 flex flex-row align-items-center gap-2 p-2">

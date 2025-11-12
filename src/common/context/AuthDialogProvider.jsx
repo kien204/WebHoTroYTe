@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { AuthDialogContext } from "./AuthDialogContext";
+import { useNavigate } from "react-router-dom";
 
 export const AuthDialogProvider = ({ children }) => {
   const [visible, setVisible] = useState(false);
   const [type, setType] = useState("expired"); // "expired" | "loginRequired"
+  const navigate = useNavigate();
 
   const showDialog = (dialogType = "expired") => {
     setType(dialogType);
@@ -16,8 +18,9 @@ export const AuthDialogProvider = ({ children }) => {
 
   const handleLogin = () => {
     hideDialog();
+    localStorage.removeItem("auth");
     localStorage.removeItem("token");
-    window.location.href = "/login";
+    navigate("/login", { replace: true });
   };
 
   return (
