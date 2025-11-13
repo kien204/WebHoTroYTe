@@ -190,10 +190,7 @@ const OverView = () => {
   };
 
   useEffect(() => {
-
-    if (Object.keys(profile).length === 0 || profile?.hoSoId)
-      return;
-    console.log("sao van lay");
+    if (Object.keys(profile).length === 0 && !profile?.hoSoId) return;
 
     getDatas1();
     getDatas2();
