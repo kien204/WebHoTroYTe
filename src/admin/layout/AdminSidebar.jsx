@@ -16,7 +16,6 @@ const MenuSidebar = () => {
   const { auth, logout } = useContext(AuthContext);
 
   const [menuSidebar] = useState([
-    { name: "Tổng quan", path: "/admin", icon: "pi-home" },
     {
       name: "Quản trị hệ thống",
       path: "/admin/system-manager",
@@ -35,7 +34,7 @@ const MenuSidebar = () => {
   ]);
 
   return (
-    <div className="h-full surface-card border-right-1 surface-border flex flex-column">
+    <div className="h-full surface-card surface-border flex flex-column">
       {/* Logo */}
       <div className="flex align-items-center gap-2 p-3 surface-border">
         <i className="pi pi-heart text-4xl font-bold text-main1" />

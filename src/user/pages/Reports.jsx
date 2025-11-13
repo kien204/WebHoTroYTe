@@ -52,18 +52,18 @@ const Reports = () => {
     const surfaceBorder = documentStyle.getPropertyValue("--surface-border");
 
     const data1 = {
-      labels: chart1.labels,
+      labels: chart1?.labels,
       datasets: [
         {
           label: "Huyết áp tâm thu",
-          data: chart1.datasets[0].data,
+          data: chart1?.datasets?.[0].data,
           fill: false,
           borderColor: "#FF0000",
           tension: 0.4,
         },
         {
           label: "Huyết áp tâm trương",
-          data: chart1.datasets[1].data,
+          data: chart1?.datasets?.[1].data,
           fill: false,
           borderColor: "#FF0000",
           tension: 0.4,
@@ -72,11 +72,11 @@ const Reports = () => {
     };
 
     const data2 = {
-      labels: chart2.labels,
+      labels: chart2?.labels,
       datasets: [
         {
           label: "Huyết áp tâm thu",
-          data: chart2.datasets[0].data,
+          data: chart2?.datasets?.[0].data,
           fill: false,
           borderColor: "#227B00",
           tension: 0.4,
@@ -85,11 +85,11 @@ const Reports = () => {
     };
 
     const data3 = {
-      labels: chart3.labels,
+      labels: chart3?.labels,
       datasets: [
         {
           label: "Huyết áp tâm thu",
-          data: chart3.datasets[0].data,
+          data: chart3?.datasets?.[0].data,
           fill: false,
           borderColor: "#10004A",
           tension: 0.4,
@@ -98,11 +98,11 @@ const Reports = () => {
     };
 
     const data4 = {
-      labels: chart4.labels,
+      labels: chart4?.labels,
       datasets: [
         {
           label: "Huyết áp tâm thu",
-          data: chart4.datasets[0].data,
+          data: chart4?.datasets?.[0].data,
           fill: false,
           borderColor: "#0032A6",
           tension: 0.4,
@@ -214,6 +214,8 @@ const Reports = () => {
     const res1 = await callApi(() =>
       reportAPI.getdata3(profile?.hoSoId, start, end)
     );
+    console.log(res1);
+    
     setDataTable(res?.data);
     setSummary(res?.total);
     if (!res1 || res1 != "underline") {

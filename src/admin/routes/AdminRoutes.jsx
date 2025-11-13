@@ -1,7 +1,7 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 
-import AdminLayout from "../layout/AdminLayout";
+import Layout from "../layout/AdminLayout";
 import ProtectedRoute from "../../routes/ProtectedRoute";
 
 import SystemManager from "../pages/SystemManager";
@@ -12,11 +12,11 @@ const AdminRoutes = () => {
       <Route
         element={
           <ProtectedRoute requireAdmin>
-            <AdminLayout />
+            <Layout />
           </ProtectedRoute>
         }
       >
-        <Route path="/system-manager" element={<SystemManager />} />
+        <Route path="system-manager" element={<SystemManager />} />
         <Route path="*" element={<SystemManager />} /> {/* fallback */}
       </Route>
     </Routes>

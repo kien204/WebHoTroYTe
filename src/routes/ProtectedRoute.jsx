@@ -9,7 +9,7 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
   }
   // Nếu là user page mà admin vào → logout
   if (!requireAdmin && auth.role === "admin") {
-    return <Navigate to="/admin" replace />; // Điều hướng admin về trang admin
+    return <Navigate to="/admin/system-manager" replace />; // Điều hướng admin về trang admin
   }
 
   // Nếu là admin page mà user thường vào → logout
