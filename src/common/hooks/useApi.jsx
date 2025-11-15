@@ -25,6 +25,7 @@ export const useApi = (showToast, showLoading = true) => {
       } else {
         handleApiError(err, showToast, opShowToast);
       }
+      throw err;
     } finally {
       if (showLoading) setLoading(false);
     }

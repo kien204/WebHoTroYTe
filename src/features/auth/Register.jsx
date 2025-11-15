@@ -100,6 +100,11 @@ const Register = () => {
       );
       setCheckStatusUser(res.s0TP);
       setIsDialog(true);
+      showToast(
+        "success",
+        "Thành công",
+        "Đăng ký thành công, vui lòng kiểm tra email để xác thực OTP"
+      );
     } catch {
       //
     }
@@ -367,13 +372,17 @@ const Register = () => {
           <InputOtp
             value={otp}
             length={6}
-            onChange={(e) => setOtp(e.value)}
+            onChange={(e) => {
+              setOtp(e.value);
+              setOtpError(false);
+            }}
             style={{ display: "flex", justifyContent: "center" }}
             inputClassName="p-0"
+            invalid={otpError && !otp}
           />
-          {otpError && (
+          {otpError && otp > 0 && (
             <div className="text-sm mt-1" style={{ color: "red" }}>
-              Vui lòng nhập đầy đủ mã OTP
+              Mã OTP gồm 6 chữ số!
             </div>
           )}
           <div className="w-full flex justify-content-center gap-3 mt-5">

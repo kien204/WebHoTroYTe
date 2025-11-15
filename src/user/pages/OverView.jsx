@@ -60,7 +60,7 @@ const OverView = () => {
   let tableWidthPx;
   if (width < 768) tableWidthPx = width - 90;
   else if (width < 1024) tableWidthPx = width - 370;
-  else tableWidthPx = width - 620;
+  else tableWidthPx = width - 680;
 
   const [chartData, setChartData] = useState({});
   const [chartOptions, setChartOptions] = useState({});

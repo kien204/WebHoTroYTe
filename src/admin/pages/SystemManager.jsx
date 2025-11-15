@@ -17,6 +17,13 @@ import { useWindowWidth } from "../../common/hooks/useWindowWidth";
 import { useToast } from "../../common/hooks/useToast";
 import { useApi } from "../../common/hooks/useApi";
 import managementAccountApi from "../../services/api/managementAccountApi";
+const extractDMY = (dateStr) => {
+  const d = new Date(dateStr);
+  const day = d.getDate();
+  const month = d.getMonth() + 1;
+  const year = d.getFullYear();
+  return { day, month, year };
+};
 
 const SystemManager = () => {
   const [listUsers, setListUsers] = useState([]);
@@ -138,46 +145,93 @@ const SystemManager = () => {
       }
     };
 
-  //  window.addEventListener("scroll", hideAll);
+    //  window.addEventListener("scroll", hideAll);
     window.addEventListener("resize", hideAll);
 
     return () => {
-    //  window.removeEventListener("scroll", hideAll);
+      //  window.removeEventListener("scroll", hideAll);
       window.removeEventListener("resize", hideAll);
       hideAll();
     };
   }, []);
 
   // Hàm lọc dữ liệu
+  // const applyFilters = () => {
+  //   let filtered = [...listUsers];
+
+  // Lọc theo ngày
+  // if (selectedDate) {
+  //   const day = String(selectedDate.getDate()).padStart(2, "0");
+  //   const month = String(selectedDate.getMonth() + 1).padStart(2, "0");
+  //   const year = selectedDate.getFullYear();
+  //   const formattedDate = `${day}/${month}/${year}`;
+  //   filtered = filtered.filter((user) => user.date === formattedDate);
+  // }
+
+  // Lọc theo tháng
+  // if (selectedMonth) {
+  //   const monthIndex = parseInt(selectedMonth.code); // chuyển về số nguyên
+  //   filtered = filtered.filter((user) => {
+  //     const m = Number(user.date.split("/")[1]);
+  //     return m === monthIndex;
+  //   });
+  // }
+
+  // Lọc theo năm
+  // if (selectedYear) {
+  //   const yearFilter = parseInt(selectedYear.code);
+  //   filtered = filtered.filter((user) => {
+  //     const y = Number(user.date.split("/")[2]);
+  //     console.log(y);
+
+  //     return y === yearFilter;
+  //   });
+  // }
+
+  // Lọc theo trạng thái
+  //   if (selectedStatus) {
+  //     filtered = filtered.filter(
+  //       (user) => user.lockStatus.toString() === selectedStatus.code
+  //     );
+  //   }
+
+  //   setFilteredUsers(filtered);
+  // };
+
+  // Xử lý khi nhấn nút "Lọc"
+  // const handleFilter = () => {
+  //   applyFilters();
+  // };
   const applyFilters = () => {
     let filtered = [...listUsers];
 
     // Lọc theo ngày
     if (selectedDate) {
-      const day = String(selectedDate.getDate()).padStart(2, "0");
-      const month = String(selectedDate.getMonth() + 1).padStart(2, "0");
-      const year = selectedDate.getFullYear();
-      const formattedDate = `${day}/${month}/${year}`;
-      filtered = filtered.filter((user) => user.date === formattedDate);
+      const { day, month, year } = extractDMY(selectedDate);
+
+      filtered = filtered.filter((user) => {
+        const u = extractDMY(user.creatAt);
+        return u.day === day && u.month === month && u.year === year;
+      });
     }
 
     // Lọc theo tháng
     if (selectedMonth) {
-      const monthIndex = parseInt(selectedMonth.code); // chuyển về số nguyên
+      const monthFilter = parseInt(selectedMonth.code);
+
       filtered = filtered.filter((user) => {
-        const m = Number(user.date.split("/")[1]);
-        return m === monthIndex;
+        const u = extractDMY(user.creatAt);
+        return u.month === monthFilter;
       });
     }
 
     // Lọc theo năm
     if (selectedYear) {
       const yearFilter = parseInt(selectedYear.code);
-      filtered = filtered.filter((user) => {
-        const y = Number(user.date.split("/")[2]);
-        console.log(y);
 
-        return y === yearFilter;
+      filtered = filtered.filter((user) => {
+        const u = extractDMY(user.creatAt);
+        return u.year === yearFilter;
       });
     }
 
@@ -189,11 +243,6 @@ const SystemManager = () => {
     }
 
     setFilteredUsers(filtered);
-  };
-
-  // Xử lý khi nhấn nút "Lọc"
-  const handleFilter = () => {
-    applyFilters();
   };
 
   // Xử lý khi nhấn nút "Làm mới"
@@ -269,7 +318,7 @@ const SystemManager = () => {
           placeholder="Trạng thái"
           className="w-10rem"
         />
-        <Button icon="pi pi-filter" label="Lọc" onClick={handleFilter} />
+        <Button icon="pi pi-filter" label="Lọc" onClick={applyFilters} />
       </div>
     </div>
   );
@@ -411,9 +460,22 @@ const SystemManager = () => {
           <Column
             field="updateAt"
             header="Cập nhật lần cuối"
-            body={(rowData) =>
-              new Date(rowData.creatAt).toLocaleDateString("vi-VN")
-            }
+            body={(rowData) => {
+              const d = new Date(rowData.creatAt);
+
+              const time = d.toLocaleTimeString("vi-VN", {
+                hour: "2-digit",
+                minute: "2-digit",
+              });
+
+              const date = d.toLocaleDateString("vi-VN", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+              });
+
+              return `${time} - ${date}`;
+            }}
           />
           <Column body={setBodyStatus} header="Trạng thái" />
           <Column body={actionBodyTemplate} header="Thao tác" />

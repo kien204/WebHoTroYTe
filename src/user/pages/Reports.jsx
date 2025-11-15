@@ -26,7 +26,7 @@ const Reports = () => {
 
   let tableWidthPx1;
   if (width < 768) tableWidthPx1 = width - 90;
-  else tableWidthPx1 = width - 400;
+  else tableWidthPx1 = width - 470;
 
   const { showToast } = useToast();
   const { callApi } = useApi(showToast);
