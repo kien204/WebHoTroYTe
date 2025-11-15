@@ -136,6 +136,7 @@ const WarningAndReminder = () => {
         time: "",
       });
       setVisibleDialog(false);
+      getData();
     } catch {
       //
     }

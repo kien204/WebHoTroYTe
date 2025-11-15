@@ -48,7 +48,11 @@ const Login = () => {
     }
 
     try {
-      const res = await callApi(() => authApi.login({ email, password }), true, true);
+      const res = await callApi(
+        () => authApi.login({ email, password }),
+        true,
+        true
+      );
       if (res.status === 1) {
         showToast("success", "Thành công", "Đăng nhập thành công!");
         login(res.auth, res.token);
@@ -101,7 +105,7 @@ const Login = () => {
       showToast("success", "Thành công", "Xác thực tài khoản thành công!");
       localStorage.removeItem("expireTime");
       login(data.auth, data.token);
-    } catch {
+    } catch  {
       //
     }
   };
@@ -257,12 +261,16 @@ const Login = () => {
             <InputOtp
               value={otp}
               length={6}
-              onChange={(e) => setOtp(e.value)}
+              onChange={(e) => {
+                setOtp(e.value);
+                setOtpError(false); // clear lỗi khi nhập
+              }}
               style={{ display: "flex", justifyContent: "center" }}
+              invalid={otpError && !otp}
             />
-            {otpError && (
+            {otpError && otp > 0 && (
               <div className="text-sm mt-1" style={{ color: "red" }}>
-                Vui lòng nhập đầy đủ mã OTP
+                Mã OTP gồm 6 chữ số!
               </div>
             )}
             <div className="w-full flex justify-content-center gap-3 mt-5">

@@ -24,7 +24,7 @@ const Layout = ({ children }) => {
 
   return (
     <div className="flex h-screen">
-      <div className="hidden md:block bg-white border-r surface-border min-h-screen flex-shrink-0">
+      <div className="hidden w-16rem md:block bg-white border-r surface-border min-h-screen flex-shrink-0">
         <MenuSidebar />
       </div>
 
@@ -42,7 +42,7 @@ const Layout = ({ children }) => {
             className="absolute h-screen w-screen bg-main2 opacity-70"
             onClick={() => setSidebarVisible(false)}
           />
-          <div className="relative min-h-screen bg-white shadow-2 z-10 animate-slide-in">
+          <div className="relative w-14rem  min-h-screen bg-white shadow-2 z-10 animate-slide-in">
             <MenuSidebar />
           </div>
         </div>

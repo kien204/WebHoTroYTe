@@ -406,7 +406,7 @@ const DataEntry = () => {
   };
 
   return (
-    <div className="flex flex-column">
+    <div className="flex flex-column dataentry">
       <div>
         <div className="font-bold text-2xl">
           Nhập dữ liệu sức khỏe cho ngày{" "}
@@ -448,7 +448,7 @@ const DataEntry = () => {
                         <div className="text-sm mt-1" style={{ color: "red" }}>
                           {form1.systolic < 30 || form1.systolic > 250
                             ? "Giá trị huyết áp tâm thu phải nằm trong khoảng 30 - 250 mmHg!"
-                            : "Dữ liệu không hợp lệ"}
+                            : "Gía trị nhập phải là số nguyên dương! Vui lòng nhập lại!"}
                         </div>
                       )}
                     </div>
@@ -472,7 +472,7 @@ const DataEntry = () => {
                         <div className="text-sm mt-1" style={{ color: "red" }}>
                           {form1.diastolic < 20 || form1.diastolic > 200
                             ? "Giá trị huyết áp tâm trương phải nằm trong khoảng 20 - 200 mmHg!"
-                            : "Dữ liệu không hợp lệ"}
+                            : "Gía trị nhập phải là số nguyên dương! Vui lòng nhập lại!"}
                         </div>
                       )}
                     </div>
@@ -496,7 +496,7 @@ const DataEntry = () => {
                       <Button
                         icon="pi pi-save"
                         label="Lưu huyết áp"
-                        className="mt-3 w-full"
+                        className="mt-3 w-full flex justify-content-center"
                         onClick={handleForm1}
                       />
                     ) : (
@@ -556,7 +556,7 @@ const DataEntry = () => {
                       <div className="text-sm mt-1" style={{ color: "red" }}>
                         {form2.heartRate < 30 || form2.heartRate > 300
                           ? "Giá trị nhịp tim phải nằm trong khoảng 30 - 300 BPM!"
-                          : "Dữ liệu không hợp lệ"}
+                          : "Gía trị nhập phải là số nguyên dương! Vui lòng nhập lại!"}
                       </div>
                     )}
                   </div>
@@ -578,8 +578,9 @@ const DataEntry = () => {
                     {firstForm2 ? (
                       <Button
                         icon="pi pi-save"
-                        label="Lưu huyết áp"
-                        className="mt-3 w-full"
+                        label="Lưu nhịp tim"
+                        className="mt-3 w-full  flex justify-content-center"
+                        clas
                         onClick={handleForm2}
                       />
                     ) : (
@@ -639,7 +640,7 @@ const DataEntry = () => {
                       <div className="text-sm mt-1" style={{ color: "red" }}>
                         {form3.bloodSugar < 0 || form3.bloodSugar > 200
                           ? "Giá trị đường huyết phải nằm trong khoảng 0 - 200 mg/dL!"
-                          : "Dữ liệu không hợp lệ"}
+                          : "Gía trị nhập phải là số nguyên dương! Vui lòng nhập lại!"}
                       </div>
                     )}
                   </div>
@@ -661,8 +662,8 @@ const DataEntry = () => {
                     {firstForm3 ? (
                       <Button
                         icon="pi pi-save"
-                        label="Lưu huyết áp"
-                        className="mt-3 w-full"
+                        label="Lưu đường huyết"
+                        className="mt-3 w-full  flex justify-content-center"
                         onClick={handleForm3}
                       />
                     ) : (
@@ -778,8 +779,8 @@ const DataEntry = () => {
                     {firstForm4 ? (
                       <Button
                         icon="pi pi-save"
-                        label="Lưu huyết áp"
-                        className="mt-3 w-full"
+                        label="Lưu giấc ngủ"
+                        className="mt-3 w-full  flex justify-content-center"
                         onClick={handleForm4}
                       />
                     ) : (

@@ -8,6 +8,7 @@ import { Divider } from "primereact/divider";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu } from "primereact/menu";
 import { Button } from "primereact/button";
+import logo from "../../assets/logo.png";
 
 const MenuSidebar = () => {
   const menu = useRef(null);
@@ -70,12 +71,8 @@ const MenuSidebar = () => {
             className="m-3 flex align-items-center cursor-pointer p-2 gap-2"
             onClick={(event) => menu.current.toggle(event)}
           >
-            <Avatar
-              image="https://i.pravatar.cc/100"
-              shape="circle"
-              size="large"
-            />
-            <span className="font-bold">HealthCare</span>
+            <Avatar image={logo} shape="circle" size="large" />
+            <span className="font-bold">Quản trị hệ thống</span>
           </div>
         ) : (
           <div className="m-3 flex align-items-center justify-content-center p-2 gap-2">
