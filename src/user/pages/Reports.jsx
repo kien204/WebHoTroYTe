@@ -214,7 +214,7 @@ const Reports = () => {
     const res1 = await callApi(() =>
       reportAPI.getdata3(profile?.hoSoId, start, end)
     );
-    console.log(res1);
+    (profile?.hoSoId);
     
     setDataTable(res?.data);
     setSummary(res?.total);
@@ -227,10 +227,22 @@ const Reports = () => {
     if (Object.keys(profile).length === 0 || !profile?.hoSoId) return;
 
     const res = await callApi(
-      () => reportAPI.getdata2(profile?.hoSoId, dates?.[0], dates?.[1]),
+      () => reportAPI.exportData1(profile?.hoSoId, dates?.[0], dates?.[1]),
       false
     );
-    console.log(res);
+
+    if (res) {
+      const blob = new Blob([res.data], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "report.pdf"; // tên cố định
+      a.click();
+
+      window.URL.revokeObjectURL(url);
+    }
+    (res);
   };
 
   return (
@@ -294,6 +306,7 @@ const Reports = () => {
               className="md:ml-auto w-auto"
               icon="pi pi-file-export"
               severity="success"
+              onClick={handleExport}
             />
           </div>
           <div

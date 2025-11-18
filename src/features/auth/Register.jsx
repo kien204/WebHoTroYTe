@@ -367,7 +367,7 @@ const Register = () => {
           <div className="mb-3 mt-3">
             {checkStatusUser === 1
               ? "Nhập mã OTP để kích hoạt tài khoản"
-              : "Đã có tài khoảnkhoản, nhập mã OTP để kích hoạt tài khoản"}
+              : "Đã có tài khoản, nhập mã OTP để kích hoạt tài khoản"}
           </div>
           <InputOtp
             value={otp}
