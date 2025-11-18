@@ -149,12 +149,12 @@ const ResetPassword = () => {
             >
               <div className="text-4xl font-bold mb-4">Quên mật khẩu</div>
               <div className="text-main2 mb-4 text-center mt-1">
-                Nhập mã dã gửi ở email để đặt lại mật khẩu
+                Nhập mã đã gửi ở email để đặt lại mật khẩu
               </div>
               <div className="w-full">
                 <div>
                   <label className="block mb-2 font-bold" htmlFor="otp">
-                    Mã Captcha
+                    Mã CAPTCHA
                   </label>
                   <div className=" flex gap-5 justify-content-between align-items-center">
                     <IconField iconPosition="left">
@@ -163,7 +163,7 @@ const ResetPassword = () => {
                         id="otp"
                         className="w-full"
                         value={otp}
-                        placeholder="Nhập mã Capcha"
+                        placeholder="Nhập mã CAPTCHA"
                         onChange={(e) => setOtp(e.target.value)}
                         invalid={errorFields.otp && !otp}
                       />

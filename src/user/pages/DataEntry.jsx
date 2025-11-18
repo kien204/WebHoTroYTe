@@ -89,7 +89,6 @@ const DataEntry = () => {
       const res = await callApi(
         () => dataEntryApi.getnewfrom1(profile.hoSoId),
         false,
-        false
       );
       setRecentlyForm1(res.record);
     } catch {
@@ -99,7 +98,6 @@ const DataEntry = () => {
       const res = await callApi(
         () => dataEntryApi.getTodayfrom1(profile.hoSoId),
         false,
-        false
       );
       setForm1({
         ...form1,
@@ -118,7 +116,6 @@ const DataEntry = () => {
       const res = await callApi(
         () => dataEntryApi.getnewfrom2(profile.hoSoId),
         false,
-        false
       );
       setRecentlyForm2(res.record);
     } catch {
@@ -128,7 +125,6 @@ const DataEntry = () => {
       const res = await callApi(
         () => dataEntryApi.getTodayfrom2(profile.hoSoId),
         false,
-        false
       );
       setForm2({
         ...form2,
@@ -146,7 +142,6 @@ const DataEntry = () => {
       const res = await callApi(
         () => dataEntryApi.getnewfrom3(profile.hoSoId),
         false,
-        false
       );
       setRecentlyForm3(res.record);
     } catch {
@@ -156,7 +151,6 @@ const DataEntry = () => {
       const res = await callApi(
         () => dataEntryApi.getTodayfrom3(profile.hoSoId),
         false,
-        false
       );
       setForm3({
         ...form3,
@@ -174,7 +168,6 @@ const DataEntry = () => {
       const res = await callApi(
         () => dataEntryApi.getnewfrom4(profile.hoSoId),
         false,
-        false
       );
       setRecentlyForm4(res.record);
     } catch {
@@ -184,7 +177,6 @@ const DataEntry = () => {
       const res = await callApi(
         () => dataEntryApi.getTodayfrom4(profile.hoSoId),
         false,
-        false
       );
       setForm4({
         ...form4,
@@ -828,7 +820,7 @@ const DataEntry = () => {
                 <i className="pi pi-chart-line text-main1 text-2xl font-bold" />
                 <div className="flex flex-column">
                   <div className="font-bold">
-                    {recentlyForm1?.systolic}/{recentlyForm1?.diastolic} mmHg
+                    {recentlyForm1?.systolic ?? "--"}/{recentlyForm1?.diastolic ?? "--"} mmHg
                   </div>
                   <div className="text-sm">
                     {dayjs(recentlyForm1?.recordedAt).format(
@@ -844,7 +836,7 @@ const DataEntry = () => {
                       textOverflow: "ellipsis",
                     }}
                   >
-                    {recentlyForm1?.note}
+                    {recentlyForm1?.note ?? "--"}
                   </div>
                 </div>
               </div>
@@ -854,7 +846,7 @@ const DataEntry = () => {
                 <i className="pi pi-heart text-main1 text-2xl font-bold" />
                 <div className="flex flex-column">
                   <div className="font-bold">
-                    {recentlyForm2?.heartRate} BPM
+                    {recentlyForm2?.heartRate ?? "--"} BPM
                   </div>
                   <div className="text-sm">
                     {dayjs(recentlyForm2?.recordedAt).format(
@@ -870,7 +862,7 @@ const DataEntry = () => {
                       textOverflow: "ellipsis",
                     }}
                   >
-                    {recentlyForm2?.note}
+                    {recentlyForm2?.note ?? "--"}
                   </div>
                 </div>
               </div>
@@ -880,7 +872,7 @@ const DataEntry = () => {
                 <i className="pi pi-wave-pulse text-main1 text-2xl font-bold" />
                 <div className="flex flex-column">
                   <div className="font-bold">
-                    {recentlyForm3?.bloodSugar} mg/dL
+                    {recentlyForm3?.bloodSugar ?? "--"} mg/dL
                   </div>
                   <div className="text-sm">
                     {dayjs(recentlyForm3?.recordedAt).format(
@@ -896,7 +888,7 @@ const DataEntry = () => {
                       textOverflow: "ellipsis",
                     }}
                   >
-                    {recentlyForm3?.note}
+                    {recentlyForm3?.note ?? "--"}
                   </div>
                 </div>
               </div>
@@ -906,7 +898,7 @@ const DataEntry = () => {
                 <i className="pi pi-moon text-main1 text-2xl font-bold" />
                 <div className="flex flex-column">
                   <div className="font-bold">
-                    {recentlyForm4?.hoursSleep} tiếng
+                    {recentlyForm4?.hoursSleep ?? "--"} tiếng
                   </div>
                   <div className="text-sm">
                     {dayjs(recentlyForm4?.recordedAt).format(
@@ -922,7 +914,7 @@ const DataEntry = () => {
                       textOverflow: "ellipsis",
                     }}
                   >
-                    {recentlyForm4?.note}
+                    {recentlyForm4?.note ?? "--"}
                   </div>
                 </div>
               </div>
