@@ -214,8 +214,8 @@ const Reports = () => {
     const res1 = await callApi(() =>
       reportAPI.getdata3(profile?.hoSoId, start, end)
     );
-    (profile?.hoSoId);
-    
+    profile?.hoSoId;
+
     setDataTable(res?.data);
     setSummary(res?.total);
     if (!res1 || res1 != "underline") {
@@ -224,25 +224,39 @@ const Reports = () => {
   };
 
   const handleExport = async () => {
-    if (Object.keys(profile).length === 0 || !profile?.hoSoId) return;
+    if (!profile?.hoSoId) return;
 
     const res = await callApi(
-      () => reportAPI.exportData1(profile?.hoSoId, dates?.[0], dates?.[1]),
+      () =>
+        reportAPI.exportData1(
+          profile.hoSoId,
+          dates[0].toISOString().split("T")[0],
+          dates[1].toISOString().split("T")[0]
+        ),
       false
     );
 
     if (res) {
       const blob = new Blob([res.data], { type: "application/pdf" });
-      const url = window.URL.createObjectURL(blob);
+      const url = URL.createObjectURL(blob);
 
       const a = document.createElement("a");
       a.href = url;
-      a.download = "report.pdf"; // tên cố định
+
+      // Lấy tên file từ backend
+      const disposition = res.headers["content-disposition"];
+      let fileName = "report.pdf";
+
+      const match = disposition?.match(
+        /filename\*=UTF-8''(.+)|filename="?([^"]+)"?/
+      );
+      fileName = decodeURIComponent(match?.[1] || match?.[2] || fileName);
+
+      a.download = fileName;
       a.click();
 
-      window.URL.revokeObjectURL(url);
+      URL.revokeObjectURL(url);
     }
-    (res);
   };
 
   return (

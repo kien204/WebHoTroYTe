@@ -18,6 +18,17 @@ export const useApi = (showToast, showLoading = true) => {
     try {
       if (showLoading) setLoading(true);
       const res = await apiFunc();
+
+      const contentType = res?.headers?.["content-type"];
+
+      if (
+        contentType?.includes("application/pdf") ||
+        contentType?.includes("application/octet-stream") ||
+        contentType?.includes("application/vnd")
+      ) {
+        return res; // ⬅⬅⬅ Quan trọng
+      }
+
       return res.data;
     } catch (err) {
       if (err?.response?.status === 401) {

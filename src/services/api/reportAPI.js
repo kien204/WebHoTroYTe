@@ -28,7 +28,9 @@ const reportAPI = {
     if (end !== undefined && end !== null) {
       url += `&End=${end}`;
     }
-  return api.get(url, { responseType: "blob" });
+    return api(url, {
+      responseType: "blob",
+    });
   },
   exportData2: (id, start, end) => {
     let url = `/Report/export-pdf/${id}?Start=${start}`;
