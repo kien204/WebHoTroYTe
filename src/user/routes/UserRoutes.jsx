@@ -16,10 +16,7 @@ import SetUpAlerts from "../pages/SetUpAlerts";
 import WarningAndReminder from "../pages/WarningAndReminder";
 
 const UserRoutes = () => {
-  const privateRouters = [{ path: "/a", component: Demo2 }];
-
-  const publicRouters = [
-    { path: "/", component: Home },
+  const privateRouters = [
     { path: "/over-view", component: OverView },
     { path: "/ai-helper", component: AiHelper },
     { path: "/data-entry", component: DataEntry },
@@ -28,6 +25,8 @@ const UserRoutes = () => {
     { path: "/set-up-alerts", component: SetUpAlerts },
     { path: "/health-profile", component: HealthProfile },
   ];
+
+  const publicRouters = [{ path: "/", component: Home }];
 
   return (
     <Routes>

@@ -150,7 +150,7 @@ const HealthProfile = () => {
       fullName: !checkName(),
       address: !checkAddress(),
       gender: !info.gender,
-      phoneNumber: !info.phoneNumber || !/^(0|\+84)(\d{9})$/.test(info.phoneNumber),
+      phoneNumber: !info.phoneNumber || !/^(0)(\d{9})$/.test(info.phoneNumber),
       age: !info.brith,
       height:
         !info.height ||

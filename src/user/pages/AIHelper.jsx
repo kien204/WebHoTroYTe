@@ -54,7 +54,11 @@ const AIHelper = () => {
     const fetchHistory = async () => {
       if (!auth?.id) return;
       try {
-        const res = await callApi(() => aiHelperAPI.getHistory(auth?.id), true, true);
+        const res = await callApi(
+          () => aiHelperAPI.getHistory(auth?.id),
+          true,
+          true
+        );
         if (isMounted) setHistory(res.data.reverse());
       } catch {
         //
@@ -151,6 +155,14 @@ const AIHelper = () => {
     ]);
   };
 
+  const handleDelete = async (dateToDelete) => {
+    try {
+      await callApi(() => aiHelperAPI.deleteHistory(auth?.id, dateToDelete), true);
+      setHistory((prev) => prev.filter((item) => item[0].date !== dateToDelete));
+    } catch {
+      //
+    }
+  }
   return (
     <div className="flex flex-column">
       <div>
@@ -203,6 +215,10 @@ const AIHelper = () => {
                     <Button
                       icon="pi pi-trash"
                       className="p-button-text p-button-danger"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(item[0].date);
+                      }}
                     />
                   </div>
                 ))}
@@ -239,7 +255,7 @@ const AIHelper = () => {
                     {msg.question && (
                       <div className="flex justify-content-end align-items-start gap-2">
                         <span
-                          className="p-2 border-round-3xl shadow-1"
+                          className="p-2 border-round-3xl shadow-1 text-white"
                           style={{
                             background: "#6D9CCB",
                             maxWidth: "70%",
@@ -279,7 +295,7 @@ const AIHelper = () => {
                         <span
                           className="p-2 border-round-3xl shadow-1"
                           style={{
-                            background: "#6D9CCB",
+                            background: "#e0e0e0",
                             maxWidth: "70%",
                             wordBreak: "break-word",
                             whiteSpace: "pre-wrap",
@@ -322,7 +338,12 @@ const AIHelper = () => {
       <Divider />
       <div className="flex flex-column lg:flex-row">
         <div className="col-12 lg:col-4">
-          <Card>
+          <Card
+            onClick={() => {
+              setInput("Huyết áp 135/80 có cao không?");
+            }}
+            className="pointer"
+          >
             <div className="flex align-items-center gap-2">
               <i className="pi pi-heart text-primary"></i>
               <span>Huyết áp 135/80 có cao không?</span>
@@ -330,7 +351,12 @@ const AIHelper = () => {
           </Card>
         </div>
         <div className="col-12 lg:col-4">
-          <Card>
+          <Card
+            onClick={() => {
+              setInput("Nên ăn gì để giảm cholesterol?");
+            }}
+            className="pointer"
+          >
             <div className="flex align-items-center gap-2">
               <i className="pi pi-apple text-primary"></i>
               <span>Nên ăn gì để giảm cholesterol?</span>
@@ -338,7 +364,12 @@ const AIHelper = () => {
           </Card>
         </div>
         <div className="col-12 lg:col-4">
-          <Card>
+          <Card
+            onClick={() => {
+              setInput("Nên thể dục bao lâu mỗi tuần?");
+            }}
+            className="pointer"
+          >
             <div className="flex align-items-center gap-2">
               <i className="pi pi-calendar text-primary"></i>
               <span>Nên thể dục bao lâu mỗi tuần?</span>

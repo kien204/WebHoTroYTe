@@ -263,7 +263,13 @@ const Home = () => {
               <h2>Vitamin C 1000mg</h2>
               <div className="flex flex-row">
                 <div className="text-main2 mr-auto">Giá: 299.000đ</div>
-                <Button severity="danger">Mua ngay</Button>
+                <a
+                  href="https://trungtamthuoc.com/vitamin-a5000-mkp"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button severity="danger">Mua ngay</Button>
+                </a>
               </div>
             </div>
           </Card>
@@ -277,7 +283,13 @@ const Home = () => {
               <h2>Dầu cá Omega 3</h2>
               <div className="flex flex-row">
                 <div className="text-main2 mr-auto">Giá: 599.000đ</div>
-                <Button severity="danger">Mua ngay</Button>
+                <a
+                  href="https://trungtamthuoc.com/vitamin-a5000-mkp"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button severity="danger">Mua ngay</Button>
+                </a>
               </div>
             </div>
           </Card>
@@ -291,7 +303,13 @@ const Home = () => {
               <h2>Dầu cá Omega 3</h2>
               <div className="flex flex-row">
                 <div className="text-main2 mr-auto">Giá: 599.000đ</div>
-                <Button severity="danger">Mua ngay</Button>
+                <a
+                  href="https://trungtamthuoc.com/vitamin-a5000-mkp"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button severity="danger">Mua ngay</Button>
+                </a>
               </div>
             </div>
           </Card>
@@ -305,7 +323,13 @@ const Home = () => {
               <h2>Vitamin C 1000mg</h2>
               <div className="flex flex-row">
                 <div className="text-main2 mr-auto">Giá: 299.000đ</div>
-                <Button severity="danger">Mua ngay</Button>
+                <a
+                  href="https://trungtamthuoc.com/vitamin-a5000-mkp"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button severity="danger">Mua ngay</Button>
+                </a>
               </div>
             </div>
           </Card>

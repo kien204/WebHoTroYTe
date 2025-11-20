@@ -108,137 +108,143 @@ const ChatWidget = () => {
 
   return (
     <>
-      {location.pathname !== "/ai-helper" && (
-        <div>
-          {!isOpen && (
-            <Button
-              rounded
-              severity="info"
-              className="chat-toggle-btn p-0 w-auto"
-              style={{ background: "none", border: "0px" }}
-              onClick={() => setIsOpen(true)}
-              aria-label="Mở chat AI"
-            >
-              <Avatar
-                image={chatAI}
-                shape="circle"
-                style={{
-                  width: "80px",
-                  height: "80px",
-                  objectFit: "cover",
-                }}
-              />
-            </Button>
-          )}
-          {isOpen && (
-            <Card className="chat-box shadow-6 border-round-2xl w-10 max-w-300">
-              <div className="flex flex-column">
-                <div
-                  className="flex flex-row p-3"
+      {location.pathname !== "/ai-helper" &&
+        location.pathname !== "/health-profile" &&
+        location.pathname !== "/forgot-password" &&
+        location.pathname !== "/terms-of-service" &&
+        location.pathname !== "/reset-password" &&
+        location.pathname !== "/register" &&
+        location.pathname !== "/login" && (
+          <div>
+            {!isOpen && (
+              <Button
+                rounded
+                severity="info"
+                className="chat-toggle-btn p-0 w-auto"
+                style={{ background: "none", border: "0px" }}
+                onClick={() => setIsOpen(true)}
+                aria-label="Mở chat AI"
+              >
+                <Avatar
+                  image={chatAI}
+                  shape="circle"
                   style={{
-                    background: "linear-gradient(to right, #3255A2, #30B3B4)",
+                    width: "80px",
+                    height: "80px",
+                    objectFit: "cover",
                   }}
-                >
-                  <div className="mr-auto text-white text-lg">
-                    Trợ lý AI xin chào
-                  </div>
-                  <Button
-                    icon="pi pi-times"
-                    className="p-0 w-auto text-lg"
-                    style={{ background: "none", border: "0px" }}
-                    onClick={() => setIsOpen(false)}
-                  />
-                </div>
-                <ScrollPanel style={{ height: "300px" }} className="p-2">
-                  <div className="flex flex-column gap-3 w-full">
-                    {messages.map((msg, i) => (
-                      <div key={i} className="flex flex-column">
-                        {/* Tin nhắn của người dùng (phải) */}
-                        {msg.question && (
-                          <div className="flex justify-content-end align-items-start gap-2">
-                            <span
-                              className="p-2 border-round-3xl shadow-1 text-white"
-                              style={{
-                                background: "#6D9CCB",
-                                maxWidth: "70%",
-                                wordBreak: "break-word",
-                                whiteSpace: "pre-wrap",
-                              }}
-                            >
-                              {msg.question}
-                            </span>
-                            <Avatar
-                              image={
-                                profile?.avatarUrl ||
-                                "https://www.w3schools.com/howto/img_avatar.png"
-                              }
-                              shape="circle"
-                              style={{
-                                width: "40px",
-                                height: "40px",
-                                objectFit: "cover",
-                              }}
-                            />
-                          </div>
-                        )}
-
-                        {/* Tin nhắn của chatbot (trái) */}
-                        {msg.answer && (
-                          <div className="flex justify-content-start align-items-start gap-2 mt-2">
-                            <Avatar
-                              image={chatAI}
-                              shape="circle"
-                              style={{
-                                width: "40px",
-                                height: "40px",
-                                objectFit: "cover",
-                              }}
-                            />
-                            <span
-                              className="p-2 border-round-3xl shadow-1 text-white"
-                              style={{
-                                background: "#6D9CCB",
-                                maxWidth: "70%",
-                                wordBreak: "break-word",
-                                whiteSpace: "pre-wrap",
-                              }}
-                            >
-                              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                {msg.answer}
-                              </ReactMarkdown>
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                    <div ref={messagesEndRef}></div>
-                  </div>
-                </ScrollPanel>
-
-                <div className="flex align-items-center gap-2 p-3">
-                  <InputTextarea
-                    autoResize
-                    rows={1}
-                    cols={5}
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    placeholder="Hỏi về sức khỏe của bạn..."
-                    className="w-full max-h-7rem overflow-y-scroll"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && !loadingMes) handleSend();
+                />
+              </Button>
+            )}
+            {isOpen && (
+              <Card className="chat-box shadow-6 border-round-2xl w-10 max-w-300">
+                <div className="flex flex-column">
+                  <div
+                    className="flex flex-row p-3"
+                    style={{
+                      background: "linear-gradient(to right, #3255A2, #30B3B4)",
                     }}
-                  />
-                  <Button
-                    icon="pi pi-send"
-                    onClick={handleSend}
-                    disabled={loadingMes}
-                  />
+                  >
+                    <div className="mr-auto text-white text-lg">
+                      Trợ lý AI xin chào
+                    </div>
+                    <Button
+                      icon="pi pi-times"
+                      className="p-0 w-auto text-lg"
+                      style={{ background: "none", border: "0px" }}
+                      onClick={() => setIsOpen(false)}
+                    />
+                  </div>
+                  <ScrollPanel style={{ height: "300px" }} className="p-2">
+                    <div className="flex flex-column gap-3 w-full">
+                      {messages.map((msg, i) => (
+                        <div key={i} className="flex flex-column">
+                          {/* Tin nhắn của người dùng (phải) */}
+                          {msg.question && (
+                            <div className="flex justify-content-end align-items-start gap-2">
+                              <span
+                                className="p-2 border-round-3xl shadow-1 text-white"
+                                style={{
+                                  background: "#6D9CCB",
+                                  maxWidth: "70%",
+                                  wordBreak: "break-word",
+                                  whiteSpace: "pre-wrap",
+                                }}
+                              >
+                                {msg.question}
+                              </span>
+                              <Avatar
+                                image={
+                                  profile?.avatarUrl ||
+                                  "https://www.w3schools.com/howto/img_avatar.png"
+                                }
+                                shape="circle"
+                                style={{
+                                  width: "40px",
+                                  height: "40px",
+                                  objectFit: "cover",
+                                }}
+                              />
+                            </div>
+                          )}
+
+                          {/* Tin nhắn của chatbot (trái) */}
+                          {msg.answer && (
+                            <div className="flex justify-content-start align-items-start gap-2 mt-2">
+                              <Avatar
+                                image={chatAI}
+                                shape="circle"
+                                style={{
+                                  width: "40px",
+                                  height: "40px",
+                                  objectFit: "cover",
+                                }}
+                              />
+                              <span
+                                className="p-2 border-round-3xl shadow-1 text-white"
+                                style={{
+                                  background: "#6D9CCB",
+                                  maxWidth: "70%",
+                                  wordBreak: "break-word",
+                                  whiteSpace: "pre-wrap",
+                                }}
+                              >
+                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                  {msg.answer}
+                                </ReactMarkdown>
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                      <div ref={messagesEndRef}></div>
+                    </div>
+                  </ScrollPanel>
+
+                  <div className="flex align-items-center gap-2 p-3">
+                    <InputTextarea
+                      autoResize
+                      rows={1}
+                      cols={5}
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      placeholder="Hỏi về sức khỏe của bạn..."
+                      className="w-full max-h-7rem overflow-y-scroll"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && !loadingMes) handleSend();
+                      }}
+                    />
+                    <Button
+                      icon="pi pi-send"
+                      onClick={handleSend}
+                      disabled={loadingMes}
+                    />
+                  </div>
                 </div>
-              </div>
-            </Card>
-          )}
-        </div>
-      )}
+              </Card>
+            )}
+          </div>
+        )}
     </>
   );
 };

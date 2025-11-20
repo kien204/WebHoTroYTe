@@ -42,6 +42,7 @@ const Reports = () => {
   const opCalender = useRef(null);
   const [dataTable, setDataTable] = useState([]);
   const [summary, setSummary] = useState(null);
+  const [history, setHistory] = useState([]);
 
   const setChart = (chart1, chart2, chart3, chart4) => {
     const documentStyle = getComputedStyle(document.documentElement);
@@ -75,7 +76,7 @@ const Reports = () => {
       labels: chart2?.labels,
       datasets: [
         {
-          label: "Huyết áp tâm thu",
+          label: "Nhịp tim",
           data: chart2?.datasets?.[0].data,
           fill: false,
           borderColor: "#227B00",
@@ -88,7 +89,7 @@ const Reports = () => {
       labels: chart3?.labels,
       datasets: [
         {
-          label: "Huyết áp tâm thu",
+          label: "Đường huyết",
           data: chart3?.datasets?.[0].data,
           fill: false,
           borderColor: "#10004A",
@@ -101,7 +102,7 @@ const Reports = () => {
       labels: chart4?.labels,
       datasets: [
         {
-          label: "Huyết áp tâm thu",
+          label: "Giấc ngủ",
           data: chart4?.datasets?.[0].data,
           fill: false,
           borderColor: "#0032A6",
@@ -195,6 +196,7 @@ const Reports = () => {
     return [start, end];
   };
   const [dates, setDates] = useState(getRangeDays(30));
+
   useEffect(() => {
     if (dates?.[0] && dates?.[1]) {
       handleFilter(
@@ -215,6 +217,16 @@ const Reports = () => {
       reportAPI.getdata3(profile?.hoSoId, start, end)
     );
     profile?.hoSoId;
+
+    const newItem = {
+      startDate: new Date(start).toLocaleDateString("en-GB"),
+      endDate: new Date(end).toLocaleDateString("en-GB"),
+      data1: 1,
+      data2: 2,
+      data3: 3,
+      data4: 4,
+    };
+    setHistory((prevHistory) => [newItem, ...prevHistory]);
 
     setDataTable(res?.data);
     setSummary(res?.total);
@@ -555,39 +567,53 @@ const Reports = () => {
           className="card-1 flex flex-column gap-3 p-3"
           style={{ color: "black" }}
         >
-          <h4 className="m-0">Báo cáo đã lưu</h4>
-          <div className="flex flex-column lg:flex-row gap-3 border-round-sm p-3 bg-white">
-            <div className="flex flex-row align-items-center gap-3">
-              <i className="pi pi-bookmark font-bold text-2xl text-main1" />
-              <div className="flex flex-column">
-                <h4 className="m-0">Báo cáo theo thời gian của tháng 9</h4>
-                <div className="text-sm opacity-80">15/09 - 30/09</div>
-                <div className="text-sm">
-                  Báo cáo chi tiết của tháng 09 đã được gửi qua email của bạn!
+          <h4 className="m-0">Lịch sử báo cáo đã xem</h4>
+          {history?.map((item, index) => {
+            return (
+              <div
+                key={index}
+                className="flex flex-column lg:flex-row gap-3 border-round-sm p-3 bg-white"
+              >
+                <div className="flex flex-row align-items-center gap-3">
+                  <i className="pi pi-bookmark font-bold text-2xl text-main1" />
+                  <div className="flex flex-column">
+                    <h4 className="m-0">
+                      Báo cáo theo thời gian từ {item.startDate ?? "--"} -{" "}
+                      {item.endDate ?? "--"}
+                    </h4>
+                    <div className="text-sm opacity-80">
+                      Trung bình: Huyết áp: {item.data1 ?? "--"} - Nhịp tim:{" "}
+                      {item.data2 ?? "--"} - Đường huyết: {item.data3 ?? "--"} -
+                      Giấc ngủ: {item.data4 ?? "--"}
+                    </div>
+                    <div className="text-sm">
+                      Báo cáo chi tiết đã được gửi qua email của bạn!
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-column md:flex-row gap-3 lg:ml-auto">
+                  <Button
+                    icon="pi pi-file-export"
+                    label="Xuất PDF"
+                    severity="success"
+                    size="small"
+                  />
+                  <Button
+                    icon="pi pi-share-alt"
+                    label="Xem"
+                    severity="info"
+                    size="small"
+                  />
+                  <Button
+                    icon="pi pi-trash"
+                    label="Xóa"
+                    severity="danger"
+                    size="small"
+                  />
                 </div>
               </div>
-            </div>
-            <div className="flex flex-column md:flex-row gap-3 lg:ml-auto">
-              <Button
-                icon="pi pi-file-export"
-                label="Xuất PDF"
-                severity="success"
-                size="small"
-              />
-              <Button
-                icon="pi pi-share-alt"
-                label="Chia sẻ"
-                severity="info"
-                size="small"
-              />
-              <Button
-                icon="pi pi-trash"
-                label="Xóa"
-                severity="danger"
-                size="small"
-              />
-            </div>
-          </div>
+            );
+          })}
         </div>
       </div>
     </>
