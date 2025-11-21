@@ -23,7 +23,7 @@ const WarningAndReminder = () => {
   else tableWidthPx = width;
 
   const { showToast } = useToast();
-  const { auth } = useContext(AuthContext);
+  const { auth, profile } = useContext(AuthContext);
   const { callApi } = useApi(showToast);
 
   const [data, setData] = useState(null);
@@ -35,6 +35,7 @@ const WarningAndReminder = () => {
     time: "",
   });
   const [visibleDialog, setVisibleDialog] = useState(false);
+  const [dataAutoWarning, setDataAutoWarning] = useState(null);
 
   const [errorAddReminder, setErrorAddReminder] = useState({
     title: false,
@@ -94,6 +95,43 @@ const WarningAndReminder = () => {
     if (!auth?.id) return;
     getData();
   }, [auth]);
+
+  const getDataAuto = async () => {
+    if (selectedStatus === 1) {
+      const result = await callApi(() =>
+        remindAPI.getWarning(profile.hoSoId, null)
+      );
+      setDataAutoWarning(result);
+    } else if (selectedStatus === 2) {
+      const result = await callApi(() =>
+        remindAPI.getWarning(profile.hoSoId, "BloodSugar")
+      );
+      setDataAutoWarning(result);
+    } else if (selectedStatus === 3) {
+      const result = await callApi(() =>
+        remindAPI.getWarning(profile.hoSoId, "HeartRate")
+      );
+      setDataAutoWarning(result);
+    } else if (selectedStatus === 4) {
+      const result = await callApi(() =>
+        remindAPI.getWarning(profile.hoSoId, "BloodPressure")
+      );
+      setDataAutoWarning(result);
+    } else if (selectedStatus === 5) {
+      const result = await callApi(() =>
+        remindAPI.getWarning(profile.hoSoId, "Sleep")
+      );
+      setDataAutoWarning(result);
+    }
+  };
+
+  useEffect(() => {
+    if (!profile?.hoSoId) return;
+
+    console.log(selectedStatus);
+
+    getDataAuto();
+  }, [profile?.hoSoId, selectedStatus]);
 
   const toDecimalHour = (time) => {
     if (!time) return null;
@@ -194,6 +232,55 @@ const WarningAndReminder = () => {
                         />
                       </div>
                     </Card>
+                    <div className="flex flex-column gap-3">
+                      {dataAutoWarning?.map((item) => (
+                        <div key={item.id} className="flex flex-column gap-3">
+                          <div
+                            className={`flex flex-row gap-3 p-3 align-items-center ${
+                              item.point === "BloodPressure"
+                                ? "card-1"
+                                : item.point === "BloodSugar"
+                                ? "card-2"
+                                : item.point === "Sleep"
+                                ? "card-3"
+                                : "card-4"
+                            }`}
+                          >
+                            <i
+                              className={`pi pi-${item.icon} p-3 text-2xl border-round-xl`}
+                            />
+                            <div className="flex flex-column gap-2 text-black">
+                              <div>
+                                <span className="font-bold">{item.point}</span>
+                              </div>
+                              <div
+                                style={{
+                                  display: "-webkit-box",
+                                  WebkitLineClamp: 2,
+                                  WebkitBoxOrient: "vertical",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                }}
+                              >
+                                {item.mess}
+                              </div>
+                              <div className="opacity-70">
+                                <i className="pi pi-calendar mr-3" />
+                                {item.node}
+                              </div>
+                            </div>
+                            <Button
+                              className="ml-auto text-2xl"
+                              icon="pi pi-trash"
+                              severity="danger"
+                              outlined
+                              style={{ border: "none" }}
+                              onClick={() => handleDelete(item.id)} // xóa theo id
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </TabPanel>
                 <TabPanel contentClassName="mt-4" header="Nhắc nhở định kỳ">

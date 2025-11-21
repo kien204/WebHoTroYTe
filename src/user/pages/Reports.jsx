@@ -199,10 +199,9 @@ const Reports = () => {
 
   useEffect(() => {
     if (dates?.[0] && dates?.[1]) {
-      handleFilter(
-        dates[0].toISOString().split("T")[0],
-        dates[1].toISOString().split("T")[0]
-      );
+      const start = dates[0].toISOString().split("T")[0];
+      const end = dates[1].toISOString().split("T")[0];
+      handleFilter(start, end);
     }
   }, [profile, dates]);
 
@@ -218,35 +217,35 @@ const Reports = () => {
     );
     profile?.hoSoId;
 
-    const newItem = {
-      startDate: new Date(start).toLocaleDateString("en-GB"),
-      endDate: new Date(end).toLocaleDateString("en-GB"),
-      data1: 1,
-      data2: 2,
-      data3: 3,
-      data4: 4,
-    };
-    setHistory((prevHistory) => [newItem, ...prevHistory]);
-
     setDataTable(res?.data);
     setSummary(res?.total);
+    const newItem = {
+      startDate: start,
+      endDate: end,
+      data1: res?.total.bloodPressure,
+      data3: res?.total.bloodSugar,
+      data2: res?.total.heartRate,
+      data4: res?.total.sleep,
+    };
+
+    setHistory((prevHistory) => [newItem, ...prevHistory]);
     if (!res1 || res1 != "underline") {
       setChart(res1.bloodPressure, res1.bloodSugar, res1.heartRate, res1.sleep);
     }
   };
 
-  const handleExport = async () => {
+  const handleExport = async (start, end) => {
     if (!profile?.hoSoId) return;
 
     const res = await callApi(
       () =>
         reportAPI.exportData1(
           profile.hoSoId,
-          dates[0].toISOString().split("T")[0],
-          dates[1].toISOString().split("T")[0]
+          start || dates[0].toISOString().split("T")[0],
+          end || dates[1].toISOString().split("T")[0]
         ),
       false
-    );
+    );    
 
     if (res) {
       const blob = new Blob([res.data], { type: "application/pdf" });
@@ -269,6 +268,10 @@ const Reports = () => {
 
       URL.revokeObjectURL(url);
     }
+  };  
+
+  const handleDelete = (index) => {
+    setHistory((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -578,8 +581,12 @@ const Reports = () => {
                   <i className="pi pi-bookmark font-bold text-2xl text-main1" />
                   <div className="flex flex-column">
                     <h4 className="m-0">
-                      Báo cáo theo thời gian từ {item.startDate ?? "--"} -{" "}
-                      {item.endDate ?? "--"}
+                      Báo cáo theo thời gian từ{" "}
+                      {new Date(item.startDate).toLocaleDateString("en-GB") ??
+                        "--"}{" "}
+                      -{" "}
+                      {new Date(item.endDate).toLocaleDateString("en-GB") ??
+                        "--"}
                     </h4>
                     <div className="text-sm opacity-80">
                       Trung bình: Huyết áp: {item.data1 ?? "--"} - Nhịp tim:{" "}
@@ -594,21 +601,19 @@ const Reports = () => {
                 <div className="flex flex-column md:flex-row gap-3 lg:ml-auto">
                   <Button
                     icon="pi pi-file-export"
+                    className="h-3rem"
                     label="Xuất PDF"
                     severity="success"
                     size="small"
+                    onClick={() => handleExport(item.startDate, item.endDate)}
                   />
                   <Button
-                    icon="pi pi-share-alt"
-                    label="Xem"
-                    severity="info"
-                    size="small"
-                  />
-                  <Button
+                    className="h-3rem"
                     icon="pi pi-trash"
                     label="Xóa"
                     severity="danger"
                     size="small"
+                    onClick={() => handleDelete(index)}
                   />
                 </div>
               </div>

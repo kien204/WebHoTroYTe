@@ -114,6 +114,7 @@ const ChatWidget = () => {
         location.pathname !== "/terms-of-service" &&
         location.pathname !== "/reset-password" &&
         location.pathname !== "/register" &&
+        location.pathname !== "/" &&
         location.pathname !== "/login" && (
           <div>
             {!isOpen && (

@@ -26,7 +26,9 @@ const UserRoutes = () => {
     { path: "/health-profile", component: HealthProfile },
   ];
 
-  const publicRouters = [{ path: "/", component: Home }];
+  const publicRouters = [
+    { path: "/", component: Home },
+  ];
 
   return (
     <Routes>
