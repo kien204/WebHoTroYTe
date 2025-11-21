@@ -191,6 +191,17 @@ const WarningAndReminder = () => {
     }
   };
 
+  const handleDeleteWarning = async () => {
+    if (!profile?.hoSoId) return;
+    try {
+      await callApi(() => remindAPI.deleteWarning(profile?.hoSoId));
+      showToast("success", "Thành công", "Xóa tất cả thành công");
+      getDataAuto();
+    } catch {
+      //
+    }
+  };
+
   return (
     <>
       <div className="flex flex-column warningandreminder">
@@ -229,6 +240,7 @@ const WarningAndReminder = () => {
                           icon="pi pi-trash"
                           severity="danger"
                           outlined
+                          onClick={handleDeleteWarning}
                         />
                       </div>
                     </Card>
@@ -269,14 +281,6 @@ const WarningAndReminder = () => {
                                 {item.node}
                               </div>
                             </div>
-                            <Button
-                              className="ml-auto text-2xl"
-                              icon="pi pi-trash"
-                              severity="danger"
-                              outlined
-                              style={{ border: "none" }}
-                              onClick={() => handleDelete(item.id)} // xóa theo id
-                            />
                           </div>
                         </div>
                       ))}
