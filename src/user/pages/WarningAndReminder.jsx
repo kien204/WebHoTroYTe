@@ -128,7 +128,7 @@ const WarningAndReminder = () => {
       setDataAutoWarning(null);
       // hoặc: setDataAutoWarning([]);
     }
-  };
+  };  
 
   useEffect(() => {
     if (!profile?.hoSoId) return;
@@ -276,7 +276,7 @@ const WarningAndReminder = () => {
                             }`}
                           >
                             <i
-                              className={`pi pi-${item.icon} p-3 text-2xl border-round-xl`}
+                              className={`pi ${item.icon} font-bold p-3 text-2xl border-round-xl`}
                             />
                             <div className="flex flex-column gap-2 text-black">
                               <div>
