@@ -139,6 +139,16 @@ const HealthProfile = () => {
   };
 
   const handleCancel = () => {
+    setErrorForm({
+      fullName: false,
+      address: false,
+      gender: false,
+      phoneNumber: false,
+      age: false,
+      weight: false,
+      height: false,
+    });
+
     setInfo(infoOld);
     setAvatarUrl(null);
     setIsEdit(false);

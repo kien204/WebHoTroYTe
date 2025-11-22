@@ -116,7 +116,7 @@ const ChatWidget = () => {
         location.pathname !== "/register" &&
         location.pathname !== "/" &&
         location.pathname !== "/login" && (
-          <div>
+          <div >
             {!isOpen && (
               <Button
                 rounded

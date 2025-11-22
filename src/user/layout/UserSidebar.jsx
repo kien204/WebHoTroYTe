@@ -58,7 +58,12 @@ const MenuSidebar = () => {
       {/* Logo */}
       <div className="flex align-items-center gap-2 p-3 surface-border flex-shrink-0">
         <Link to="/" className="flex align-items-center gap-2">
-          <img src={logo} alt="Logo" height="36" />
+          <Avatar
+            image={logo}
+            shape="circle"
+            size="large" 
+            className="border-round-3xl"
+          />
           <div>
             <span className="font-semibold text-xl">HealthCare</span>
             <div className="text-sm text-main2">
@@ -97,7 +102,7 @@ const MenuSidebar = () => {
 
         {auth ? (
           <div
-            className="m-3 flex align-items-center cursor-pointer p-2 gap-2 hover:bg-main4 border-round-xl transition-all duration-200"
+            className="m-3 flex align-items-center cursor-pointer gap-2 hover:bg-main4 border-round-xl transition-all duration-200"
             onClick={(event) => menu.current.toggle(event)}
           >
             <Avatar
@@ -107,10 +112,28 @@ const MenuSidebar = () => {
               }
               shape="circle"
               size="large"
+              className="w-3rem"
             />
-            <div className="font-bold text-main2">
-              {profile?.fullName || "Người dùng"}
-              <div className="opacity-40 text-sm">{auth?.email}</div>
+            <div className="font-bold text-main2 w-9">
+              <div
+                style={{
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {profile?.fullName || "Người dùng"}
+              </div>
+              <div
+                className="opacity-40 text-sm"
+                style={{
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {auth?.email}
+              </div>
             </div>
           </div>
         ) : (

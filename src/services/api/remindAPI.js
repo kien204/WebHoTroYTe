@@ -7,12 +7,13 @@ const warningAndReminder = {
 
   getWarning: (id, fill) => {
     const url = `/AutoWarnings/${id}`;
-    if(fill){
+    if (fill) {
       return api.get(url + `?fill=${fill}`);
     }
     return api.get(url);
   },
-  deleteWarning: (id) => api.delete(`/AutoWarnings/${id}`),
+  deleteWarning: (id) => api.delete(`/AutoWarnings/all/${id}`),
+  deleteItemWarning: (id) => api.delete(`/AutoWarnings/${id}`),
 };
 
 export default warningAndReminder;

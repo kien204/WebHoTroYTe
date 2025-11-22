@@ -400,7 +400,7 @@ const SystemManager = () => {
               <i className="pi pi-users font-bold" />
             </div>
             <div className="font-bold">{listUsers?.length}</div>
-            <div>+12% so với tháng trước</div>
+            
           </div>
           <div className="flex flex-column w-full lg:w-4 card-2 p-3">
             <div className="flex items-center justify-between mb-3">
@@ -412,7 +412,7 @@ const SystemManager = () => {
             <div className="font-bold">
               {listUsers?.filter((user) => user.lockStatus).length}
             </div>
-            <div>+12% so với tháng trước</div>
+            
           </div>
           <div className="flex flex-column w-full lg:w-4 card-4 p-3">
             <div className="flex items-center justify-between mb-3">
@@ -422,7 +422,7 @@ const SystemManager = () => {
             <div className="font-bold">
               {listUsers?.filter((user) => !user.lockStatus).length}
             </div>
-            <div>+12% so với tháng trước</div>
+            
           </div>
         </div>
       </div>

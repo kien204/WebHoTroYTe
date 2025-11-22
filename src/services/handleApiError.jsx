@@ -4,9 +4,15 @@ export const handleApiError = (error, showToast, opShowToast = true) => {
   if (error.response) {
     switch (error.response.status) {
       case 400:
-      case 404:
         showToast(
           "error",
+          "Thất bại",
+          error.response.data?.message || "Vui lòng kiểm tra lại"
+        );
+        break;
+      case 404:
+        showToast(
+          "warn",
           "Thất bại",
           error.response.data?.message || "Vui lòng kiểm tra lại"
         );

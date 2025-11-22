@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "primereact/button";
-import logo from "../../assets/logo.png";
+import { Avatar } from "primereact/avatar";
 
 const Topbar = ({ onMenuToggle }) => {
   return (
@@ -11,7 +11,12 @@ const Topbar = ({ onMenuToggle }) => {
     >
       {/* Logo */}
       <Link to="/" className="flex align-items-center gap-2 md:hidden">
-        <img src={logo} alt="Logo" height="36" />
+        <Avatar
+          image="/src/assets/logo.png"
+          shape="circle"
+          size="large"
+          className="border-round-3xl"
+        />
         <span className="text-xl font-bold text-primary">HealthCare</span>
       </Link>
       <div className="mr-auto"></div>

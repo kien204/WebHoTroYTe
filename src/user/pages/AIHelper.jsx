@@ -337,12 +337,12 @@ const AIHelper = () => {
       {/* FAQ */}
       <Divider />
       <div className="flex flex-column lg:flex-row">
-        <div className="col-12 lg:col-4">
+        <div className="col-12 lg:col-4 ">
           <Card
             onClick={() => {
               setInput("Huyết áp 135/80 có cao không?");
             }}
-            className="pointer"
+            className="cursor-pointer"
           >
             <div className="flex align-items-center gap-2">
               <i className="pi pi-heart text-primary"></i>
@@ -355,7 +355,7 @@ const AIHelper = () => {
             onClick={() => {
               setInput("Nên ăn gì để giảm cholesterol?");
             }}
-            className="pointer"
+            className="cursor-pointer"
           >
             <div className="flex align-items-center gap-2">
               <i className="pi pi-apple text-primary"></i>
@@ -368,7 +368,7 @@ const AIHelper = () => {
             onClick={() => {
               setInput("Nên thể dục bao lâu mỗi tuần?");
             }}
-            className="pointer"
+            className="cursor-pointer"
           >
             <div className="flex align-items-center gap-2">
               <i className="pi pi-calendar text-primary"></i>

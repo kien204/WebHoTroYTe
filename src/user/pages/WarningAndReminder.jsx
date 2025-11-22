@@ -97,38 +97,41 @@ const WarningAndReminder = () => {
   }, [auth]);
 
   const getDataAuto = async () => {
-    if (selectedStatus === 1) {
+    try {
+      let type = null;
+
+      switch (selectedStatus) {
+        case 2:
+          type = "BloodSugar";
+          break;
+        case 3:
+          type = "HeartRate";
+          break;
+        case 4:
+          type = "BloodPressure";
+          break;
+        case 5:
+          type = "Sleep";
+          break;
+        default:
+          type = null;
+          break;
+      }
+
       const result = await callApi(() =>
-        remindAPI.getWarning(profile.hoSoId, null)
+        remindAPI.getWarning(profile.hoSoId, type)
       );
-      setDataAutoWarning(result);
-    } else if (selectedStatus === 2) {
-      const result = await callApi(() =>
-        remindAPI.getWarning(profile.hoSoId, "BloodSugar")
-      );
-      setDataAutoWarning(result);
-    } else if (selectedStatus === 3) {
-      const result = await callApi(() =>
-        remindAPI.getWarning(profile.hoSoId, "HeartRate")
-      );
-      setDataAutoWarning(result);
-    } else if (selectedStatus === 4) {
-      const result = await callApi(() =>
-        remindAPI.getWarning(profile.hoSoId, "BloodPressure")
-      );
-      setDataAutoWarning(result);
-    } else if (selectedStatus === 5) {
-      const result = await callApi(() =>
-        remindAPI.getWarning(profile.hoSoId, "Sleep")
-      );
-      setDataAutoWarning(result);
+
+      setDataAutoWarning(result || null);
+      // hoặc: setDataAutoWarning(result || []);
+    } catch {
+      setDataAutoWarning(null);
+      // hoặc: setDataAutoWarning([]);
     }
   };
 
   useEffect(() => {
     if (!profile?.hoSoId) return;
-
-    console.log(selectedStatus);
 
     getDataAuto();
   }, [profile?.hoSoId, selectedStatus]);
@@ -193,9 +196,21 @@ const WarningAndReminder = () => {
 
   const handleDeleteWarning = async () => {
     if (!profile?.hoSoId) return;
+
     try {
       await callApi(() => remindAPI.deleteWarning(profile?.hoSoId));
       showToast("success", "Thành công", "Xóa tất cả thành công");
+      getDataAuto();
+    } catch {
+      //
+    }
+  };
+
+  const handleDeleteItemWarning = async (id) => {
+    if (!id) return;
+    try {
+      await callApi(() => remindAPI.deleteItemWarning(id));
+      showToast("success", "Thành công", "Xóa thành công");
       getDataAuto();
     } catch {
       //
@@ -234,14 +249,16 @@ const WarningAndReminder = () => {
                             className="w-10rem"
                           />
                         </div>
-                        <Button
-                          className="lg:ml-auto w-10rem"
-                          label="Xóa tất cả"
-                          icon="pi pi-trash"
-                          severity="danger"
-                          outlined
-                          onClick={handleDeleteWarning}
-                        />
+                        {dataAutoWarning?.length > 0 && (
+                          <Button
+                            className="lg:ml-auto w-10rem"
+                            label="Xóa tất cả"
+                            icon="pi pi-trash"
+                            severity="danger"
+                            outlined
+                            onClick={handleDeleteWarning}
+                          />
+                        )}
                       </div>
                     </Card>
                     <div className="flex flex-column gap-3">
@@ -281,6 +298,14 @@ const WarningAndReminder = () => {
                                 {item.node}
                               </div>
                             </div>
+                            <Button
+                              className="ml-auto text-2xl"
+                              icon="pi pi-trash"
+                              severity="danger"
+                              outlined
+                              style={{ border: "none" }}
+                              onClick={() => handleDeleteItemWarning(item.id)} // xóa theo id
+                            />
                           </div>
                         </div>
                       ))}
@@ -415,6 +440,7 @@ const WarningAndReminder = () => {
                 }
                 invalid={errorAddReminder.time}
                 className="w-full"
+                inputClassName="pr-8"
                 timeOnly
                 readOnlyInput
                 placeholder="Nhập thời gian nhắc nhở"
@@ -423,7 +449,7 @@ const WarningAndReminder = () => {
                 }
               />
               <span
-                className="absolute text-main1"
+                className="absolute text-main1 text-sm"
                 style={{
                   right: "12px",
                   top: "50%",

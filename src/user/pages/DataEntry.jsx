@@ -88,7 +88,7 @@ const DataEntry = () => {
     try {
       const res = await callApi(
         () => dataEntryApi.getnewfrom1(profile.hoSoId),
-        false,
+        false
       );
       setRecentlyForm1(res.record);
     } catch {
@@ -97,7 +97,7 @@ const DataEntry = () => {
     try {
       const res = await callApi(
         () => dataEntryApi.getTodayfrom1(profile.hoSoId),
-        false,
+        false
       );
       setForm1({
         ...form1,
@@ -115,7 +115,7 @@ const DataEntry = () => {
     try {
       const res = await callApi(
         () => dataEntryApi.getnewfrom2(profile.hoSoId),
-        false,
+        false
       );
       setRecentlyForm2(res.record);
     } catch {
@@ -124,7 +124,7 @@ const DataEntry = () => {
     try {
       const res = await callApi(
         () => dataEntryApi.getTodayfrom2(profile.hoSoId),
-        false,
+        false
       );
       setForm2({
         ...form2,
@@ -141,7 +141,7 @@ const DataEntry = () => {
     try {
       const res = await callApi(
         () => dataEntryApi.getnewfrom3(profile.hoSoId),
-        false,
+        false
       );
       setRecentlyForm3(res.record);
     } catch {
@@ -150,7 +150,7 @@ const DataEntry = () => {
     try {
       const res = await callApi(
         () => dataEntryApi.getTodayfrom3(profile.hoSoId),
-        false,
+        false
       );
       setForm3({
         ...form3,
@@ -167,7 +167,7 @@ const DataEntry = () => {
     try {
       const res = await callApi(
         () => dataEntryApi.getnewfrom4(profile.hoSoId),
-        false,
+        false
       );
       setRecentlyForm4(res.record);
     } catch {
@@ -176,7 +176,7 @@ const DataEntry = () => {
     try {
       const res = await callApi(
         () => dataEntryApi.getTodayfrom4(profile.hoSoId),
-        false,
+        false
       );
       setForm4({
         ...form4,
@@ -243,6 +243,11 @@ const DataEntry = () => {
       systolic: recentlyForm1.systolic,
       note: recentlyForm1.note,
     });
+
+    seterrorForm1({
+      data1: false,
+      data2: false,
+    });
     setEditForm1(false);
   };
 
@@ -252,6 +257,8 @@ const DataEntry = () => {
       heartRate: recentlyForm2.heartRate,
       note: recentlyForm2.note,
     });
+
+    seterrorForm2(false);
     setEditForm2(false);
   };
 
@@ -261,6 +268,7 @@ const DataEntry = () => {
       bloodSugar: recentlyForm3.bloodSugar,
       note: recentlyForm3.note,
     });
+    seterrorForm3(false);
     setEditForm3(false);
   };
 
@@ -274,6 +282,10 @@ const DataEntry = () => {
         ? new Date(recentlyForm4.wakeTime)
         : null,
       note: recentlyForm4.sleepAlert,
+    });
+    seterrorForm4({
+      data1: false,
+      data2: false,
     });
     setEditForm4(false);
   };
@@ -723,7 +735,7 @@ const DataEntry = () => {
                       />
                       {errorform4.data1 && form4.timeSleep && (
                         <div className="text-sm mt-1" style={{ color: "red" }}>
-                          Giờ thức phải sau giờ dậy
+                          Thời gian thức dậy phải sau thời gian đi ngủ{" "}
                         </div>
                       )}
                     </div>
@@ -820,7 +832,8 @@ const DataEntry = () => {
                 <i className="pi pi-chart-line text-main1 text-2xl font-bold" />
                 <div className="flex flex-column">
                   <div className="font-bold">
-                    {recentlyForm1?.systolic ?? "--"}/{recentlyForm1?.diastolic ?? "--"} mmHg
+                    {recentlyForm1?.systolic ?? "--"}/
+                    {recentlyForm1?.diastolic ?? "--"} mmHg
                   </div>
                   <div className="text-sm">
                     {dayjs(recentlyForm1?.recordedAt).format(

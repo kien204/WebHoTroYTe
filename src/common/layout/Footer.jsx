@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
+import { Avatar } from "primereact/avatar";
+
 
 const Footer = () => {
   const [value2, setValue2] = useState("");
@@ -13,10 +15,11 @@ const Footer = () => {
       <div className="flex flex-column md:flex-row gap-7">
         <div className="flex flex-column gap-4">
           <div className="flex flex-row align-items-center gap-3">
-            <img
-              src="/src/assets/logo.png"
-              alt=""
-              className="max-h-full h-5rem"
+            <Avatar
+              image="/src/assets/logo.png"
+              shape="circle" 
+              size="xlarge"
+              className="border-round-3xl w-4rem h-auto"
             />
             <div className="font-bold text-xl text-white">
               HealthCare - Nền tảng chăm sóc sức khỏe cho mọi người
@@ -34,7 +37,7 @@ const Footer = () => {
           </div>
           <div className="flex gap-3">
             <i className="pi pi-envelope text-white" />
-            <span className="text-white">healthcare@gmail.com</span>
+            <span className="text-white">healthcare2025.work@gmail.com</span>
           </div>
           <div className="flex gap-3">
             <i className="pi pi-globe text-white" />

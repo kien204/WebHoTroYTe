@@ -78,9 +78,9 @@ const Home = () => {
               className="max-w-full h-auto border-round-sm img"
             />
             <div className="text-main2 text-center mt-2">
-              “Ứng dụng giúp tôi dễ dàng tìm phòng khám gần nhà.”
+              “Ứng dụng giúp tôi dễ dàng tra cứu các bệnh lý.”
             </div>
-            <h2 className="text-center m-2">Nguyễn Văn An</h2>
+            <h2 className="text-center m-2">Trịnh Trần Phương Tuấn</h2>
           </Card>
           <Card className="p-card1 w-full">
             <img
@@ -90,9 +90,9 @@ const Home = () => {
             />
 
             <div className="text-main2 text-center mt-2">
-              “Ứng dụng giúp tôi dễ dàng tìm phòng khám gần nhà.”
+              “Ứng dụng giúp tôi dễ dàng quản lý sức khỏe.”
             </div>
-            <h2 className="text-center m-2">Nguyễn Văn An</h2>
+            <h2 className="text-center m-2">Sơn Tùng M-TP</h2>
           </Card>
           <Card className="p-card1 w-full">
             <img
@@ -102,14 +102,10 @@ const Home = () => {
             />
 
             <div className="text-main2 text-center mt-2">
-              “Ứng dụng giúp tôi dễ dàng tìm phòng khám gần nhà.”
+              “Ứng dụng rất đẹp và dễ sử dụng tôi cho 100 điểm.”
             </div>
-            <h2 className="text-center m-2">Nguyễn Văn An</h2>
+            <h2 className="text-center m-2">G-Dragon</h2>
           </Card>
-        </div>
-        <div className="justify-content-center gap-3 hidden md:flex">
-          <i className="pi pi-arrow-left text-4xl" />
-          <i className="pi pi-arrow-right text-4xl" />
         </div>
       </div>
 
@@ -296,15 +292,15 @@ const Home = () => {
           <Card className="hidden lg:block  cursor-pointer">
             <div className="flex flex-column w-12 hover-2">
               <img
-                src="/src/assets/sanpham2.png"
+                src="/src/assets/sanpham3.png"
                 alt=""
                 className="max-w-full h-auto border-round-sm"
               />
-              <h2>Dầu cá Omega 3</h2>
-              <div className="flex flex-row">
-                <div className="text-main2 mr-auto">Giá: 599.000đ</div>
+              <h2>Sữa bột Enfagrow A+</h2>
+              <div className="flex flex-row ">
+                <div className="text-main2 mr-auto">Giá: 999.000đ</div>
                 <a
-                  href="https://trungtamthuoc.com/vitamin-a5000-mkp"
+                  href="https://s.shopee.vn/9zq6qcTosM"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -316,15 +312,15 @@ const Home = () => {
           <Card className="hidden xl:block cursor-pointer">
             <div className="flex flex-column w-12 hover-2">
               <img
-                src="/src/assets/sanpham1.png"
+                src="/src/assets/sanpham4.png"
                 alt=""
                 className="max-w-full h-auto border-round-sm"
               />
-              <h2>Vitamin C 1000mg</h2>
+              <h2>Sữa Nước Ensure</h2>
               <div className="flex flex-row">
-                <div className="text-main2 mr-auto">Giá: 299.000đ</div>
+                <div className="text-main2 mr-auto">Giá: 399.000đ</div>
                 <a
-                  href="https://trungtamthuoc.com/vitamin-a5000-mkp"
+                  href="https://s.shopee.vn/40Ythd2z1R"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -333,15 +329,6 @@ const Home = () => {
               </div>
             </div>
           </Card>
-        </div>
-        <div className="flex justify-content-center">
-          <Button
-            className="hover-button"
-            label="Khám phá thêm sản phẩm"
-            severity="help"
-            rounded
-            outlined
-          />
         </div>
         <div className="flex flex-column justify-content-center gap-3">
           <h1 className="text-main3 text-center">Mẹo sức khỏe & Blog</h1>
