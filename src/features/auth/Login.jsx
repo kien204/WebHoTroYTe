@@ -257,7 +257,7 @@ const Login = () => {
       >
         {isHidden ? (
           <div>
-            <div className="mb-3 mt-3">Nhập mã OTP để kích hoạt tài khoản</div>
+            <div className="mb-3 mt-3 text-center">Nhập mã OTP để kích hoạt tài khoản</div>
             <InputOtp
               value={otp}
               length={6}

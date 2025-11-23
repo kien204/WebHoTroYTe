@@ -91,11 +91,6 @@ const WarningAndReminder = () => {
     }
   };
 
-  useEffect(() => {
-    if (!auth?.id) return;
-    getData();
-  }, [auth]);
-
   const getDataAuto = async () => {
     try {
       let type = null;
@@ -222,6 +217,21 @@ const WarningAndReminder = () => {
     }
   };
 
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const onTabChange = (e) => {
+    setActiveIndex(e.index);
+    if (e.index === 0) {
+      if (!profile?.hoSoId) return;
+      getDataAuto();
+    } else if (e.index === 1) {
+      console.log(auth.id);
+      
+      if (!auth?.id) return;
+      getData();
+    }
+  };
+
   return (
     <>
       <div className="flex flex-column warningandreminder">
@@ -236,7 +246,7 @@ const WarningAndReminder = () => {
             <Card
               style={{ width: width >= 992 ? "100%" : `${tableWidthPx}px` }}
             >
-              <TabView>
+              <TabView activeIndex={activeIndex} onTabChange={onTabChange}>
                 <TabPanel contentClassName="mt-4" header="Cảnh báo tự động">
                   <div className="flex flex-column gap-5">
                     <Card>

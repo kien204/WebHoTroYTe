@@ -86,10 +86,7 @@ const DataEntry = () => {
 
   const getRecentlyForm1 = async () => {
     try {
-      const res = await callApi(
-        () => dataEntryApi.getnewfrom1(profile.hoSoId),
-        false
-      );
+      const res = await callApi(() => dataEntryApi.getnewfrom1(profile.hoSoId));
       setRecentlyForm1(res.record);
     } catch {
       //
@@ -113,10 +110,7 @@ const DataEntry = () => {
 
   const getRecentlyForm2 = async () => {
     try {
-      const res = await callApi(
-        () => dataEntryApi.getnewfrom2(profile.hoSoId),
-        false
-      );
+      const res = await callApi(() => dataEntryApi.getnewfrom2(profile.hoSoId));
       setRecentlyForm2(res.record);
     } catch {
       //
@@ -139,10 +133,7 @@ const DataEntry = () => {
 
   const getRecentlyForm3 = async () => {
     try {
-      const res = await callApi(
-        () => dataEntryApi.getnewfrom3(profile.hoSoId),
-        false
-      );
+      const res = await callApi(() => dataEntryApi.getnewfrom3(profile.hoSoId));
       setRecentlyForm3(res.record);
     } catch {
       //
@@ -165,10 +156,7 @@ const DataEntry = () => {
 
   const getRecentlyForm4 = async () => {
     try {
-      const res = await callApi(
-        () => dataEntryApi.getnewfrom4(profile.hoSoId),
-        false
-      );
+      const res = await callApi(() => dataEntryApi.getnewfrom4(profile.hoSoId));
       setRecentlyForm4(res.record);
     } catch {
       //

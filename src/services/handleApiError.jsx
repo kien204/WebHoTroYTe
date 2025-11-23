@@ -12,8 +12,8 @@ export const handleApiError = (error, showToast, opShowToast = true) => {
         break;
       case 404:
         showToast(
-          "info",
-          "Thất bại",
+          "warn",
+          "Cảnh báo",
           error.response.data?.message || "Vui lòng kiểm tra lại"
         );
         break;
