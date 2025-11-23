@@ -60,6 +60,10 @@ const reportAPI = {
     }
     return api(url);
   },
+  share: (id, mail, start, end) => {
+    const url = `/Report/share-email/${id}/${mail}?start=${start}&end=${end}`;
+    return api(url);
+  },
 };
 
 export default reportAPI;

@@ -31,7 +31,7 @@ const Reports = () => {
 
   const { showToast } = useToast();
   const { callApi } = useApi(showToast);
-  const { profile } = useContext(AuthContext);
+  const { profile, auth } = useContext(AuthContext);
 
   const [chartData1, setChartData1] = useState({});
   const [chartData2, setChartData2] = useState({});
@@ -244,8 +244,7 @@ const Reports = () => {
           profile.hoSoId,
           start || dates[0].toISOString().split("T")[0],
           end || dates[1].toISOString().split("T")[0]
-        ),
-      false
+        )
     );
 
     if (res) {
@@ -269,6 +268,22 @@ const Reports = () => {
 
       URL.revokeObjectURL(url);
     }
+  };
+
+  const handleShare = async (start, end) => {
+    if (!profile?.hoSoId || !auth?.email) return;
+
+    await callApi(
+      () =>
+        reportAPI.share(
+          profile.hoSoId,
+          auth.email,
+          start || dates[0].toISOString().split("T")[0],
+          end || dates[1].toISOString().split("T")[0]
+        )
+    );
+
+    showToast("success", "Thành công", "Báo cáo đã được gưi về Gmail!");
   };
 
   const handleDelete = (index) => {
@@ -337,7 +352,7 @@ const Reports = () => {
               className="md:ml-auto w-auto"
               icon="pi pi-file-export"
               severity="success"
-              onClick={handleExport}
+              onClick={() => handleExport(null, null)}
             />
           </div>
           <div
@@ -608,6 +623,14 @@ const Reports = () => {
                     severity="success"
                     size="small"
                     onClick={() => handleExport(item.startDate, item.endDate)}
+                  />
+                  <Button
+                    icon="pi pi-share-alt"
+                    className="h-3rem"
+                    label="Gửi về Email"
+                    severity="info"
+                    size="small"
+                    onClick={() => handleShare(item.startDate, item.endDate)}
                   />
                   <Button
                     className="h-3rem"

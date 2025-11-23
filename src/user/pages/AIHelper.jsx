@@ -29,7 +29,7 @@ const AIHelper = () => {
       id: null,
       question: null,
       answer:
-        "Xin chào! Tôi là trợ lý Al sức khỏe của bạn. Tôi có thể giúp bạn hiểu về các chỉ số sức khỏe, đưa ra lời khuyên về chế độ ăn uông, tập luyện và giải thích các cảnh báo. Bạn muôn hỏi gì hôm nay?",
+        "Xin chào! Tôi là trợ lý Al sức khỏe của bạn. Tôi có thể giúp bạn hiểu về các chỉ số sức khỏe, đưa ra lời khuyên về chế độ ăn uống, tập luyện và giải thích các cảnh báo. Bạn muốn hỏi gì hôm nay?",
       date: null,
     },
   ]);
