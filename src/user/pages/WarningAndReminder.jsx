@@ -128,7 +128,7 @@ const WarningAndReminder = () => {
       setDataAutoWarning(null);
       // hoặc: setDataAutoWarning([]);
     }
-  };  
+  };
 
   useEffect(() => {
     if (!profile?.hoSoId) return;
@@ -148,13 +148,18 @@ const WarningAndReminder = () => {
   const handleAddReminder = async () => {
     setErrorAddReminder({
       title: !formAddReminder.title,
-      content: !formAddReminder.content,
+      content:
+        !formAddReminder.content ||
+        formAddReminder.content.length < 2 ||
+        formAddReminder.content.length > 255,
       time: !formAddReminder.time,
     });
 
     if (
       !formAddReminder.title ||
       !formAddReminder.content ||
+      formAddReminder.content.length < 2 ||
+      formAddReminder.content.length > 255 ||
       !formAddReminder.time
     )
       return;
@@ -210,7 +215,7 @@ const WarningAndReminder = () => {
     if (!id) return;
     try {
       await callApi(() => remindAPI.deleteItemWarning(id));
-      showToast("success", "Thành công", "Xóa thành công");
+      showToast("success", "Thành công", "Xóa cảnh báo thành công!");
       getDataAuto();
     } catch {
       //
@@ -280,7 +285,15 @@ const WarningAndReminder = () => {
                             />
                             <div className="flex flex-column gap-2 text-black">
                               <div>
-                                <span className="font-bold">{item.point}</span>
+                                <span className="font-bold">
+                                  {item.point === "BloodPressure"
+                                    ? "Huyết áp"
+                                    : item.point === "BloodSugar"
+                                    ? "Đường huyết"
+                                    : item.point === "Sleep"
+                                    ? "Giấc ngủ"
+                                    : "Nhịp tim"}
+                                </span>
                               </div>
                               <div
                                 style={{
@@ -427,6 +440,9 @@ const WarningAndReminder = () => {
               }
             />
           </div>
+          {formAddReminder.content && errorAddReminder.content && (
+            <small className="p-error">Nội dung phải từ 2 đến 255 ký tự</small>
+          )}
           <div>
             <p className="mt-0 text-main1">Thời gian nhắc nhở</p>
             <div className="relative w-full">

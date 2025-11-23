@@ -29,9 +29,11 @@ export const AuthDialogProvider = ({ children }) => {
 
       <Dialog
         header={
-          type === "expired"
-            ? "Phiên đăng nhập đã hết hạn"
-            : "Yêu cầu đăng nhập"
+          <div className="text-center">
+            {type === "expired"
+              ? "Phiên đăng nhập đã hết hạn"
+              : "Yêu cầu đăng nhập"}
+          </div>
         }
         visible={visible}
         onHide={hideDialog}

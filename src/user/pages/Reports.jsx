@@ -15,6 +15,7 @@ import { useToast } from "../../common/hooks/useToast";
 import reportAPI from "../../services/api/reportAPI";
 import { useApi } from "../../common/hooks/useApi";
 import { AuthContext } from "../../common/context/AuthContext";
+
 ChartJS.register(zoomPlugin);
 
 const Reports = () => {
@@ -245,7 +246,7 @@ const Reports = () => {
           end || dates[1].toISOString().split("T")[0]
         ),
       false
-    );    
+    );
 
     if (res) {
       const blob = new Blob([res.data], { type: "application/pdf" });
@@ -268,10 +269,11 @@ const Reports = () => {
 
       URL.revokeObjectURL(url);
     }
-  };  
+  };
 
   const handleDelete = (index) => {
     setHistory((prev) => prev.filter((_, i) => i !== index));
+    showToast("success", "Thành công", "Xóa báo cáo Thành công!");
   };
 
   return (

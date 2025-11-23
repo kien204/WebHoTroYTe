@@ -6,11 +6,11 @@ import { Avatar } from "primereact/avatar";
 const Topbar = ({ onMenuToggle }) => {
   return (
     <div
-      className="layout-topbar flex align-items-center justify-content-between px-2 py-2"
+      className="layout-topbar flex align-items-center justify-content-between px-2 py-2 md:hidden"
       style={{ borderBottom: "1px solid #E3E3E3" }}
     >
       {/* Logo */}
-      <Link to="/" className="flex align-items-center gap-2 md:hidden">
+      <Link to="/" className="flex align-items-center gap-2 ">
         <Avatar
           image="/src/assets/logo.png"
           shape="circle"
@@ -22,10 +22,9 @@ const Topbar = ({ onMenuToggle }) => {
       <div className="mr-auto"></div>
       {/* Actions */}
       <div className="flex align-items-center gap-2">
-        <Button icon="pi pi-bell" className="p-button-rounded p-button-text" />
         <Button
           icon="pi pi-bars"
-          className="p-button-rounded p-button-text block md:hidden"
+          className="p-button-rounded p-button-text block "
           onClick={onMenuToggle}
         />
       </div>

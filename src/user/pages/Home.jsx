@@ -92,7 +92,7 @@ const Home = () => {
             <div className="text-main2 text-center mt-2">
               “Ứng dụng giúp tôi dễ dàng quản lý sức khỏe.”
             </div>
-            <h2 className="text-center m-2">Sơn Tùng M-TP</h2>
+            <h2 className="text-center m-2">Thùy Tiên</h2>
           </Card>
           <Card className="p-card1 w-full">
             <img
@@ -104,7 +104,7 @@ const Home = () => {
             <div className="text-main2 text-center mt-2">
               “Ứng dụng rất đẹp và dễ sử dụng tôi cho 100 điểm.”
             </div>
-            <h2 className="text-center m-2">G-Dragon</h2>
+            <h2 className="text-center m-2">Hằng Du Mục</h2>
           </Card>
         </div>
       </div>
@@ -453,12 +453,6 @@ const Home = () => {
               </div>
             </Card>
           </div>
-        </div>
-      </div>
-
-      <div className="flex justify-content-end my-3">
-        <div className="card-1 mr-5 p-2 font-bold cursor-pointer">
-          Nhận tư vấn miễn phí về dịch vụ của chúng tôi
         </div>
       </div>
     </div>

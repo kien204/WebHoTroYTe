@@ -46,6 +46,10 @@ const OverView = () => {
     height: "",
     weight: "",
   });
+  const [dataBMI1, setDataBMI1] = useState({
+    height: "",
+    weight: "",
+  });
   const [errorForm, setErrorForm] = useState({
     weight: false,
     height: false,
@@ -201,25 +205,30 @@ const OverView = () => {
   const handleBMI = () => {
     const newErrors = {
       height:
-        !dataBMI.height ||
-        dataBMI.height <= 0 ||
-        dataBMI.height >= 300 ||
-        !/^-?\d+$/.test(dataBMI.height) ||
-        isNaN(dataBMI.height),
+        !dataBMI1.height ||
+        dataBMI1.height <= 0 ||
+        dataBMI1.height >= 300 ||
+        !/^-?\d+$/.test(dataBMI1.height) ||
+        isNaN(dataBMI1.height),
       weight:
-        !dataBMI.weight ||
-        dataBMI.weight <= 0 ||
-        dataBMI.weight >= 500 ||
-        !/^-?\d+$/.test(dataBMI.weight) ||
-        isNaN(dataBMI.weight),
+        !dataBMI1.weight ||
+        dataBMI1.weight <= 0 ||
+        dataBMI1.weight >= 500 ||
+        !/^-?\d+$/.test(dataBMI1.weight) ||
+        isNaN(dataBMI1.weight),
     };
 
     setErrorForm(newErrors);
 
     if (Object.values(newErrors).some((v) => v)) return;
 
-    const heightInMeters = dataBMI.height / 100;
-    setKetQUa(dataBMI.weight / (heightInMeters * heightInMeters));
+    const heightInMeters = dataBMI1.height / 100;
+    setKetQUa(dataBMI1.weight / (heightInMeters * heightInMeters));
+    setDataBMI(dataBMI1);
+    setDataBMI1({
+      height: null,
+      weight: null,
+    });
     setVisible(false);
   };
 
@@ -749,21 +758,23 @@ const OverView = () => {
           />
           <InputText
             id="weight"
-            value={dataBMI.weight || ""}
-            onChange={(e) => setDataBMI({ ...dataBMI, weight: e.target.value })}
+            value={dataBMI1.weight || ""}
+            onChange={(e) =>
+              setDataBMI1({ ...dataBMI1, weight: e.target.value })
+            }
             placeholder="Nhập cân nặng"
             invalid={errorForm.weight}
             onFocus={() => setErrorForm({ ...errorForm, weight: false })}
             className="pl-5 w-12"
           />
-          {dataBMI.weight && errorForm.weight && (
-            <small className="p-error">
-              {dataBMI.weight <= 0 || dataBMI.weight >= 500
-                ? "Dữ liệu phải làm trong khoảng 0-500 kg"
-                : "Cân nặng không hợp lệ! Vui lòng nhập lại!"}
-            </small>
-          )}
         </div>
+        {dataBMI1.weight && errorForm.weight && (
+          <small className="p-error">
+            {dataBMI1.weight <= 0 || dataBMI1.weight >= 500
+              ? "Dữ liệu phải làm trong khoảng 0-500 kg"
+              : "Cân nặng không hợp lệ! Vui lòng nhập lại!"}
+          </small>
+        )}
         <label className="block mb-1 font-bold mt-3" htmlFor="height">
           Chiều cao
         </label>
@@ -774,21 +785,23 @@ const OverView = () => {
           />
           <InputText
             id="height"
-            value={dataBMI.height || ""}
-            onChange={(e) => setDataBMI({ ...dataBMI, height: e.target.value })}
+            value={dataBMI1.height || ""}
+            onChange={(e) =>
+              setDataBMI1({ ...dataBMI1, height: e.target.value })
+            }
             onFocus={() => setErrorForm({ ...errorForm, height: false })}
             placeholder="Nhập chiều cao"
             invalid={errorForm.height}
             className="pl-5 w-12"
           />
-          {dataBMI.height && errorForm.height && (
-            <small className="p-error">
-              {dataBMI.height <= 0 || dataBMI.height >= 300
-                ? "Dữ liệu phải làm trong khoảng 0-300 cm"
-                : "Chiều cao không hợp lệ! Vui lòng nhập lại!"}
-            </small>
-          )}
         </div>
+        {dataBMI1.height && errorForm.height && (
+          <small className="p-error">
+            {dataBMI1.height <= 0 || dataBMI1.height >= 300
+              ? "Dữ liệu phải làm trong khoảng 0-300 cm"
+              : "Chiều cao không hợp lệ! Vui lòng nhập lại!"}
+          </small>
+        )}
         <div className="flex flex-row justify-content-center gap-3 mt-3">
           <Button label="Hủy" onClick={() => setVisible(false)} />
           <Button label="Tính toán" onClick={handleBMI} />

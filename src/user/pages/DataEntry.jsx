@@ -402,7 +402,7 @@ const DataEntry = () => {
         );
         setEditForm4(false);
       }
-      showToast("success", "Thành công", "Lưu đường huyết Thành công");
+      showToast("success", "Thành công", "Lưu giấc ngủ Thành công");
       getRecentlyForm4();
     } catch {
       //
