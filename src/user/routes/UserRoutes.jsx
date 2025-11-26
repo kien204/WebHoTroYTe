@@ -21,13 +21,13 @@ const UserRoutes = () => {
     { path: "/ai-helper", component: AiHelper },
     { path: "/data-entry", component: DataEntry },
     { path: "/reports", component: Reports },
-    { path: "/warning-and-reminder", component: WarningAndReminder },
     { path: "/set-up-alerts", component: SetUpAlerts },
     { path: "/health-profile", component: HealthProfile },
   ];
 
   const publicRouters = [
     { path: "/", component: Home },
+    { path: "/warning-and-reminder", component: WarningAndReminder },
   ];
 
   return (

@@ -12,10 +12,9 @@ import { AuthContext } from "../../common/context/AuthContext";
 import { useApi } from "../../common/hooks/useApi";
 import { useToast } from "../../common/hooks/useToast";
 import aiHelperAPI from "../../services/api/aiHelperAPI";
-
 import "./MiniChat.css";
 
-const ChatWidget = () => {
+const ChatWidget = ({ messager }) => {
   const { auth, profile } = useContext(AuthContext);
   const { showToast } = useToast();
   const { callApi } = useApi(showToast, false);
@@ -43,8 +42,28 @@ const ChatWidget = () => {
     }
   }, [messages]);
 
+  useEffect(() => {
+    if(loadingMes) return;
+
+    if (messager) {
+      console.log(messager);
+
+      setInput(messager);
+      setIsOpen(true);
+    }
+  }, [messager]);
+
+  useEffect(() => {
+    if (
+      messager &&
+      input === messager // chỉ chạy khi input update từ messager
+    ) {
+      handleSend();
+    }
+  }, [input, messager]);
+
   const handleSend = async () => {
-    if (!input.trim()) return;
+    if (!input || !input?.trim()) return;
 
     const userMessage = {
       id: null, // id tạm
@@ -116,7 +135,7 @@ const ChatWidget = () => {
         location.pathname !== "/register" &&
         location.pathname !== "/" &&
         location.pathname !== "/login" && (
-          <div >
+          <div>
             {!isOpen && (
               <Button
                 rounded

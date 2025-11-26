@@ -13,6 +13,7 @@ import { Calendar } from "primereact/calendar";
 import { useApi } from "../../common/hooks/useApi";
 import { useToast } from "../../common/hooks/useToast";
 import { AuthContext } from "../../common/context/AuthContext";
+import { ChatWidgetContext } from "../../common/context/ChatWidgetContext";
 import remindAPI from "../../services/api/remindAPI";
 
 const WarningAndReminder = () => {
@@ -24,6 +25,7 @@ const WarningAndReminder = () => {
 
   const { showToast } = useToast();
   const { auth, profile } = useContext(AuthContext);
+  const { set } = useContext(ChatWidgetContext);
   const { callApi } = useApi(showToast);
 
   const [data, setData] = useState(null);
@@ -35,7 +37,44 @@ const WarningAndReminder = () => {
     time: "",
   });
   const [visibleDialog, setVisibleDialog] = useState(false);
-  const [dataAutoWarning, setDataAutoWarning] = useState(null);
+  const [dataAutoWarning, setDataAutoWarning] = useState([
+    {
+      id: 6,
+      userProfileId: 19,
+      userProfile: null,
+      point: "HeartRate",
+      icon: "arrow-up",
+      title: "Cảnh báo nhịp tim",
+      node: "2025-11-21 16:09",
+      mess: "Nhịp tim 200 bpm vượt ngưỡng tối đa (120 bpm).",
+      createdAt: "2025-11-21T16:09:11.2397643",
+      updatedAt: "2025-11-21T16:09:11.239767",
+    },
+    {
+      id: 5,
+      userProfileId: 19,
+      userProfile: null,
+      point: "BloodSugar",
+      icon: "arrow-up",
+      title: "Cảnh báo đường huyết",
+      node: "2025-11-21 16:08",
+      mess: "Đường huyết 200 mg/dL vượt ngưỡng tối đa (121.00 mg/dL).",
+      createdAt: "2025-11-21T16:08:51.9561085",
+      updatedAt: "2025-11-21T16:08:51.9561087",
+    },
+    {
+      id: 4,
+      userProfileId: 19,
+      userProfile: null,
+      point: "BloodPressure",
+      icon: "arrow-up",
+      title: "Cảnh báo huyết áp",
+      node: "2025-11-21 16:08",
+      mess: "Huyết áp tâm thu 200 mmHg vượt ngưỡng tối đa (55 mmHg).",
+      createdAt: "2025-11-21T16:08:32.7507018",
+      updatedAt: "2025-11-21T16:08:32.7507297",
+    },
+  ]);
 
   const [errorAddReminder, setErrorAddReminder] = useState({
     title: false,
@@ -225,8 +264,6 @@ const WarningAndReminder = () => {
       if (!profile?.hoSoId) return;
       getDataAuto();
     } else if (e.index === 1) {
-      console.log(auth.id);
-      
       if (!auth?.id) return;
       getData();
     }
@@ -278,20 +315,21 @@ const WarningAndReminder = () => {
                     </Card>
                     <div className="flex flex-column gap-3">
                       {dataAutoWarning?.map((item) => (
-                        <div key={item.id} className="flex flex-column gap-3">
-                          <div
-                            className={`flex flex-row gap-3 p-3 align-items-center ${
-                              item.point === "BloodPressure"
-                                ? "card-1"
-                                : item.point === "BloodSugar"
-                                ? "card-2"
-                                : item.point === "Sleep"
-                                ? "card-3"
-                                : "card-4"
-                            }`}
-                          >
+                        <div
+                          key={item.id}
+                          className={`flex flex-column lg:flex-row gap-3 p-3 ${
+                            item.point === "BloodPressure"
+                              ? "card-1"
+                              : item.point === "BloodSugar"
+                              ? "card-2"
+                              : item.point === "Sleep"
+                              ? "card-3"
+                              : "card-4"
+                          }`}
+                        >
+                          <div className="flex flex-row align-items-center flex-1">
                             <i
-                              className={`pi ${item.icon} font-bold p-3 text-2xl border-round-xl`}
+                              className={`pi pi-${item.icon} font-bold p-3 text-2xl border-round-xl`}
                             />
                             <div className="flex flex-column gap-2 text-black">
                               <div>
@@ -305,6 +343,7 @@ const WarningAndReminder = () => {
                                     : "Nhịp tim"}
                                 </span>
                               </div>
+
                               <div
                                 style={{
                                   display: "-webkit-box",
@@ -316,18 +355,32 @@ const WarningAndReminder = () => {
                               >
                                 {item.mess}
                               </div>
+
                               <div className="opacity-70">
                                 <i className="pi pi-calendar mr-3" />
                                 {item.node}
                               </div>
                             </div>
+                          </div>
+                          <div className="flex flex-row align-items-center gap-2 lg:ml-auto">
                             <Button
-                              className="ml-auto text-2xl"
+                              className="text-2xl"
                               icon="pi pi-trash"
                               severity="danger"
                               outlined
                               style={{ border: "none" }}
-                              onClick={() => handleDeleteItemWarning(item.id)} // xóa theo id
+                              onClick={() => handleDeleteItemWarning(item.id)}
+                            />
+                            <Button
+                              icon="pi pi-comments"
+                              severity="message"
+                              label="Giải thích bằng AI"
+                              onClick={() => {
+                                set(
+                                  `Bạn hãy giải thích và đưa ra lời khuyên phù hợp khi ${item.mess}`
+                                );
+                              }}
+                              className="h-3rem text-sm"
                             />
                           </div>
                         </div>

@@ -4,11 +4,20 @@ import ChatWidget from "../components/ChatWidget";
 import { ChatWidgetContext } from "./ChatWidgetContext";
 
 export const ChatWidgetProvider = ({ children }) => {
-  const [visible, setVisible] = useState(false);
+  const [messager, setMessager] = useState("");
+
+  const set = (message) => {
+    setMessager(message);
+  };
 
   return (
-    <ChatWidgetContext.Provider value={{ visible, setVisible }}>
-      {ReactDOM.createPortal(<ChatWidget visible={visible} />, document.body)}
+    <ChatWidgetContext.Provider
+      value={{ messager, set }}
+    >
+      {ReactDOM.createPortal(
+        <ChatWidget messager={messager} />,
+        document.body
+      )}
       {children}
     </ChatWidgetContext.Provider>
   );

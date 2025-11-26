@@ -70,7 +70,6 @@ const SetUpAlerts = () => {
     })();
   }, [profile?.hoSoId]);
 
-
   const getData = async () => {
     try {
       const res = await callApi(
@@ -652,7 +651,7 @@ const SetUpAlerts = () => {
               {first ? (
                 <Button
                   icon="pi pi-save"
-                  label="Lưu huyết áp"
+                  label="Lưu cảnh báo"
                   className="mt-3 w-full"
                   onClick={handleButton}
                 />
